@@ -1,0 +1,19 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "solaire/ranking-list",
+  "title": "Solaire Ranking List",
+  "category": "design",
+  "icon": "list-view",
+  "description": "Ranked list of games with thumbnail, blurb and Play / Demo actions.",
+  "editorScript": "file:./build/index.js",
+  "style": "file:./style.css",
+  "render": "file:./render.php",
+  "supports": { "html": false },
+  "attributes": {
+    "title": { "type": "string", "default": "Local Region Ranking" },
+    "category": { "type": "string", "default": "" },
+    "count": { "type": "number", "default": 7 },
+    "viewAllUrl": { "type": "string", "default": "" }
+  }
+}

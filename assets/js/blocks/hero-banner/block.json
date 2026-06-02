@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "solaire/hero-banner",
+  "title": "Solaire Hero Banner",
+  "category": "design",
+  "icon": "cover-image",
+  "description": "Full-width hero with background image, heading, subheading and CTA.",
+  "editorScript": "file:./build/index.js",
+  "style": "file:./style.css",
+  "render": "file:./render.php",
+  "supports": { "html": false },
+  "attributes": {
+    "title": { "type": "string", "default": "Solaire Online Casino" },
+    "subtitle": { "type": "string", "default": "Premium Live Casino & Luxury Slots" },
+    "buttonText": { "type": "string", "default": "Play now" },
+    "buttonUrl": { "type": "string", "default": "" },
+    "imageId": { "type": "number", "default": 0 },
+    "imageUrl": { "type": "string", "default": "" }
+  }
+}

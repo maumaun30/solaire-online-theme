@@ -1,0 +1,35 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "solaire/convenience-hook",
+  "title": "Solaire Convenience Hook",
+  "category": "design",
+  "icon": "smartphone",
+  "description": "Two-column \"Premium Convenience\" section with feature icons and an accordion.",
+  "editorScript": "file:./build/index.js",
+  "style": "file:./style.css",
+  "render": "file:./render.php",
+  "supports": { "html": false },
+  "attributes": {
+    "overline": { "type": "string", "default": "Additional Features" },
+    "heading": { "type": "string", "default": "The Premium\nConvenience Hook" },
+    "text": { "type": "string", "default": "The prestige of Solaire, anywhere you are. Experience the country's number one luxury gaming resort right from your screen. Start playing instantly." },
+    "features": {
+      "type": "array",
+      "default": [
+        { "icon": "phone", "label": "Play anywhere, anytime" },
+        { "icon": "clock", "label": "Instant access to games" },
+        { "icon": "shield-plain", "label": "Safe and secure online" },
+        { "icon": "peso", "label": "Enjoy your online wins" }
+      ]
+    },
+    "items": {
+      "type": "array",
+      "default": [
+        { "icon": "phone-plain", "title": "Mobile Compatibility", "text": "You can play seamlessly on any device. Solaire Online offers optimized navigation and high-performance streaming for live gaming wherever life takes you." },
+        { "icon": "card", "title": "Easy Payout", "text": "Fast, transparent withdrawals through trusted local payment channels. Get your winnings quickly with no hidden fees." },
+        { "icon": "dual", "title": "Hybrid Casino Games", "text": "Enjoy a unified rewards experience that bridges the physical Solaire resort with the online platform, all in one account." }
+      ]
+    }
+  }
+}

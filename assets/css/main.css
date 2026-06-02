@@ -1,0 +1,197 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Solaire Online — shared styles
+   Brand tokens, fonts, and custom utilities layered on Tailwind
+   (ported from the design source of truth: solaire/css/styles.css)
+   ============================================================ */
+
+/* ---- Fonts ---------------------------------------------------
+   Figtree, Montserrat, Inter & Cormorant Garamond load from
+   Google Fonts (enqueued in functions.php). Gotham is a licensed
+   font — drop the woff2 files into /assets/fonts/ and these
+   @font-face rules pick them up; until then the family stack
+   falls back to Montserrat.
+--------------------------------------------------------------- */
+@font-face {
+  font-family: "Gotham";
+  src: url("../fonts/Gotham-Book.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Gotham";
+  src: url("../fonts/Gotham-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Gotham";
+  src: url("../fonts/Gotham-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  --c-bg: #232629;          /* page surface */
+  --c-bg-deep: #15171a;     /* deep panels / footer */
+  --c-panel: #2b2e31;       /* cards */
+  --c-red: #c42b29;         /* header gradient top */
+  --c-red-deep: #aa2d29;
+  --c-orange: #df6a2e;      /* primary accent */
+  --c-orange-bright: #ef7b00;
+  --c-gold: #f5b335;        /* secondary accent / gold */
+  --c-gold-soft: #f8ab3e;
+  --c-slate: #94a3b8;       /* muted text */
+  --c-slate-2: #abb2ba;
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--c-bg);
+    color: #fff;
+    font-family: "Figtree", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; text-decoration: none; }
+}
+
+@layer components {
+  .font-display { font-family: "Montserrat", "Gotham", sans-serif; }
+  .font-gotham  { font-family: "Gotham", "Montserrat", sans-serif; }
+  .font-inter   { font-family: "Inter", sans-serif; }
+  /* Serif wordmark for the SOLAIRE logo */
+  .font-logo {
+    font-family: "Cormorant Garamond", "Times New Roman", serif;
+  }
+
+  /* ---- Brand gradients & fills ------------------------------ */
+  .bg-brand-orange {
+    background: linear-gradient(92deg, #ef7b00 0%, #df6a2e 60%, #d2242a 100%);
+  }
+  .bg-gold-cta {
+    background: linear-gradient(180deg, #f5c451 0%, #d99a2c 100%);
+  }
+  .text-gradient-orange {
+    background: linear-gradient(90deg, #f5b335 0%, #df6a2e 60%, #d2242a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  /* The red glow that bleeds from the top of the page */
+  .header-glow::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 220px;
+    background: radial-gradient(120% 100% at 20% -40%, rgba(196,43,41,0.55), rgba(196,43,41,0) 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ---- Accent border used on section title bars ------------- */
+  .title-bar {
+    border: 1px solid rgba(223,106,46,0.5);
+    border-radius: 10px;
+  }
+  .title-tab {
+    border-left: 4px solid var(--c-orange);
+  }
+
+  /* ---- Carousels: hide scrollbar but keep scroll ----------- */
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .snap-row { scroll-snap-type: x mandatory; }
+  .snap-row > * { scroll-snap-align: start; }
+
+  /* ---- Reusable card hover lift ----------------------------- */
+  .card-lift {
+    transition: transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s ease;
+    will-change: transform;
+  }
+  .card-lift:hover {
+    transform: translateY(-6px) scale(1.025);
+    box-shadow: 0 18px 40px -12px rgba(0,0,0,.7), 0 0 0 1px rgba(245,179,53,.25);
+  }
+  .btn-press {
+    transition: transform .18s ease, box-shadow .25s ease, filter .25s ease;
+  }
+  .btn-press:hover { filter: brightness(1.08); transform: translateY(-1px); }
+  .btn-press:active { transform: translateY(0) scale(.98); }
+
+  /* ---- Striped placeholder for missing art ----------------- */
+  .ph {
+    background-color: #1d1f22;
+    background-image: repeating-linear-gradient(
+      45deg, rgba(255,255,255,.035) 0 10px, rgba(255,255,255,0) 10px 20px);
+    display: flex; align-items: center; justify-content: center;
+    color: #6b7177; font-family: "Figtree", monospace; font-size: 11px;
+    letter-spacing: .08em; text-transform: uppercase; text-align: center;
+  }
+
+  /* ---- Accordion ------------------------------------------- */
+  .acc-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows .4s cubic-bezier(.4,0,.2,1);
+  }
+  .acc-item.open .acc-panel { grid-template-rows: 1fr; }
+  .acc-panel > div { overflow: hidden; }
+  .acc-chevron { transition: transform .35s ease; }
+  .acc-item.open .acc-chevron { transform: rotate(180deg); }
+
+  /* ---- Filter chips (category archive) --------------------- */
+  .solaire-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    border-radius: .375rem;
+    padding: .625rem 1.25rem;
+    font-size: .875rem;
+    font-weight: 600;
+    color: rgba(255,255,255,.85);
+    background: rgba(255,255,255,.05);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.1);
+    transition: background .2s ease, color .2s ease, box-shadow .2s ease;
+    cursor: pointer;
+  }
+  .solaire-chip:hover { background: rgba(255,255,255,.1); }
+  .solaire-chip.is-active {
+    color: #fff;
+    font-weight: 700;
+    background: linear-gradient(92deg, #ef7b00 0%, #df6a2e 60%, #d2242a 100%);
+    box-shadow: 0 10px 15px -3px rgba(223,106,46,.2);
+  }
+
+  /* ---- Mobile nav drawer ----------------------------------- */
+  #nav-drawer {
+    transform: translateX(100%);
+    transition: transform .35s cubic-bezier(.4,0,.2,1);
+  }
+  #nav-drawer.open { transform: translateX(0); }
+  #nav-overlay { transition: opacity .35s ease; }
+}
+
+/* ---- Hero / on-load entrance animations ---------------------
+   Hidden state only applies once JS adds .anim-on to <html>, so
+   the page is fully visible if JS or IntersectionObserver fail.
+   Uses a keyframe (time-based, fill both) rather than a transition
+   so it always resolves to the visible end-state. */
+@keyframes anim-in {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* resting state stays visible; .in plays a one-shot fade-up */
+  html.anim-on [data-anim].in {
+    animation: anim-in .7s cubic-bezier(.2,.7,.2,1) both;
+  }
+}
+@media print {
+  [data-anim] { opacity: 1 !important; animation: none !important; }
+}

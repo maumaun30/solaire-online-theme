@@ -1,0 +1,148 @@
+<?php
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+define('SOLAIRE_VERSION', '1.0.0');
+
+/* ============================================================
+   Advanced Custom Fields (bundled)
+   ============================================================ */
+add_action('after_setup_theme', function () {
+    if (!class_exists('ACF')) {
+        include_once get_stylesheet_directory() . '/acf/acf.php';
+    }
+});
+
+add_filter('acf/settings/path', function ($path) {
+    return get_stylesheet_directory() . '/acf/';
+});
+
+add_filter('acf/settings/dir', function ($dir) {
+    return get_stylesheet_directory_uri() . '/acf/';
+});
+
+/* ============================================================
+   Theme support
+   ============================================================ */
+function solaire_setup()
+{
+    add_theme_support('title-tag');
+    add_theme_support('post-thumbnails');
+    add_theme_support('editor-styles');
+    add_theme_support('wp-block-styles');
+    add_theme_support('align-wide');
+    add_theme_support('custom-logo');
+    add_theme_support('html5', ['search-form', 'gallery', 'caption', 'style', 'script']);
+
+    register_nav_menus([
+        'primary' => __('Primary Menu', 'solaire'),
+    ]);
+}
+add_action('after_setup_theme', 'solaire_setup');
+
+/* ============================================================
+   Front-end assets
+   ============================================================ */
+function solaire_fonts_url()
+{
+    return 'https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@400;600;700&family=Cormorant+Garamond:wght@500;600&display=swap';
+}
+
+function solaire_enqueue_assets()
+{
+    $critical_css = get_theme_file_path('/assets/css/critical.min.css');
+    $main_css     = get_theme_file_path('/assets/css/main.min.css');
+    $solaire_js   = get_theme_file_path('/assets/js/solaire.js');
+
+    // Google Fonts: Figtree (body/UI), Montserrat (display), Inter, Cormorant Garamond (logo).
+    wp_enqueue_style('solaire-fonts', solaire_fonts_url(), [], null);
+
+    if (file_exists($critical_css)) {
+        wp_enqueue_style(
+            'solaire-critical',
+            get_theme_file_uri('/assets/css/critical.min.css'),
+            [],
+            filemtime($critical_css)
+        );
+    }
+
+    if (file_exists($main_css)) {
+        wp_enqueue_style(
+            'solaire-main',
+            get_theme_file_uri('/assets/css/main.min.css'),
+            ['solaire-fonts', 'solaire-critical'],
+            filemtime($main_css)
+        );
+    }
+
+    wp_enqueue_style(
+        'solaire-style',
+        get_stylesheet_uri(),
+        ['solaire-main'],
+        filemtime(get_theme_file_path('/style.css'))
+    );
+
+    if (file_exists($solaire_js)) {
+        wp_enqueue_script(
+            'solaire-main',
+            get_theme_file_uri('/assets/js/solaire.js'),
+            [],
+            filemtime($solaire_js),
+            true
+        );
+    }
+}
+add_action('wp_enqueue_scripts', 'solaire_enqueue_assets');
+
+/* ============================================================
+   Editor assets — preview blocks with real fonts + utilities
+   ============================================================ */
+function solaire_editor_assets()
+{
+    if (file_exists(get_theme_file_path('/assets/css/main.min.css'))) {
+        add_editor_style('assets/css/main.min.css');
+    }
+}
+add_action('after_setup_theme', 'solaire_editor_assets');
+
+function solaire_editor_fonts()
+{
+    wp_enqueue_style('solaire-fonts', solaire_fonts_url(), [], null);
+}
+add_action('enqueue_block_editor_assets', 'solaire_editor_fonts');
+
+/* ============================================================
+   Auto-register dynamic blocks in /assets/js/blocks
+   ============================================================ */
+function solaire_register_blocks()
+{
+    $blocks_dir = get_theme_file_path('/assets/js/blocks');
+
+    if (!is_dir($blocks_dir)) {
+        return;
+    }
+
+    foreach (scandir($blocks_dir) as $folder) {
+        if ($folder === '.' || $folder === '..') {
+            continue;
+        }
+
+        $block_path = $blocks_dir . '/' . $folder;
+
+        if (is_dir($block_path) && file_exists($block_path . '/block.json')) {
+            register_block_type($block_path);
+        }
+    }
+}
+add_action('init', 'solaire_register_blocks');
+
+/* ============================================================
+   Theme modules
+   ============================================================ */
+require_once get_theme_file_path('/inc/cpt.php');
+require_once get_theme_file_path('/inc/acf-fields.php');
+require_once get_theme_file_path('/inc/template-helpers.php');
+require_once get_theme_file_path('/inc/homepage.php');
+require_once get_theme_file_path('/inc/seed.php');

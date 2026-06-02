@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.editor-styles-wrapper {
+    @apply text-gray-900;
+}

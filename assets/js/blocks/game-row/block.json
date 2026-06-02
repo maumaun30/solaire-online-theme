@@ -1,0 +1,20 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "solaire/game-row",
+  "title": "Solaire Game Row",
+  "category": "design",
+  "icon": "slides",
+  "description": "Horizontal snap-scroll carousel of games from a category.",
+  "editorScript": "file:./build/index.js",
+  "style": "file:./style.css",
+  "render": "file:./render.php",
+  "supports": { "html": false },
+  "attributes": {
+    "title": { "type": "string", "default": "E-Games" },
+    "category": { "type": "string", "default": "" },
+    "count": { "type": "number", "default": 5 },
+    "viewAllText": { "type": "string", "default": "View all" },
+    "viewAllUrl": { "type": "string", "default": "" }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "solaire/feature-cards",
+  "title": "Solaire Feature Cards",
+  "category": "design",
+  "icon": "media-document",
+  "description": "\"Explore the Best\" intro + three feature cards with image, icon and link.",
+  "editorScript": "file:./build/index.js",
+  "style": "file:./style.css",
+  "render": "file:./render.php",
+  "supports": { "html": false },
+  "attributes": {
+    "overline": { "type": "string", "default": "Premium Online Casino Experience" },
+    "heading": { "type": "string", "default": "Explore the Best of Casino Gaming at Solaire Online" },
+    "subheading": { "type": "string", "default": "Discover a world of premium gaming with live casino tables, luxury slots, and exclusive e-games crafted for entertainment, excitement and security." },
+    "cards": {
+      "type": "array",
+      "default": [
+        { "icon": "live-slots", "title": "Live Slots", "text": "Experience real-time slot machines with live results. Feel the mechanical pull and digital thrill as you engage with the most popular titles directly from the Solaire floor.", "linkText": "Explore Slots", "linkUrl": "", "imageId": 0, "imageUrl": "feature-machine.png" },
+        { "icon": "live-casino", "title": "Live Casino Games", "text": "Interact with professional dealers in real time. Our high-definition streams bring Baccarat, Roulette, and Blackjack tables to your device with crystal clear clarity.", "linkText": "Explore Live Casino", "linkUrl": "", "imageId": 0, "imageUrl": "game-5.jpg" },
+        { "icon": "e-games", "title": "Exclusive e-Games", "text": "Dive into a massive library of digital titles. From traditional favorites to modern cinematic experiences, our e-games collection is curated for variety and high win potential.", "linkText": "Explore e-Games", "linkUrl": "", "imageId": 0, "imageUrl": "game-2.png" }
+      ]
+    }
+  }
+}

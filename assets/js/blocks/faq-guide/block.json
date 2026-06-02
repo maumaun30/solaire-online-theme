@@ -1,0 +1,25 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "solaire/faq-guide",
+  "title": "Solaire FAQ Guide",
+  "category": "design",
+  "icon": "editor-help",
+  "description": "Gold-accented single-open FAQ accordion.",
+  "editorScript": "file:./build/index.js",
+  "style": "file:./style.css",
+  "render": "file:./render.php",
+  "supports": { "html": false },
+  "attributes": {
+    "heading": { "type": "string", "default": "A Quick Guide to Live Slots Games" },
+    "items": {
+      "type": "array",
+      "default": [
+        { "icon": "help", "question": "What are Solaire Online's live slots?", "answer": "Solaire Online Live Slots is the Philippines' top online platform to play live slots games. Upon logging in, you will be welcomed to a luxurious online casino. Experience high-quality entertainment and engaging live slots gameplay right from your screen." },
+        { "icon": "shield-plain", "question": "Are the games fair and secure?", "answer": "Absolutely. All games run on certified random number generators and are regulated under PAGCOR. Every transaction is protected with advanced encryption for complete fairness and security." },
+        { "icon": "card", "question": "Does Solaire Online have betting limits?", "answer": "Yes. Each game features flexible betting ranges to suit both casual players and high rollers, with clearly displayed minimum and maximum stakes on every table." },
+        { "icon": "phone-plain", "question": "Can I play on my mobile device?", "answer": "Of course. Solaire Online is fully optimized for mobile and tablet, delivering smooth, high-performance live gaming streams wherever you are." }
+      ]
+    }
+  }
+}

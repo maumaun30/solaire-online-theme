@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "solaire/category-tiles",
+  "title": "Solaire Category Tiles",
+  "category": "design",
+  "icon": "grid-view",
+  "description": "Responsive grid of category tiles linking to game categories.",
+  "editorScript": "file:./build/index.js",
+  "style": "file:./style.css",
+  "render": "file:./render.php",
+  "supports": { "html": false },
+  "attributes": {
+    "tiles": {
+      "type": "array",
+      "default": [
+        { "label": "Live Slots",  "slug": "live-slots",  "icon": "live-slots",  "imageId": 0, "imageUrl": "" },
+        { "label": "Live Casino", "slug": "live-casino", "icon": "live-casino", "imageId": 0, "imageUrl": "" },
+        { "label": "E-Games",     "slug": "e-games",     "icon": "e-games",     "imageId": 0, "imageUrl": "" },
+        { "label": "Sportsbook",  "slug": "sportsbook",  "icon": "sportsbook",  "imageId": 0, "imageUrl": "" }
+      ]
+    }
+  }
+}

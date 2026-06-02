@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "solaire/benefits-row",
+  "title": "Solaire Benefits Row",
+  "category": "design",
+  "icon": "awards",
+  "description": "\"Why Play\" benefits row with icon, title and text.",
+  "editorScript": "file:./build/index.js",
+  "style": "file:./style.css",
+  "render": "file:./render.php",
+  "supports": { "html": false },
+  "attributes": {
+    "heading": { "type": "string", "default": "Why Play at Solaire Online?" },
+    "benefits": {
+      "type": "array",
+      "default": [
+        { "icon": "bolt", "title": "Instant Excitement", "text": "Live streaming and real-time results ensure every spin and deal is captured with zero delay." },
+        { "icon": "shield", "title": "Safe and Secure", "text": "Advanced encryption protocols and secure payment gateways for total peace of mind and discretion." },
+        { "icon": "hybrid", "title": "Hybrid Gaming", "text": "Seamlessly transition between your physical resort and online platform with unified rewards." }
+      ]
+    }
+  }
+}

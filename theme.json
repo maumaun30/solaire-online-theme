@@ -1,0 +1,43 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "settings": {
+    "appearanceTools": true,
+    "layout": {
+      "contentSize": "840px",
+      "wideSize": "1440px"
+    },
+    "spacing": {
+      "units": ["px", "rem", "em", "%", "vw", "vh"]
+    },
+    "typography": {
+      "fluid": true
+    },
+    "color": {
+      "palette": [
+        { "slug": "surface", "name": "Surface", "color": "#232629" },
+        { "slug": "deep", "name": "Deep", "color": "#15171a" },
+        { "slug": "panel", "name": "Panel", "color": "#2b2e31" },
+        { "slug": "brandred", "name": "Brand Red", "color": "#c42b29" },
+        { "slug": "orange", "name": "Orange", "color": "#df6a2e" },
+        { "slug": "orange-bright", "name": "Orange Bright", "color": "#ef7b00" },
+        { "slug": "gold", "name": "Gold", "color": "#f5b335" },
+        { "slug": "slatey", "name": "Slate", "color": "#94a3b8" },
+        { "slug": "white", "name": "White", "color": "#FFFFFF" }
+      ]
+    }
+  },
+  "styles": {
+    "color": {
+      "background": "#232629",
+      "text": "#FFFFFF"
+    },
+    "typography": {
+      "fontFamily": "Figtree, system-ui, sans-serif",
+      "lineHeight": "1.6"
+    },
+    "spacing": {
+      "blockGap": "1.5rem"
+    }
+  }
+}
