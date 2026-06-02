@@ -81,8 +81,8 @@ while (have_posts()) :
 
   <!-- ===================== MORE GAMES ===================== -->
   <?php
-  $more = solaire_query_games(['category' => $cat_slug, 'count' => 10, 'exclude' => [$id]]);
-  if ($more->have_posts()) :
+  $more_q = solaire_query_games(['category' => $cat_slug, 'count' => 10, 'exclude' => [$id]]);
+  if ($more_q->have_posts()) :
   ?>
   <section class="mt-12" data-carousel>
     <div class="mb-3 flex items-center justify-between">
@@ -95,8 +95,8 @@ while (have_posts()) :
     </div>
     <div data-track class="no-scrollbar snap-row flex gap-3 overflow-x-auto pb-2 sm:gap-4">
       <?php
-      while ($more->have_posts()) {
-          $more->the_post();
+      while ($more_q->have_posts()) {
+          $more_q->the_post();
           echo solaire_game_card(get_the_ID(), ['variant' => 'grid', 'class' => 'w-[40%] shrink-0 sm:w-[28%] md:w-[16%]']); // phpcs:ignore
       }
       wp_reset_postdata();
