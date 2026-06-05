@@ -48,45 +48,43 @@ $solaire_nav = [
 <?php wp_body_open(); ?>
 
 <!-- ============================ HEADER ============================ -->
-<header class="header-glow relative z-50 bg-surface">
-  <div class="mx-auto max-w-shell px-4 pt-4">
-    <div class="relative z-10 flex h-[68px] items-center justify-between gap-4 rounded-xl bg-black/35 px-4 backdrop-blur-sm ring-1 ring-white/5">
+<header class="header-bar relative z-50 border-b border-white/5">
+  <div class="relative z-10 mx-auto flex h-[68px] max-w-shell items-center gap-6 px-4 sm:px-6">
 
-      <!-- Logo -->
-      <a href="<?php echo esc_url(home_url('/')); ?>" class="flex shrink-0 flex-col leading-none">
-        <?php if (has_custom_logo()) : ?>
-            <?php the_custom_logo(); ?>
-        <?php else : ?>
-            <span class="font-logo text-2xl font-semibold tracking-[0.32em] text-white sm:text-[28px]">SOLAIRE</span>
-            <span class="font-logo text-[10px] tracking-[0.55em] text-white/70">ONLINE</span>
-        <?php endif; ?>
-      </a>
+    <!-- Logo -->
+    <a href="<?php echo esc_url(home_url('/')); ?>" class="flex shrink-0 flex-col leading-none">
+      <?php if (has_custom_logo()) : ?>
+          <?php the_custom_logo(); ?>
+      <?php else : ?>
+          <span class="font-logo text-2xl font-semibold tracking-[0.32em] text-white sm:text-[28px]">SOLAIRE</span>
+          <span class="font-logo text-[10px] tracking-[0.55em] text-white/70">ONLINE</span>
+      <?php endif; ?>
+    </a>
 
-      <!-- Desktop nav -->
-      <nav class="hidden items-center gap-1 lg:flex" aria-label="<?php esc_attr_e('Primary Menu', 'solaire'); ?>">
-        <?php foreach ($solaire_nav as $key => $item) :
-            $active = solaire_nav_active($key);
-            $classes = $active
-                ? 'text-orange hover:text-orange-bright'
-                : 'text-white/90 hover:text-orange';
-        ?>
-          <a href="<?php echo esc_url(solaire_nav_url($key)); ?>"
-             class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors <?php echo esc_attr($classes); ?>"
-             <?php echo $active ? 'aria-current="page"' : ''; ?>>
-            <?php echo solaire_icon($item['icon']); // phpcs:ignore ?>
-            <span><?php echo esc_html($item['label']); ?></span>
-          </a>
-        <?php endforeach; ?>
-      </nav>
+    <!-- Desktop nav -->
+    <nav class="hidden items-center gap-1 lg:flex" aria-label="<?php esc_attr_e('Primary Menu', 'solaire'); ?>">
+      <?php foreach ($solaire_nav as $key => $item) :
+          $active = solaire_nav_active($key);
+          $classes = $active
+              ? 'text-orange hover:text-orange-bright'
+              : 'text-white/90 hover:text-orange';
+      ?>
+        <a href="<?php echo esc_url(solaire_nav_url($key)); ?>"
+           class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors <?php echo esc_attr($classes); ?>"
+           <?php echo $active ? 'aria-current="page"' : ''; ?>>
+          <?php echo solaire_icon($item['icon']); // phpcs:ignore ?>
+          <span><?php echo esc_html($item['label']); ?></span>
+        </a>
+      <?php endforeach; ?>
+    </nav>
 
-      <!-- Right actions -->
-      <div class="flex items-center gap-3">
-        <a href="#" class="hidden text-sm font-semibold text-white/80 transition-colors hover:text-white sm:inline"><?php esc_html_e('Sign Up', 'solaire'); ?></a>
-        <a href="#" class="btn-press hidden rounded-md bg-brand-orange px-5 py-2 text-sm font-bold text-white shadow-lg shadow-orange/20 sm:inline-block"><?php esc_html_e('Sign In', 'solaire'); ?></a>
-        <button id="nav-toggle" aria-label="<?php esc_attr_e('Open menu', 'solaire'); ?>" class="flex h-10 w-10 items-center justify-center rounded-lg text-white lg:hidden">
-          <?php echo solaire_icon('menu', 'h-6 w-6'); // phpcs:ignore ?>
-        </button>
-      </div>
+    <!-- Right actions -->
+    <div class="ml-auto flex items-center gap-4">
+      <a href="#" class="hidden text-sm font-semibold text-orange transition-colors hover:text-orange-bright sm:inline"><?php esc_html_e('Sign Up', 'solaire'); ?></a>
+      <a href="#" class="btn-press hidden rounded-md bg-brand-orange px-5 py-2 text-sm font-bold text-white shadow-lg shadow-orange/20 sm:inline-block"><?php esc_html_e('Sign In', 'solaire'); ?></a>
+      <button id="nav-toggle" aria-label="<?php esc_attr_e('Open menu', 'solaire'); ?>" class="flex h-10 w-10 items-center justify-center rounded-lg text-white lg:hidden">
+        <?php echo solaire_icon('menu', 'h-6 w-6'); // phpcs:ignore ?>
+      </button>
     </div>
   </div>
 </header>

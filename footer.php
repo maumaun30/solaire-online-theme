@@ -8,9 +8,8 @@ if (!defined('ABSPATH')) {
 }
 ?>
 <!-- ============================ FOOTER ============================ -->
-<footer class="relative bg-deep">
-  <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-orange/60 to-transparent"></div>
-  <div class="mx-auto max-w-shell px-4 py-14">
+<footer class="footer-glow relative bg-deep">
+  <div class="relative z-10 mx-auto max-w-shell px-4 py-14">
     <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
       <div class="lg:col-span-2 lg:max-w-sm">
         <div class="flex flex-col leading-none">
@@ -28,7 +27,7 @@ if (!defined('ABSPATH')) {
         </div>
       </div>
       <div>
-        <h3 class="border-b border-white/15 pb-2 font-display text-base font-bold">Legal</h3>
+        <h3 class="inline-block border-b-2 border-orange pb-1 font-display text-base font-bold">Legal</h3>
         <ul class="mt-4 flex flex-col gap-3 text-sm text-slatey">
           <li><a href="#" class="transition hover:text-white">Responsible Gaming</a></li>
           <li><a href="#" class="transition hover:text-white">Privacy Policy</a></li>
@@ -37,7 +36,7 @@ if (!defined('ABSPATH')) {
         </ul>
       </div>
       <div>
-        <h3 class="border-b border-white/15 pb-2 font-display text-base font-bold">Support</h3>
+        <h3 class="inline-block border-b-2 border-orange pb-1 font-display text-base font-bold">Support</h3>
         <ul class="mt-4 flex flex-col gap-3 text-sm text-slatey">
           <li><a href="#" class="transition hover:text-white">About us</a></li>
           <li><a href="#" class="transition hover:text-white">Help</a></li>

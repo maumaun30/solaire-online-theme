@@ -94,6 +94,29 @@
     z-index: 0;
   }
 
+  /* Red glow bleeding down from the top of the footer */
+  .footer-glow::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 260px;
+    background: radial-gradient(75% 100% at 16% -25%, rgba(196, 43, 41, 0.45), rgba(196, 43, 41, 0) 62%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Full-width header bar: red glow bleeds from the left edge into the dark base */
+  .header-bar {
+    position: relative;
+    background-color: #15171a;
+    background-image: radial-gradient(
+      90% 200% at 0% 50%,
+      rgba(210, 36, 42, 0.60) 0%,
+      rgba(196, 43, 41, 0.22) 22%,
+      rgba(21, 23, 26, 0) 52%
+    );
+  }
+
   /* ---- Accent border used on section title bars ------------- */
   .title-bar {
     border: 1px solid rgba(223,106,46,0.5);
