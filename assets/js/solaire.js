@@ -57,20 +57,34 @@
 
   /* ---- Accordions ----------------------------------------- */
   function initAccordions() {
+    function setOpen(item, open) {
+      var panel = item.querySelector(".acc-panel");
+      item.classList.toggle("open", open);
+      if (!panel) return;
+      panel.style.maxHeight = open ? panel.scrollHeight + "px" : "0px";
+    }
     document.querySelectorAll("[data-accordion]").forEach(function (group) {
       var single = group.hasAttribute("data-single");
       group.querySelectorAll(".acc-item").forEach(function (item) {
         var head = item.querySelector("[data-acc-head]");
         if (!head) return;
+        // Sync each panel with its initial open state on load.
+        setOpen(item, item.classList.contains("open"));
         head.addEventListener("click", function () {
-          var isOpen = item.classList.contains("open");
-          if (single) {
+          var willOpen = !item.classList.contains("open");
+          if (single && willOpen) {
             group.querySelectorAll(".acc-item.open").forEach(function (o) {
-              if (o !== item) o.classList.remove("open");
+              if (o !== item) setOpen(o, false);
             });
           }
-          item.classList.toggle("open", !isOpen);
+          setOpen(item, willOpen);
         });
+      });
+    });
+    // Keep an open panel's height correct if the viewport reflows.
+    window.addEventListener("resize", function () {
+      document.querySelectorAll(".acc-item.open .acc-panel").forEach(function (p) {
+        p.style.maxHeight = p.scrollHeight + "px";
       });
     });
   }

@@ -15,7 +15,7 @@ export default function Edit({ attributes, setAttributes }) {
             items={tiles}
             onChange={(v) => setAttributes({ tiles: v })}
             addLabel={__('Add tile', 'solaire')}
-            newItem={{ label: '', slug: '', icon: 'live-slots', imageId: 0, imageUrl: '' }}
+            newItem={{ label: '', slug: '', icon: 'live-slots', image: { id: 0, url: '' } }}
             fields={[
               { name: 'label', label: __('Label', 'solaire'), type: 'text' },
               { name: 'slug', label: __('Category slug', 'solaire'), type: 'text' },
