@@ -48,8 +48,8 @@ $solaire_nav = [
 <?php wp_body_open(); ?>
 
 <!-- ============================ HEADER ============================ -->
-<header class="header-bar relative z-50 border-b border-white/5">
-  <div class="relative z-10 mx-auto flex h-[68px] max-w-shell items-center gap-6 px-4 sm:px-6">
+<header class="so-header header-bar relative z-50 border-b border-white/5">
+  <div class="relative z-10 mx-auto my-2.5 flex h-[68px] max-w-shell items-center gap-6 rounded-2xl bg-white/[0.06] px-4 ring-1 ring-white/10 backdrop-blur-sm sm:px-6">
 
     <!-- Logo -->
     <a href="<?php echo esc_url(home_url('/')); ?>" class="flex shrink-0 flex-col leading-none">

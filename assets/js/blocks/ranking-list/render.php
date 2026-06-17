@@ -12,29 +12,38 @@ if (!defined('ABSPATH')) {
 $title    = $attributes['title'] ?? '';
 $category = $attributes['category'] ?? '';
 $count    = max(1, (int) ($attributes['count'] ?? 7));
+$per_page = max(1, (int) ($attributes['perPage'] ?? 7));
 $view_url = $attributes['viewAllUrl'] ?: (get_post_type_archive_link('game') ?: '#');
 
 $query = solaire_query_games(['category' => $category, 'count' => $count]);
+
+$slides = (int) ceil($query->post_count / $per_page);
 ?>
 <section <?php echo get_block_wrapper_attributes(['class' => 'relative']); ?>>
   <div class="mx-auto max-w-shell px-4">
-    <div class="relative z-10 mt-12">
+    <div class="relative z-10 mt-12" data-carousel>
       <div class="mb-4 flex items-center justify-between">
         <h2 class="font-display text-lg font-bold sm:text-xl"><?php echo esc_html($title); ?></h2>
         <div class="flex items-center gap-2">
           <a href="<?php echo esc_url($view_url); ?>" class="rounded-md bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/80 transition hover:bg-white/20"><?php esc_html_e('View all', 'solaire'); ?></a>
-          <button aria-label="<?php esc_attr_e('Previous', 'solaire'); ?>" class="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-white/80 transition hover:bg-white/20"><?php echo solaire_icon('arrow-left', 'h-4 w-4', '2.5'); // phpcs:ignore ?></button>
-          <button aria-label="<?php esc_attr_e('Next', 'solaire'); ?>" class="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-white/80 transition hover:bg-white/20"><?php echo solaire_icon('arrow-right', 'h-4 w-4', '2.5'); // phpcs:ignore ?></button>
+          <?php if ($slides > 1) : ?>
+            <button data-prev aria-label="<?php esc_attr_e('Previous', 'solaire'); ?>" class="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-white/80 transition hover:bg-white/20"><?php echo solaire_icon('arrow-left', 'h-4 w-4', '2.5'); // phpcs:ignore ?></button>
+            <button data-next aria-label="<?php esc_attr_e('Next', 'solaire'); ?>" class="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-white/80 transition hover:bg-white/20"><?php echo solaire_icon('arrow-right', 'h-4 w-4', '2.5'); // phpcs:ignore ?></button>
+          <?php endif; ?>
         </div>
       </div>
 
-      <div class="flex flex-col gap-3">
+      <div data-track class="no-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto">
         <?php
         if ($query->have_posts()) :
             $rank = 0;
             while ($query->have_posts()) :
                 $query->the_post();
                 $rank++;
+                // Open a new full-width slide at the start of each page.
+                if (($rank - 1) % $per_page === 0) {
+                    echo '<div class="flex w-full shrink-0 snap-start flex-col gap-3">';
+                }
                 $thumb = get_the_post_thumbnail_url(get_the_ID(), 'medium');
                 $play  = get_field('play_url') ?: get_permalink();
                 $demo  = get_field('demo_url') ?: get_permalink();
@@ -61,11 +70,17 @@ $query = solaire_query_games(['category' => $category, 'count' => $count]);
             </div>
           </article>
         <?php
+                // Close the slide after a full page, or on the final item.
+                if ($rank % $per_page === 0 || $rank === $query->post_count) {
+                    echo '</div>';
+                }
             endwhile;
             wp_reset_postdata();
         else :
         ?>
-          <p class="rounded-xl bg-white/[0.03] p-6 text-sm text-slatey ring-1 ring-white/5"><?php esc_html_e('No games found yet. Add games to populate the ranking.', 'solaire'); ?></p>
+          <div class="flex w-full shrink-0 flex-col gap-3">
+            <p class="rounded-xl bg-white/[0.03] p-6 text-sm text-slatey ring-1 ring-white/5"><?php esc_html_e('No games found yet. Add games to populate the ranking.', 'solaire'); ?></p>
+          </div>
         <?php endif; ?>
       </div>
     </div>

@@ -25,7 +25,8 @@ $gradients = [
           $label = $tile['label'] ?? '';
           $slug  = $tile['slug'] ?? '';
           $icon  = $tile['icon'] ?? 'live-slots';
-          $image = $tile['imageUrl'] ?? '';
+          // The media picker stores { id, url } under `image`; fall back to the legacy `imageUrl`.
+          $image = $tile['image']['url'] ?? ($tile['imageUrl'] ?? '');
 
           // Default the Live Slots tile to the bundled category artwork.
           if (!$image && $slug === 'live-slots') {
@@ -44,18 +45,19 @@ $gradients = [
           }
           $gradient = $gradients[$slug] ?? 'bg-gradient-to-br from-panel via-deep to-deep';
       ?>
-        <a href="<?php echo esc_url($url); ?>" class="card-lift group relative block aspect-[3/4] overflow-hidden rounded-xl sm:aspect-[4/5]">
+        <a href="<?php echo esc_url($url); ?>" class="card-lift group relative block aspect-square overflow-hidden rounded-xl">
           <?php if ($image) : ?>
-            <img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr($label); ?>" class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
+            <img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr($label); ?>" class="absolute inset-0 h-full w-full transition-transform duration-500" loading="lazy" />
           <?php else : ?>
             <div class="absolute inset-0 <?php echo esc_attr($gradient); ?>"></div>
             <div class="ph absolute inset-0"><?php echo esc_html($label); ?></div>
           <?php endif; ?>
-          <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent"></div>
-          <span class="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-md bg-black/55 text-orange">
+          <span class="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-md bg-black/55 text-orange backdrop-blur-sm">
             <?php echo solaire_icon($icon, 'h-4 w-4'); // phpcs:ignore ?>
           </span>
-          <span class="absolute bottom-3 left-4 font-display text-sm font-bold uppercase tracking-wide sm:text-base"><?php echo esc_html($label); ?></span>
+          <div class="absolute inset-x-0 bottom-0 flex items-center bg-black/35 px-4 py-2.5 backdrop-blur-md">
+            <span class="font-display text-sm font-bold uppercase tracking-wide sm:text-base"><?php echo esc_html($label); ?></span>
+          </div>
         </a>
       <?php endforeach; ?>
     </div>
