@@ -172,7 +172,7 @@ function solaire_game_card($post, $args = [])
     // portrait variant (homepage rows + more-games)
     ob_start(); ?>
     <a href="<?php echo esc_url($url); ?>" data-category="<?php echo $cat_attr; ?>"
-       class="card-lift group relative block aspect-[3/4] overflow-hidden rounded-xl <?php echo esc_attr($extra); ?>">
+       class="card-lift game-card group relative block overflow-hidden rounded-xl <?php echo esc_attr($extra); ?>">
         <?php echo $media; // phpcs:ignore ?>
         <?php echo $badge_html; // phpcs:ignore ?>
     </a>
@@ -189,7 +189,7 @@ function solaire_placeholder_cards($count = 5, $extra = '')
     $out = '';
     for ($i = 0; $i < $count; $i++) {
         $out .= sprintf(
-            '<a href="#" class="card-lift group relative block aspect-[3/4] overflow-hidden rounded-xl %s"><div class="ph absolute inset-0">game art</div><span class="absolute right-2 top-2 rounded bg-brand-orange px-1.5 py-0.5 text-[10px] font-bold uppercase">Demo</span></a>',
+            '<a href="#" class="card-lift game-card group relative block overflow-hidden rounded-xl %s"><div class="ph absolute inset-0">game art</div><span class="absolute right-2 top-2 rounded bg-brand-orange px-1.5 py-0.5 text-[10px] font-bold uppercase">Demo</span></a>',
             esc_attr($extra)
         );
     }

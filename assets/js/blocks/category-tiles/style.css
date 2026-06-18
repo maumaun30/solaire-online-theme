@@ -1,1 +1,8 @@
 /* Solaire Category Tiles — styling handled by Tailwind utilities in render.php */
+
+/* Game tile aspect ratio — single source of truth for the card shape.
+   Tweak --game-card-ratio to make cards taller/shorter. */
+.game-card {
+  --game-card-ratio: 111 / 140;
+  aspect-ratio: var(--game-card-ratio);
+}
