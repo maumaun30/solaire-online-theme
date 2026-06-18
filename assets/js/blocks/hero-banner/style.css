@@ -1,1 +1,4 @@
 /* Solaire Hero Banner — styling handled by Tailwind utilities in render.php */
+.hero-slider-container{
+    height: 300px;
+}

@@ -27,7 +27,7 @@ if (!$view_url) {
     }
 }
 
-$card_class = 'w-[44%] shrink-0 sm:w-[31%] lg:w-[19%]';
+$card_class = 'w-[30%] shrink-0 sm:w-[22%] lg:w-[15.5%]';
 $query = solaire_query_games(['category' => $category, 'count' => $count]);
 ?>
 <section <?php echo get_block_wrapper_attributes(['class' => 'relative']); ?> data-carousel>
@@ -41,7 +41,7 @@ $query = solaire_query_games(['category' => $category, 'count' => $count]);
           <button data-next aria-label="<?php esc_attr_e('Next', 'solaire'); ?>" class="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-white/80 transition hover:bg-white/20"><?php echo solaire_icon('arrow-right', 'h-4 w-4', '2.5'); // phpcs:ignore ?></button>
         </div>
       </div>
-      <div data-track class="no-scrollbar snap-row flex gap-3 overflow-x-auto pb-2 sm:gap-4">
+      <div data-track class="no-scrollbar snap-row flex gap-3 overflow-x-auto pt-3 pb-2 sm:gap-4">
         <?php
         if ($query->have_posts()) {
             while ($query->have_posts()) {

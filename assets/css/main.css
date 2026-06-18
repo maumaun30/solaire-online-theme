@@ -169,7 +169,7 @@
     will-change: transform;
   }
   .card-lift:hover {
-    transform: translateY(-6px) scale(1.025);
+    transform: translateY(-5px);
     box-shadow:
       0 18px 40px -12px rgba(0, 0, 0, 0.7),
       0 0 0 1px rgba(245, 179, 53, 0.25);
