@@ -49,8 +49,8 @@ add_action('acf/init', function () {
                 'label'   => 'Volatility',
                 'name'    => 'volatility',
                 'type'    => 'select',
-                'choices' => ['Low' => 'Low', 'Medium' => 'Medium', 'High' => 'High'],
-                'default_value' => 'Medium',
+                'choices' => ['Select Volatility' => 'Select Volatility', 'Low' => 'Low', 'Medium' => 'Medium', 'High' => 'High'],
+                'default_value' => 'Select Volatility',
                 'wrapper' => ['width' => '50'],
             ],
             [

@@ -9,31 +9,9 @@
    ============================================================ */
 
 /* ---- Fonts ---------------------------------------------------
-   Figtree, Montserrat, Inter & Cormorant Garamond load from
-   Google Fonts (enqueued in functions.php). Gotham is a licensed
-   font — drop the woff2 files into /assets/fonts/ and these
-   @font-face rules pick them up; until then the family stack
-   falls back to Montserrat.
+   Montserrat is the single typeface for the whole theme and
+   loads from Google Fonts (enqueued in functions.php).
 --------------------------------------------------------------- */
-@font-face {
-  font-family: "Gotham";
-  src: url("../fonts/Gotham-Book.woff2") format("woff2");
-  font-weight: 400;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Gotham";
-  src: url("../fonts/Gotham-Medium.woff2") format("woff2");
-  font-weight: 500;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Gotham";
-  src: url("../fonts/Gotham-Bold.woff2") format("woff2");
-  font-weight: 700;
-  font-display: swap;
-}
-
 :root {
   --c-bg: #232629; /* page surface */
   --c-bg-deep: #15171a; /* deep panels / footer */
@@ -56,7 +34,7 @@
   body {
     background: var(--c-bg);
     color: #fff;
-    font-family: "Figtree", system-ui, sans-serif;
+    font-family: "Montserrat", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -67,18 +45,27 @@
 }
 
 @layer components {
-  .font-display {
-    font-family: "Montserrat", "Gotham", sans-serif;
-  }
-  .font-gotham {
-    font-family: "Gotham", "Montserrat", sans-serif;
-  }
-  .font-inter {
-    font-family: "Inter", sans-serif;
-  }
-  /* Serif wordmark for the SOLAIRE logo */
+  .font-display,
   .font-logo {
-    font-family: "Cormorant Garamond", "Times New Roman", serif;
+    font-family: "Montserrat", sans-serif;
+  }
+
+  /* Single-game hero artwork — tweak the ratio/width here to control its size */
+  .game-art {
+    aspect-ratio: 111 / 140;
+    object-fit: cover;
+    width: 11rem;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 0.75rem;
+    box-shadow:
+      0 0 0 1px rgba(245, 179, 53, 0.3),
+      0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+  @media (min-width: 768px) {
+    .game-art {
+      width: 100%;
+    }
   }
 
   /* ---- Brand gradients & fills ------------------------------ */
@@ -170,9 +157,6 @@
   }
   .card-lift:hover {
     transform: translateY(-5px);
-    box-shadow:
-      0 18px 40px -12px rgba(0, 0, 0, 0.7),
-      0 0 0 1px rgba(245, 179, 53, 0.25);
   }
   .btn-press {
     transition:
@@ -200,7 +184,7 @@
     align-items: center;
     justify-content: center;
     color: #6b7177;
-    font-family: "Figtree", monospace;
+    font-family: "Montserrat", monospace;
     font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;

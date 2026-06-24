@@ -133,8 +133,8 @@ function solaire_game_card($post, $args = [])
     $url     = get_permalink($post);
     $title   = get_the_title($post);
     $img     = get_the_post_thumbnail_url($post, 'large');
-    $badge   = get_field('demo_badge', $post->ID);
-    $badge   = ($badge === null) ? true : (bool) $badge;
+    // Show the "Demo" badge only when the game has a playable demo code.
+    $badge   = trim((string) get_field('so_game_code', $post->ID)) !== '';
 
     $cats = wp_get_post_terms($post->ID, 'game_category', ['fields' => 'slugs']);
     $cat_attr = esc_attr(implode(' ', (array) $cats));
@@ -150,6 +150,10 @@ function solaire_game_card($post, $args = [])
     if ($variant === 'grid') {
         $rtp = get_field('rtp', $post->ID);
         $vol = get_field('volatility', $post->ID);
+        // "Select Volatility" is the placeholder default — show "—" like RTP.
+        if ($vol === 'Select Volatility') {
+            $vol = '';
+        }
         ob_start(); ?>
         <a href="<?php echo esc_url($url); ?>" data-grid-item data-category="<?php echo $cat_attr; ?>"
            class="card-lift group block overflow-hidden rounded-xl bg-panel ring-1 ring-white/5 <?php echo esc_attr($extra); ?>">
@@ -228,4 +232,125 @@ function solaire_nav_active($key)
         return is_post_type_archive('game') || is_tax('game_category', 'live-slots');
     }
     return is_tax('game_category', $key);
+}
+
+/**
+ * Resolve the icon key for a nav menu item (matches solaire_icon() names).
+ * Home links map to "home"; game_category items use their term slug.
+ */
+function solaire_nav_icon_key($item)
+{
+    if (untrailingslashit($item->url) === untrailingslashit(home_url('/'))) {
+        return 'home';
+    }
+    if ($item->object === 'game_category') {
+        $term = get_term($item->object_id, 'game_category');
+        if ($term && !is_wp_error($term)) {
+            return $term->slug;
+        }
+    }
+    return sanitize_title($item->title);
+}
+
+/**
+ * Resolve an ACF image field value (array / attachment ID / URL) to a URL.
+ */
+function solaire_acf_image_url($value, $size = 'thumbnail')
+{
+    if (is_array($value)) {
+        if (!empty($value['sizes'][$size])) {
+            return $value['sizes'][$size];
+        }
+        return $value['url'] ?? '';
+    }
+    if (is_numeric($value)) {
+        return wp_get_attachment_image_url($value, $size) ?: '';
+    }
+    return is_string($value) ? $value : '';
+}
+
+/**
+ * Icon HTML for a header nav item.
+ *
+ * game_category items use their custom two-tone ACF image icons
+ * (so_game_ctg_icon when idle, so_game_category_active_icon when active or
+ * hovered). Falls back to the built-in SVG icon when no image is set.
+ */
+function solaire_nav_icon_html($item, $active)
+{
+    if ($item->object === 'game_category' && function_exists('get_field')) {
+        $term_ref     = 'game_category_' . $item->object_id;
+        $inactive_url = solaire_acf_image_url(get_field('so_game_ctg_icon', $term_ref));
+        $active_url   = solaire_acf_image_url(get_field('so_game_category_active_icon', $term_ref));
+
+        if ($inactive_url || $active_url) {
+            // If only one icon is set, use it for both states.
+            $inactive_url = $inactive_url ?: $active_url;
+            $active_url   = $active_url ?: $inactive_url;
+
+            return sprintf(
+                '<span class="relative inline-flex h-5 w-5 shrink-0 items-center justify-center">'
+                . '<img src="%1$s" alt="" aria-hidden="true" class="h-5 w-5 object-contain transition-opacity %3$s" />'
+                . '<img src="%2$s" alt="" aria-hidden="true" class="absolute inset-0 h-5 w-5 object-contain transition-opacity %4$s" />'
+                . '</span>',
+                esc_url($inactive_url),
+                esc_url($active_url),
+                $active ? 'opacity-0' : 'opacity-100 group-hover:opacity-0',
+                $active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+            );
+        }
+    }
+
+    return solaire_icon(solaire_nav_icon_key($item));
+}
+
+/**
+ * Walker for the header navigation. Renders bare <a> elements (no <ul>/<li>)
+ * with icons and active styling, in either the "desktop" or "mobile" variant.
+ */
+class Solaire_Nav_Walker extends Walker_Nav_Menu
+{
+    protected $variant;
+
+    public function __construct($variant = 'desktop')
+    {
+        $this->variant = $variant;
+    }
+
+    public function start_lvl(&$output, $depth = 0, $args = null) {}
+    public function end_lvl(&$output, $depth = 0, $args = null) {}
+    public function end_el(&$output, $item, $depth = 0, $args = null) {}
+
+    public function start_el(&$output, $item, $depth = 0, $args = null, $id = 0)
+    {
+        $classes = (array) $item->classes;
+        $active  = in_array('current-menu-item', $classes, true)
+            || in_array('current-menu-parent', $classes, true)
+            || in_array('current-menu-ancestor', $classes, true);
+
+        $url   = $item->url ?: '#';
+        $label = $item->title;
+
+        if ($this->variant === 'mobile') {
+            $cls = $active ? 'text-orange' : 'text-white/90';
+            $output .= sprintf(
+                '<a href="%s" class="rounded-lg px-3 py-3 hover:bg-white/5 %s">%s</a>',
+                esc_url($url),
+                esc_attr($cls),
+                esc_html($label)
+            );
+            return;
+        }
+
+        $cls  = $active ? 'text-orange hover:text-orange-bright' : 'text-white/90 hover:text-orange';
+        $icon = solaire_nav_icon_html($item, $active);
+        $output .= sprintf(
+            '<a href="%s" class="group flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors %s"%s>%s<span>%s</span></a>',
+            esc_url($url),
+            esc_attr($cls),
+            $active ? ' aria-current="page"' : '',
+            $icon, // phpcs:ignore
+            esc_html($label)
+        );
+    }
 }
