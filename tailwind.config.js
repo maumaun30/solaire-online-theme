@@ -19,8 +19,8 @@ module.exports = {
         slatey: "#94a3b8"
       },
       fontFamily: {
-        sans: ["Figtree", "system-ui", "sans-serif"],
-        display: ["Montserrat", "Gotham", "sans-serif"]
+        sans: ["Montserrat", "system-ui", "sans-serif"],
+        display: ["Montserrat", "sans-serif"]
       },
       maxWidth: { shell: "1440px" }
     }

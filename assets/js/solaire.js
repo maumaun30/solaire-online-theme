@@ -46,12 +46,21 @@
         // scroll by roughly one viewport of the track
         return Math.max(track.clientWidth * 0.8, 240);
       }
+      // Disable prev/next when there's nothing more to scroll to.
+      function update() {
+        var maxScroll = track.scrollWidth - track.clientWidth;
+        if (prev) prev.disabled = track.scrollLeft <= 1;
+        if (next) next.disabled = track.scrollLeft >= maxScroll - 1;
+      }
       prev && prev.addEventListener("click", function () {
         track.scrollBy({ left: -step(), behavior: "smooth" });
       });
       next && next.addEventListener("click", function () {
         track.scrollBy({ left: step(), behavior: "smooth" });
       });
+      track.addEventListener("scroll", update, { passive: true });
+      window.addEventListener("resize", update);
+      update();
     });
   }
 
@@ -60,6 +69,9 @@
     function setOpen(item, open) {
       var panel = item.querySelector(".acc-panel");
       item.classList.toggle("open", open);
+      // Move the orange outline to whichever item is active.
+      item.classList.toggle("ring-orange/40", open);
+      item.classList.toggle("ring-white/10", !open);
       if (!panel) return;
       panel.style.maxHeight = open ? panel.scrollHeight + "px" : "0px";
     }
@@ -185,12 +197,65 @@
     }, 1100);
   }
 
+  /* ---- Collapsible "Read More" blocks --------------------- */
+  function initReadMore() {
+    document.querySelectorAll("[data-readmore]").forEach(function (root) {
+      var body = root.querySelector("[data-readmore-body]");
+      var btn = root.querySelector("[data-readmore-toggle]");
+      var fade = root.querySelector("[data-readmore-fade]");
+      if (!body || !btn) return;
+
+      // Collapsed height: either show the first N block elements
+      // (data-readmore-blocks) or a fixed pixel height fallback.
+      var blocks = parseInt(root.getAttribute("data-readmore-blocks") || "0", 10);
+      var collapsed;
+      if (blocks > 0 && body.children.length > blocks) {
+        var lastShown = body.children[blocks - 1];
+        collapsed = lastShown.offsetTop + lastShown.offsetHeight;
+      } else {
+        collapsed = parseInt(root.getAttribute("data-readmore-collapsed-height") || "220", 10);
+      }
+
+      // Short enough to fit — no toggle or fade needed.
+      if (body.scrollHeight <= collapsed + 4) {
+        btn.style.display = "none";
+        if (fade) fade.style.display = "none";
+        return;
+      }
+
+      var open = false;
+      body.style.overflow = "hidden";
+      body.style.maxHeight = collapsed + "px";
+      body.style.transition = "max-height 0.4s ease";
+
+      btn.addEventListener("click", function () {
+        open = !open;
+        if (open) {
+          body.style.maxHeight = body.scrollHeight + "px";
+          btn.textContent = btn.getAttribute("data-less") || "Read Less";
+          if (fade) fade.style.opacity = "0";
+        } else {
+          // Pin to the current height first so the collapse transition fires.
+          body.style.maxHeight = body.scrollHeight + "px";
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              body.style.maxHeight = collapsed + "px";
+            });
+          });
+          btn.textContent = btn.getAttribute("data-more") || "Read More";
+          if (fade) fade.style.opacity = "1";
+        }
+      });
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     initDrawer();
     initCarousels();
     initAccordions();
     initFilters();
     initLoadMore();
+    initReadMore();
     initAnim();
   });
 })();

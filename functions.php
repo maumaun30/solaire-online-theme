@@ -49,7 +49,7 @@ add_action('after_setup_theme', 'solaire_setup');
    ============================================================ */
 function solaire_fonts_url()
 {
-    return 'https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@400;600;700&family=Cormorant+Garamond:wght@500;600&display=swap';
+    return 'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap';
 }
 
 function solaire_enqueue_assets()
@@ -58,7 +58,7 @@ function solaire_enqueue_assets()
     $main_css     = get_theme_file_path('/assets/css/main.min.css');
     $solaire_js   = get_theme_file_path('/assets/js/solaire.js');
 
-    // Google Fonts: Figtree (body/UI), Montserrat (display), Inter, Cormorant Garamond (logo).
+    // Google Fonts: Montserrat (single typeface for the whole theme).
     wp_enqueue_style('solaire-fonts', solaire_fonts_url(), [], null);
 
     if (file_exists($critical_css)) {

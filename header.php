@@ -6,36 +6,6 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-
-/**
- * Resolve a nav item's URL from its taxonomy slug, falling back to '#'.
- */
-function solaire_nav_url($key)
-{
-    if ($key === 'home') {
-        return home_url('/');
-    }
-    if ($key === 'live-slots') {
-        $link = get_post_type_archive_link('game');
-        return $link ?: '#';
-    }
-    $term = get_term_by('slug', $key, 'game_category');
-    if ($term && !is_wp_error($term)) {
-        $link = get_term_link($term);
-        if (!is_wp_error($link)) {
-            return $link;
-        }
-    }
-    return '#';
-}
-
-$solaire_nav = [
-    'home'        => ['label' => 'Home',        'icon' => 'home'],
-    'live-slots'  => ['label' => 'Live Slots',  'icon' => 'live-slots'],
-    'live-casino' => ['label' => 'Live Casino', 'icon' => 'live-casino'],
-    'e-games'     => ['label' => 'E-Games',     'icon' => 'e-games'],
-    'sportsbook'  => ['label' => 'Sportsbook',  'icon' => 'sportsbook'],
-];
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -63,19 +33,13 @@ $solaire_nav = [
 
     <!-- Desktop nav -->
     <nav class="hidden items-center gap-1 lg:flex" aria-label="<?php esc_attr_e('Primary Menu', 'solaire'); ?>">
-      <?php foreach ($solaire_nav as $key => $item) :
-          $active = solaire_nav_active($key);
-          $classes = $active
-              ? 'text-orange hover:text-orange-bright'
-              : 'text-white/90 hover:text-orange';
-      ?>
-        <a href="<?php echo esc_url(solaire_nav_url($key)); ?>"
-           class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors <?php echo esc_attr($classes); ?>"
-           <?php echo $active ? 'aria-current="page"' : ''; ?>>
-          <?php echo solaire_icon($item['icon']); // phpcs:ignore ?>
-          <span><?php echo esc_html($item['label']); ?></span>
-        </a>
-      <?php endforeach; ?>
+      <?php wp_nav_menu([
+          'theme_location' => 'primary',
+          'container'      => false,
+          'items_wrap'     => '%3$s',
+          'walker'         => new Solaire_Nav_Walker('desktop'),
+          'fallback_cb'    => false,
+      ]); ?>
     </nav>
 
     <!-- Right actions -->
@@ -99,11 +63,13 @@ $solaire_nav = [
     </button>
   </div>
   <nav class="flex flex-col gap-1 text-base font-semibold" aria-label="<?php esc_attr_e('Mobile Menu', 'solaire'); ?>">
-    <?php foreach ($solaire_nav as $key => $item) :
-        $classes = solaire_nav_active($key) ? 'text-orange' : 'text-white/90';
-    ?>
-      <a href="<?php echo esc_url(solaire_nav_url($key)); ?>" class="rounded-lg px-3 py-3 hover:bg-white/5 <?php echo esc_attr($classes); ?>"><?php echo esc_html($item['label']); ?></a>
-    <?php endforeach; ?>
+    <?php wp_nav_menu([
+        'theme_location' => 'primary',
+        'container'      => false,
+        'items_wrap'     => '%3$s',
+        'walker'         => new Solaire_Nav_Walker('mobile'),
+        'fallback_cb'    => false,
+    ]); ?>
   </nav>
   <div class="mt-auto flex flex-col gap-3 pt-6">
     <a href="#" class="rounded-md border border-white/15 px-5 py-3 text-center text-sm font-semibold text-white"><?php esc_html_e('Sign Up', 'solaire'); ?></a>
