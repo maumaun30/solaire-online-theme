@@ -86,7 +86,8 @@ function solaire_maybe_flush_rewrites()
 add_action('init', 'solaire_maybe_flush_rewrites', 99);
 
 /**
- * Default the Games archive to a comfortable per-page count.
+ * Tune the front-end Games archive + category queries: a comfortable per-page
+ * count, and order the cards oldest → newest by publish date.
  */
 function solaire_game_archive_query($query)
 {
@@ -95,6 +96,8 @@ function solaire_game_archive_query($query)
     }
     if ($query->is_post_type_archive('game') || $query->is_tax('game_category')) {
         $query->set('posts_per_page', 24);
+        $query->set('orderby', 'date');
+        $query->set('order', 'ASC'); // oldest first
     }
 }
 add_action('pre_get_posts', 'solaire_game_archive_query');

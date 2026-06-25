@@ -199,7 +199,7 @@ function solaire_game_card($post, $args = [])
         ob_start(); ?>
         <a href="<?php echo esc_url($url); ?>" data-grid-item data-category="<?php echo $cat_attr; ?>"
            class="card-lift group block overflow-hidden rounded-xl bg-panel ring-1 ring-white/5 <?php echo esc_attr($extra); ?>">
-            <div class="relative aspect-square overflow-hidden">
+            <div class="game-card relative overflow-hidden">
                 <?php echo $media; // phpcs:ignore ?>
                 <?php echo $badge_html; // phpcs:ignore ?>
             </div>
