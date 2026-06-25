@@ -148,6 +148,15 @@
     scroll-snap-align: start;
   }
 
+  /* ---- Game card aspect ratio — single source of truth -------
+     Defined globally (not just in the category-tiles block style) so
+     game cards keep their shape on every template: homepage rows, the
+     category grid, and single-game "More Games". */
+  .game-card {
+    --game-card-ratio: 111 / 140;
+    aspect-ratio: var(--game-card-ratio);
+  }
+
   /* ---- Reusable card hover lift ----------------------------- */
   .card-lift {
     transition:

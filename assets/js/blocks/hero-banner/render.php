@@ -27,7 +27,7 @@ $title_rest  = $title_parts[1] ?? '';
       <!-- Warm brand gradient bleeding from the left over the casino image -->
       <div class="absolute inset-0 bg-gradient-to-r from-deep via-brandred/70 to-transparent"></div>
       <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-      <div class="relative z-10 flex min-h-[180px] flex-col justify-center gap-3 px-6 py-8 sm:min-h-[220px] sm:px-10 sm:py-10 lg:min-h-[240px] lg:px-12">
+      <div class="relative z-10 flex min-h-[180px] flex-col items-center justify-center gap-3 px-6 py-8 text-center sm:min-h-[220px] sm:items-start sm:px-10 sm:py-10 sm:text-left lg:min-h-[240px] lg:px-12">
         <?php if ($title) : ?>
           <h1 data-anim class="font-display text-2xl font-extrabold uppercase leading-tight tracking-tight drop-shadow sm:text-4xl lg:text-5xl">
             <span class="text-orange"><?php echo esc_html($title_first); ?></span><?php if ($title_rest) : ?> <span class="text-white"><?php echo esc_html($title_rest); ?></span><?php endif; ?>
