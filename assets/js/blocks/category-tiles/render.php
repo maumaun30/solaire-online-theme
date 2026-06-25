@@ -52,9 +52,6 @@ $gradients = [
             <div class="absolute inset-0 <?php echo esc_attr($gradient); ?>"></div>
             <div class="ph absolute inset-0"><?php echo esc_html($label); ?></div>
           <?php endif; ?>
-          <span class="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-md bg-black/55 text-orange backdrop-blur-sm">
-            <?php echo solaire_icon($icon, 'h-4 w-4'); // phpcs:ignore ?>
-          </span>
           <div class="absolute inset-x-0 bottom-0 flex items-center bg-black/35 px-4 py-2.5 backdrop-blur-md">
             <span class="font-display text-sm font-bold uppercase tracking-wide sm:text-base"><?php echo esc_html($label); ?></span>
           </div>

@@ -174,6 +174,17 @@ function fix_svg() {
 }
 add_action( 'admin_head', 'fix_svg' );
 
+add_action( 'pre_get_posts', function ( $query ) {
+    if ( is_admin() || ! $query->is_main_query() ) {
+        return;
+    }
+
+    if ( $query->is_tax( 'game_category' ) ) {
+        $query->set( 'orderby', 'date' );
+        $query->set( 'order', 'ASC' ); // oldest first
+    }
+} );
+
 /* ============================================================
    Theme modules
    ============================================================ */

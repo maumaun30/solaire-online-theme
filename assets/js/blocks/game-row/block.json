@@ -13,7 +13,7 @@
   "attributes": {
     "title": { "type": "string", "default": "E-Games" },
     "category": { "type": "string", "default": "" },
-    "count": { "type": "number", "default": 6 },
+    "count": { "type": "number", "default": 12 },
     "viewAllText": { "type": "string", "default": "View all" },
     "viewAllUrl": { "type": "string", "default": "" }
   }
