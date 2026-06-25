@@ -64,6 +64,75 @@
     });
   }
 
+  /* ---- Site popups: cookie policy + responsible gaming ------
+     First visit shows the Cookie Policy modal; accepting it opens the
+     Responsible Gaming gate. Accepting RG proceeds to the site; "I Do
+     Not Accept" redirects the visitor away. Each acceptance is stored
+     in localStorage so the popups don't reappear. */
+  function initSitePopups() {
+    var COOKIE_KEY = "solaire_cookie_ok";
+    var RG_KEY = "solaire_rg_ok";
+
+    function remembered(key) {
+      try { return localStorage.getItem(key) === "1"; } catch (e) { return false; }
+    }
+    function remember(key) {
+      try { localStorage.setItem(key, "1"); } catch (e) {}
+    }
+    function lock() { document.body.style.overflow = "hidden"; }
+    function unlock() { document.body.style.overflow = ""; }
+    function show(el) {
+      if (!el) return;
+      el.classList.remove("hidden");
+      el.classList.add("flex");
+      el.setAttribute("aria-hidden", "false");
+      lock();
+    }
+    function hide(el) {
+      if (!el) return;
+      el.classList.add("hidden");
+      el.classList.remove("flex");
+      el.setAttribute("aria-hidden", "true");
+    }
+
+    var cookie = document.querySelector("[data-cookie-modal]");
+    var rg = document.querySelector("[data-rg-modal]");
+    var needCookie = cookie && !remembered(COOKIE_KEY);
+    var needRg = rg && !remembered(RG_KEY);
+
+    function showRg() {
+      if (needRg) { show(rg); } else { unlock(); }
+    }
+
+    // Cookie: accept and close both dismiss, then open the RG gate.
+    if (cookie) {
+      cookie.querySelectorAll("[data-cookie-accept]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          remember(COOKIE_KEY);
+          hide(cookie);
+          showRg();
+        });
+      });
+    }
+
+    // RG: accept → proceed; decline → redirect away.
+    if (rg) {
+      var accept = rg.querySelector("[data-rg-accept]");
+      accept && accept.addEventListener("click", function () {
+        remember(RG_KEY);
+        hide(rg);
+        unlock();
+      });
+      var decline = rg.querySelector("[data-rg-decline]");
+      decline && decline.addEventListener("click", function () {
+        window.location.href = rg.getAttribute("data-decline-url") || "https://www.google.com";
+      });
+    }
+
+    // Cookie first, then responsible gaming.
+    if (needCookie) { show(cookie); } else { showRg(); }
+  }
+
   /* ---- Accordions ----------------------------------------- */
   function initAccordions() {
     function setOpen(item, open) {
@@ -252,6 +321,7 @@
   document.addEventListener("DOMContentLoaded", function () {
     initDrawer();
     initCarousels();
+    initSitePopups();
     initAccordions();
     initFilters();
     initLoadMore();

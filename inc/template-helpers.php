@@ -115,7 +115,48 @@ function solaire_query_games($args = [])
 }
 
 /**
+ * Site logo URL (WordPress Custom Logo), or '' when none is set.
+ */
+function solaire_site_logo_url()
+{
+    $logo_id = get_theme_mod('custom_logo');
+    if ($logo_id) {
+        $url = wp_get_attachment_image_url($logo_id, 'medium');
+        if ($url) {
+            return $url;
+        }
+    }
+    return '';
+}
+
+/**
+ * Branded card face — the site logo centered on a dark panel. Used as the
+ * visual for every game card (in place of game artwork). Falls back to the
+ * "SOLAIRE ONLINE" wordmark when no Custom Logo is configured.
+ */
+function solaire_card_logo_face()
+{
+    $logo = solaire_site_logo_url();
+    if ($logo) {
+        $inner = sprintf(
+            '<img src="%s" alt="%s" class="w-3/5 max-w-[130px] object-contain opacity-95 transition duration-300" loading="lazy" />',
+            esc_url($logo),
+            esc_attr(get_bloginfo('name'))
+        );
+    } else {
+        $inner = '<span class="flex flex-col items-center leading-none text-center">'
+            . '<span class="font-logo text-base font-semibold tracking-[0.3em] text-white/90">SOLAIRE</span>'
+            . '<span class="font-logo text-[7px] tracking-[0.55em] text-white/60">ONLINE</span>'
+            . '</span>';
+    }
+    return '<div class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-panel via-surface to-deep p-4">' . $inner . '</div>';
+}
+
+/**
  * Render a single game card.
+ *
+ * Shows the game's featured image when one exists; otherwise falls back to the
+ * site logo centered on a panel with the game name along the bottom.
  *
  * @param int|WP_Post $post
  * @param array $args  variant: 'portrait' (row/more-games) | 'grid' (square + RTP/Vol).
@@ -139,12 +180,13 @@ function solaire_game_card($post, $args = [])
     $cats = wp_get_post_terms($post->ID, 'game_category', ['fields' => 'slugs']);
     $cat_attr = esc_attr(implode(' ', (array) $cats));
 
+    // Featured image, or the branded logo fallback when none is set.
     $media = $img
         ? sprintf('<img src="%s" alt="%s" class="absolute inset-0 h-full w-full object-cover" loading="lazy" />', esc_url($img), esc_attr($title))
-        : sprintf('<div class="ph absolute inset-0">%s</div>', esc_html($title));
+        : solaire_card_logo_face();
 
     $badge_html = $badge
-        ? '<span class="absolute right-2 top-2 rounded bg-brand-orange px-1.5 py-0.5 text-[10px] font-bold uppercase">Demo</span>'
+        ? '<span class="absolute right-2 top-2 z-10 rounded bg-brand-orange px-1.5 py-0.5 text-[10px] font-bold uppercase">Demo</span>'
         : '';
 
     if ($variant === 'grid') {
@@ -173,12 +215,18 @@ function solaire_game_card($post, $args = [])
         return ob_get_clean();
     }
 
-    // portrait variant (homepage rows + more-games)
+    // portrait variant (homepage rows + more-games). When there's no featured
+    // image, the logo fallback gets the game name along the bottom.
     ob_start(); ?>
     <a href="<?php echo esc_url($url); ?>" data-category="<?php echo $cat_attr; ?>"
        class="card-lift game-card group relative block overflow-hidden rounded-xl <?php echo esc_attr($extra); ?>">
         <?php echo $media; // phpcs:ignore ?>
         <?php echo $badge_html; // phpcs:ignore ?>
+        <?php if (!$img) : ?>
+            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent px-2.5 pb-2 pt-7">
+                <h3 class="truncate text-center font-display text-xs font-bold text-white sm:text-sm"><?php echo esc_html($title); ?></h3>
+            </div>
+        <?php endif; ?>
     </a>
     <?php
     return ob_get_clean();
@@ -190,11 +238,14 @@ function solaire_game_card($post, $args = [])
  */
 function solaire_placeholder_cards($count = 5, $extra = '')
 {
-    $out = '';
+    $face = solaire_card_logo_face();
+    $out  = '';
     for ($i = 0; $i < $count; $i++) {
         $out .= sprintf(
-            '<a href="#" class="card-lift game-card group relative block overflow-hidden rounded-xl %s"><div class="ph absolute inset-0">game art</div><span class="absolute right-2 top-2 rounded bg-brand-orange px-1.5 py-0.5 text-[10px] font-bold uppercase">Demo</span></a>',
-            esc_attr($extra)
+            '<a href="#" class="card-lift game-card group relative block overflow-hidden rounded-xl %s">%s<span class="absolute right-2 top-2 z-10 rounded bg-brand-orange px-1.5 py-0.5 text-[10px] font-bold uppercase">Demo</span><div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent px-2.5 pb-2 pt-7"><h3 class="truncate text-center font-display text-xs font-bold text-white sm:text-sm">%s</h3></div></a>',
+            esc_attr($extra),
+            $face,
+            esc_html__('Game', 'solaire')
         );
     }
     return $out;

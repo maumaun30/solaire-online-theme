@@ -88,6 +88,8 @@ $footer_responsible = get_field('so_footer_responsible_gaming', 'option');
   <div class="border-t border-white/10 py-5 text-center text-xs text-white/40">Copyright &copy; <?php echo esc_html(date('Y')); ?> <?php bloginfo('name'); ?>. All Rights Reserved.</div>
 </footer>
 
+<?php get_template_part('template-parts/site-popups'); ?>
+
 <?php wp_footer(); ?>
 </body>
 </html>
