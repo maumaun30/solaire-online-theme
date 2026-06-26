@@ -283,6 +283,40 @@
       gap: 1rem;
     }
   }
+
+  /* ---- Game-row exact cards-per-view -------------------------
+     Each card width is (100% - total gaps) / cards, so a whole
+     number of cards fills the viewport with no partial card. The
+     gap subtracted matches the track gap (0.75rem < sm, 1rem sm+).
+       < 640px : 3 · >=640 : 3 · >=768 : 4 · >=1024 : 5 · >=1280 : 6 */
+  .game-row-track > * {
+    flex: 0 0 calc((100% - 1.5rem) / 3);
+    width: calc((100% - 1.5rem) / 3);
+  }
+  @media (min-width: 640px) {
+    .game-row-track > * {
+      flex-basis: calc((100% - 2rem) / 3);
+      width: calc((100% - 2rem) / 3);
+    }
+  }
+  @media (min-width: 768px) {
+    .game-row-track > * {
+      flex-basis: calc((100% - 3rem) / 4);
+      width: calc((100% - 3rem) / 4);
+    }
+  }
+  @media (min-width: 1024px) {
+    .game-row-track > * {
+      flex-basis: calc((100% - 4rem) / 5);
+      width: calc((100% - 4rem) / 5);
+    }
+  }
+  @media (min-width: 1280px) {
+    .game-row-track > * {
+      flex-basis: calc((100% - 5rem) / 6);
+      width: calc((100% - 5rem) / 6);
+    }
+  }
 }
 
 /* ---- Hero / on-load entrance animations ---------------------
