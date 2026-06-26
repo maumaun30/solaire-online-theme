@@ -55,14 +55,21 @@ if (!defined('ABSPATH')) {
 
 <!-- Mobile drawer -->
 <div id="nav-overlay" class="fixed inset-0 z-50 hidden bg-black/60 opacity-0 lg:hidden"></div>
-<aside id="nav-drawer" class="fixed right-0 top-0 z-[60] flex h-full w-72 max-w-[80vw] flex-col bg-deep p-6 shadow-2xl lg:hidden">
+<aside id="nav-drawer" class="fixed right-0 top-0 z-[60] flex h-full w-full flex-col bg-deep p-6 shadow-2xl sm:w-80 sm:max-w-[80vw] lg:hidden">
   <div class="mb-8 flex items-center justify-between">
-    <span class="font-logo text-xl tracking-[0.3em]">SOLAIRE</span>
+    <a href="<?php echo esc_url(home_url('/')); ?>" class="flex shrink-0 flex-col leading-none">
+      <?php if (has_custom_logo()) : ?>
+          <?php the_custom_logo(); ?>
+      <?php else : ?>
+          <span class="font-logo text-2xl font-semibold tracking-[0.32em] text-white">SOLAIRE</span>
+          <span class="font-logo text-[10px] tracking-[0.55em] text-white/70">ONLINE</span>
+      <?php endif; ?>
+    </a>
     <button id="nav-close" aria-label="<?php esc_attr_e('Close menu', 'solaire'); ?>" class="flex h-9 w-9 items-center justify-center rounded-lg text-white/70 hover:text-white">
       <?php echo solaire_icon('close', 'h-6 w-6'); // phpcs:ignore ?>
     </button>
   </div>
-  <nav class="flex flex-col gap-1 text-base font-semibold" aria-label="<?php esc_attr_e('Mobile Menu', 'solaire'); ?>">
+  <nav class="flex flex-col gap-1 text-base font-semibold text-center" aria-label="<?php esc_attr_e('Mobile Menu', 'solaire'); ?>">
     <?php wp_nav_menu([
         'theme_location' => 'primary',
         'container'      => false,
