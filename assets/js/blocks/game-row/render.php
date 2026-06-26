@@ -13,7 +13,9 @@ $title     = $attributes['title'] ?? '';
 $category  = $attributes['category'] ?? '';
 $count     = max(1, (int) ($attributes['count'] ?? 12));
 
-$card_class = 'w-[30%] shrink-0 sm:w-[22%] lg:w-[15.5%]';
+// Exact cards-per-view per breakpoint with no partial card — sizing handled by
+// the `.game-row-track` rule in main.css (2 → 3 → 4 tablet → 5 → 6 desktop).
+$card_class = 'shrink-0';
 $query = solaire_query_games(['category' => $category, 'count' => $count]);
 ?>
 <section <?php echo get_block_wrapper_attributes(['class' => 'relative']); ?> data-carousel>
@@ -26,7 +28,7 @@ $query = solaire_query_games(['category' => $category, 'count' => $count]);
           <button data-next aria-label="<?php esc_attr_e('Next', 'solaire'); ?>" class="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-orange transition hover:bg-white/20 disabled:cursor-not-allowed"><?php echo solaire_icon('arrow-right', 'h-4 w-4', '2.5'); // phpcs:ignore ?></button>
         </div>
       </div>
-      <div data-track class="no-scrollbar snap-row flex gap-3 overflow-x-auto pt-3 pb-2 sm:gap-4">
+      <div data-track class="game-row-track no-scrollbar snap-row flex gap-3 overflow-x-auto pt-3 pb-2 sm:gap-4">
         <?php
         if ($query->have_posts()) {
             while ($query->have_posts()) {

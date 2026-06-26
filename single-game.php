@@ -147,11 +147,11 @@ while (have_posts()) :
         <button data-next aria-label="<?php esc_attr_e('Next', 'solaire'); ?>" class="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-orange transition hover:bg-white/20 disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/25 disabled:hover:bg-white/5"><?php echo solaire_icon('arrow-right', 'h-4 w-4', '2.5'); // phpcs:ignore ?></button>
       </div>
     </div>
-    <div data-track class="no-scrollbar snap-row flex gap-3 overflow-x-auto pb-2 pt-3 sm:gap-4">
+    <div data-track class="game-row-track no-scrollbar snap-row flex gap-3 overflow-x-auto pb-2 pt-3 sm:gap-4">
       <?php
       while ($more_q->have_posts()) {
           $more_q->the_post();
-          echo solaire_game_card(get_the_ID(), ['variant' => 'grid', 'class' => 'w-[40%] shrink-0 sm:w-[28%] md:w-[16%]']); // phpcs:ignore
+          echo solaire_game_card(get_the_ID(), ['variant' => 'grid', 'class' => 'shrink-0']); // phpcs:ignore
       }
       wp_reset_postdata();
       ?>
