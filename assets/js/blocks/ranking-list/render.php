@@ -18,6 +18,9 @@ $view_url = $attributes['viewAllUrl'] ?: (get_post_type_archive_link('game') ?: 
 $query = solaire_query_games(['category' => $category, 'count' => $count]);
 
 $slides = (int) ceil($query->post_count / $per_page);
+// Rows per slide column — two columns fill top-to-bottom so the rank
+// numbers stay continuous down each column.
+$rows = (int) ceil($per_page / 2);
 ?>
 <section <?php echo get_block_wrapper_attributes(['class' => 'relative']); ?>>
   <div class="mx-auto max-w-shell px-4">
@@ -42,7 +45,7 @@ $slides = (int) ceil($query->post_count / $per_page);
                 $rank++;
                 // Open a new full-width slide at the start of each page.
                 if (($rank - 1) % $per_page === 0) {
-                    echo '<div class="flex w-full shrink-0 snap-start flex-col gap-3">';
+                    printf('<div class="rank-grid w-full shrink-0 snap-start" style="--rank-rows:%d">', $rows);
                 }
                 $thumb = get_the_post_thumbnail_url(get_the_ID(), 'medium');
                 $play  = get_field('play_url') ?: get_permalink();
@@ -57,12 +60,18 @@ $slides = (int) ceil($query->post_count / $per_page);
             </div>
             <?php if ($thumb) : ?>
               <img src="<?php echo esc_url($thumb); ?>" alt="<?php echo esc_attr(get_the_title()); ?>" class="h-14 w-14 shrink-0 rounded-lg object-cover sm:h-16 sm:w-16" loading="lazy" />
-            <?php else : ?>
-              <div class="ph h-14 w-14 shrink-0 rounded-lg sm:h-16 sm:w-16"></div>
+            <?php else : $logo = solaire_site_logo_url(); ?>
+              <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-panel via-surface to-deep p-2 sm:h-16 sm:w-16">
+                <?php if ($logo) : ?>
+                  <img src="<?php echo esc_url($logo); ?>" alt="<?php echo esc_attr(get_the_title()); ?>" class="max-h-full max-w-full object-contain opacity-90" loading="lazy" />
+                <?php else : ?>
+                  <span class="font-logo text-[8px] tracking-[0.3em] text-white/80">SOLAIRE</span>
+                <?php endif; ?>
+              </div>
             <?php endif; ?>
             <div class="min-w-0 flex-1">
               <h3 class="font-display text-base font-bold sm:text-lg"><?php echo esc_html(get_the_title()); ?></h3>
-              <p class="mt-0.5 hidden text-xs leading-relaxed text-slatey sm:block"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 38)); ?></p>
+              <p class="mt-0.5 hidden text-xs leading-relaxed text-slatey lg:block"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 38)); ?></p>
             </div>
             <div class="flex shrink-0 flex-col gap-2">
               <a href="<?php echo esc_url($play); ?>" class="btn-press rounded-md bg-brand-orange px-4 py-2 text-center text-xs font-bold text-white sm:text-sm"><?php esc_html_e('Play now', 'solaire'); ?></a>
@@ -83,6 +92,10 @@ $slides = (int) ceil($query->post_count / $per_page);
           </div>
         <?php endif; ?>
       </div>
+
+      <?php if ($slides > 1) : ?>
+        <div data-dots class="mt-5 flex items-center justify-center gap-2" aria-label="<?php esc_attr_e('Slides', 'solaire'); ?>"></div>
+      <?php endif; ?>
     </div>
   </div>
 </section>

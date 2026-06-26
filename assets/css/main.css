@@ -263,6 +263,26 @@
   #nav-overlay {
     transition: opacity 0.35s ease;
   }
+
+  /* ---- Ranking-list slide grid ------------------------------
+     One column on mobile (numbers run 1..N straight down). On sm+
+     it splits into two columns that fill top-to-bottom, so the
+     ranking numbers stay continuous down each column. --rank-rows
+     (set inline per slide) controls how tall each column is. */
+  .rank-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  @media (min-width: 640px) {
+    .rank-grid {
+      grid-auto-flow: column;
+      grid-template-columns: none;
+      grid-template-rows: repeat(var(--rank-rows, 4), auto);
+      grid-auto-columns: minmax(0, 1fr);
+      gap: 1rem;
+    }
+  }
 }
 
 /* ---- Hero / on-load entrance animations ---------------------
