@@ -247,6 +247,8 @@ while (have_posts()) :
       }
 
       document.querySelectorAll('[data-demo-open]').forEach(function (btn) {
+        // Buttons with a target belong to the shared modal (solaire_demo_modal).
+        if (btn.dataset.demoTarget) return;
         btn.addEventListener('click', function () {
           // On mobile, open the game full-screen in a new tab instead of the modal.
           if (isMobile && frame && frame.src && frame.src !== 'about:blank') {

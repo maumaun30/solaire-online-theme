@@ -13,7 +13,6 @@ $title    = $attributes['title'] ?? '';
 $category = $attributes['category'] ?? '';
 $count    = max(1, (int) ($attributes['count'] ?? 7));
 $per_page = max(1, (int) ($attributes['perPage'] ?? 7));
-$view_url = $attributes['viewAllUrl'] ?: (get_post_type_archive_link('game') ?: '#');
 
 $query = solaire_query_games(['category' => $category, 'count' => $count]);
 
@@ -28,10 +27,9 @@ $rows = (int) ceil($per_page / 2);
       <div class="mb-4 flex items-center justify-between">
         <h2 class="font-display text-lg font-bold sm:text-xl"><?php echo esc_html($title); ?></h2>
         <div class="flex items-center gap-2">
-          <a href="<?php echo esc_url($view_url); ?>" class="rounded-md bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/80 transition hover:bg-white/20"><?php esc_html_e('View all', 'solaire'); ?></a>
           <?php if ($slides > 1) : ?>
-            <button data-prev aria-label="<?php esc_attr_e('Previous', 'solaire'); ?>" class="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-white/80 transition hover:bg-white/20"><?php echo solaire_icon('arrow-left', 'h-4 w-4', '2.5'); // phpcs:ignore ?></button>
-            <button data-next aria-label="<?php esc_attr_e('Next', 'solaire'); ?>" class="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-white/80 transition hover:bg-white/20"><?php echo solaire_icon('arrow-right', 'h-4 w-4', '2.5'); // phpcs:ignore ?></button>
+            <button data-prev aria-label="<?php esc_attr_e('Previous', 'solaire'); ?>" class="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-orange transition hover:bg-white/20 disabled:cursor-not-allowed"><?php echo solaire_icon('arrow-left', 'h-4 w-4', '2.5'); // phpcs:ignore ?></button>
+            <button data-next aria-label="<?php esc_attr_e('Next', 'solaire'); ?>" class="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-orange transition hover:bg-white/20 disabled:cursor-not-allowed"><?php echo solaire_icon('arrow-right', 'h-4 w-4', '2.5'); // phpcs:ignore ?></button>
           <?php endif; ?>
         </div>
       </div>
@@ -49,7 +47,6 @@ $rows = (int) ceil($per_page / 2);
                 }
                 $thumb = get_the_post_thumbnail_url(get_the_ID(), 'medium');
                 $play  = get_field('play_url') ?: get_permalink();
-                $demo  = get_field('demo_url') ?: get_permalink();
         ?>
           <article data-anim class="group flex items-center gap-3 rounded-xl bg-white/[0.03] p-3 ring-1 ring-white/5 transition hover:bg-white/[0.06] sm:gap-5 sm:p-4">
             <div class="relative flex h-12 w-9 shrink-0 items-center justify-center sm:h-16 sm:w-12">
@@ -75,7 +72,14 @@ $rows = (int) ceil($per_page / 2);
             </div>
             <div class="flex shrink-0 flex-col gap-2">
               <a href="<?php echo esc_url($play); ?>" class="btn-press rounded-md bg-brand-orange px-4 py-2 text-center text-xs font-bold text-white sm:text-sm"><?php esc_html_e('Play now', 'solaire'); ?></a>
-              <a href="<?php echo esc_url($demo); ?>" class="rounded-md bg-white/10 px-4 py-2 text-center text-xs font-semibold text-white/80 transition hover:bg-white/20 sm:text-sm"><?php esc_html_e('Demo', 'solaire'); ?></a>
+              <?php
+                // Demo button only renders when the game has an `so_game_code`.
+                echo solaire_demo_trigger(
+                    get_the_ID(),
+                    __('Demo', 'solaire'),
+                    'rounded-md bg-white/10 px-4 py-2 text-center text-xs font-semibold text-white/80 transition hover:bg-white/20 sm:text-sm'
+                ); // phpcs:ignore
+              ?>
             </div>
           </article>
         <?php
@@ -98,4 +102,5 @@ $rows = (int) ceil($per_page / 2);
       <?php endif; ?>
     </div>
   </div>
+  <?php echo solaire_demo_modal(); // phpcs:ignore ?>
 </section>

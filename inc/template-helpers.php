@@ -252,6 +252,143 @@ function solaire_placeholder_cards($count = 5, $extra = '')
 }
 
 /**
+ * Demo trigger button + its lazy game embed.
+ *
+ * Returns a button that opens the shared demo modal (see solaire_demo_modal),
+ * paired with a <template> holding the st8 game iframe. The iframe lives in the
+ * template so it isn't loaded until the visitor actually opens the demo.
+ *
+ * Returns '' when the game has no `so_game_code`, so callers can simply skip
+ * rendering a demo control for games without an embed.
+ *
+ * @param int|WP_Post $post
+ * @param string $label  Button text.
+ * @param string $class  Button classes.
+ */
+function solaire_demo_trigger($post, $label, $class)
+{
+    $post = get_post($post);
+    if (!$post) {
+        return '';
+    }
+    $code = trim((string) get_field('so_game_code', $post->ID));
+    if ($code === '') {
+        return '';
+    }
+
+    $device = wp_is_mobile() ? 'MOBILE' : 'DESKTOP';
+    $embed  = do_shortcode('[st8_game game="' . esc_attr($code) . '" fun_mode="true" device="' . $device . '"]');
+    $tpl_id = 'demo-embed-' . $post->ID . '-' . wp_unique_id();
+    $title  = get_the_title($post) . ' — ' . __('Demo', 'solaire');
+
+    return sprintf(
+        '<button type="button" data-demo-open data-demo-target="%1$s" data-title="%2$s" class="%3$s">%4$s</button>'
+        . '<template id="%1$s">%5$s</template>',
+        esc_attr($tpl_id),
+        esc_attr($title),
+        esc_attr($class),
+        esc_html($label),
+        $embed // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- shortcode markup.
+    );
+}
+
+/**
+ * Shared demo modal markup + script. Outputs once per request (later calls
+ * return ''), so it can be invoked from any block/template that uses
+ * solaire_demo_trigger(). Mirrors the single-game demo modal: desktop opens the
+ * iframe in the modal; mobile opens the embed URL in a new tab.
+ */
+function solaire_demo_modal()
+{
+    static $done = false;
+    if ($done) {
+        return '';
+    }
+    $done = true;
+
+    ob_start(); ?>
+    <div id="solaire-demo-modal" class="fixed inset-0 z-[9997] hidden items-center justify-center bg-black/85 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="relative w-full max-w-5xl overflow-hidden rounded-2xl bg-deep shadow-2xl ring-1 ring-white/15">
+        <div class="flex items-center justify-between border-b border-white/10 bg-surface px-5 py-3">
+          <h2 data-demo-title class="font-display text-lg font-bold text-white"></h2>
+          <button type="button" data-demo-close aria-label="<?php esc_attr_e('Close', 'solaire'); ?>" class="flex h-9 w-9 items-center justify-center rounded-md text-white/70 transition hover:bg-white/10 hover:text-white">
+            <?php echo solaire_icon('close', 'h-5 w-5', '2.5'); // phpcs:ignore ?>
+          </button>
+        </div>
+        <div class="relative aspect-video w-full bg-deep">
+          <div data-demo-loading class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-deep text-sm text-slatey">
+            <span class="h-10 w-10 animate-spin rounded-full border-[3px] border-white/15 border-t-orange"></span>
+            <span><?php esc_html_e('Loading game…', 'solaire'); ?></span>
+          </div>
+          <div data-demo-body class="absolute inset-0 [&_iframe]:absolute [&_iframe]:inset-0 [&_iframe]:h-full [&_iframe]:w-full [&_iframe]:border-0"></div>
+        </div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        'use strict';
+        var modal = document.getElementById('solaire-demo-modal');
+        if (!modal) return;
+
+        var titleEl = modal.querySelector('[data-demo-title]');
+        var bodyEl  = modal.querySelector('[data-demo-body]');
+        var loadEl  = modal.querySelector('[data-demo-loading]');
+        var isMobile = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+        function showLoading() { if (loadEl) loadEl.style.display = 'flex'; }
+        function hideLoading() { if (loadEl) loadEl.style.display = 'none'; }
+
+        function open() {
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+          modal.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden';
+        }
+        function close() {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+          modal.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = '';
+          if (bodyEl) bodyEl.innerHTML = ''; // stop the game / free the iframe
+        }
+
+        document.querySelectorAll('[data-demo-open]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var tpl = document.getElementById(btn.dataset.demoTarget);
+            if (!tpl || !tpl.content) return;
+            var frag  = tpl.content.cloneNode(true);
+            var frame = frag.querySelector('iframe');
+
+            // On mobile, open the game full-screen in a new tab instead.
+            if (isMobile && frame && frame.getAttribute('src')) {
+              window.open(frame.getAttribute('src'), '_blank', 'noopener');
+              return;
+            }
+
+            if (titleEl) titleEl.textContent = btn.dataset.title || '';
+            bodyEl.innerHTML = '';
+            showLoading();
+            if (frame) { frame.addEventListener('load', hideLoading); }
+            bodyEl.appendChild(frag);
+            if (!frame) hideLoading();
+            open();
+          });
+        });
+
+        modal.querySelectorAll('[data-demo-close]').forEach(function (btn) {
+          btn.addEventListener('click', close);
+        });
+        modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && !modal.classList.contains('hidden')) close();
+        });
+      })();
+    </script>
+    <?php
+    return ob_get_clean();
+}
+
+/**
  * Resolve an image value to a usable URL.
  * Full URLs pass through; bare filenames resolve against /assets/img.
  */
