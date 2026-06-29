@@ -69,6 +69,10 @@ while (have_posts()) :
     <div class="relative z-10 grid items-center gap-6 p-6 sm:p-10 md:grid-cols-[260px_1fr]">
       <?php if ($art) : ?>
         <img data-anim src="<?php echo esc_url($art); ?>" alt="<?php echo esc_attr(get_the_title()); ?>" class="game-art" />
+      <?php elseif ($logo = solaire_site_logo_url()) : ?>
+        <div data-anim class="game-art mx-auto flex aspect-[3/4] w-44 items-center justify-center rounded-xl bg-gradient-to-br from-panel via-surface to-deep p-6 md:w-full">
+          <img src="<?php echo esc_url($logo); ?>" alt="<?php echo esc_attr(get_bloginfo('name')); ?>" class="w-3/5 max-w-[130px] object-contain opacity-95" />
+        </div>
       <?php else : ?>
         <div data-anim class="ph mx-auto aspect-[3/4] w-44 rounded-xl md:w-full"></div>
       <?php endif; ?>
