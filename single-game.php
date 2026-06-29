@@ -76,8 +76,8 @@ while (have_posts()) :
       <?php else : ?>
         <div data-anim class="ph mx-auto aspect-[3/4] w-44 rounded-xl md:w-full"></div>
       <?php endif; ?>
-      <div>
-        <nav data-anim class="flex flex-wrap items-center gap-2 text-sm font-semibold text-white/70" aria-label="<?php esc_attr_e('Breadcrumb', 'solaire'); ?>">
+      <div class="text-center md:text-left">
+        <nav data-anim class="flex flex-wrap items-center justify-center gap-2 text-sm font-semibold text-white/70 md:justify-start" aria-label="<?php esc_attr_e('Breadcrumb', 'solaire'); ?>">
           <a href="<?php echo esc_url(home_url('/')); ?>" class="transition hover:text-white"><?php esc_html_e('Home', 'solaire'); ?></a>
           <?php if ($cat_name) :
               $cat_link = (!is_wp_error($cats) && $cats) ? get_term_link($cats[0]) : '';
@@ -94,7 +94,7 @@ while (have_posts()) :
         </nav>
         <h1 data-anim data-anim-delay="100" class="mt-4 font-display text-3xl font-extrabold leading-tight text-orange sm:text-5xl"><?php the_title(); ?></h1>
         <?php if ($short_desc) : ?>
-          <p data-anim data-anim-delay="180" class="mt-4 max-w-xl text-sm leading-relaxed text-white/85 sm:text-lg"><?php echo esc_html($short_desc); ?></p>
+          <p data-anim data-anim-delay="180" class="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-white/85 sm:text-lg md:mx-0"><?php echo esc_html($short_desc); ?></p>
         <?php endif; ?>
       </div>
     </div>
@@ -115,12 +115,11 @@ while (have_posts()) :
 
   <!-- ===================== CTA ===================== -->
   <div class="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
-    <a href="https://www.solaireonline.com/login" class="bg-brand-orange text-white btn-press inline-flex w-full items-center justify-center rounded-xl px-8 py-4 text-center font-display text-lg font-bold sm:w-auto sm:text-xl"><?php esc_html_e('Play for Real - Sign Up Now', 'solaire'); ?></a>
+    <a href="https://www.solaireonline.com/login" class="bg-brand-orange text-white btn-press inline-flex w-full items-center justify-center rounded-xl px-8 py-4 text-center font-display text-lg sm:w-auto sm:text-xl"><?php esc_html_e('Play for Real - Sign Up Now', 'solaire'); ?></a>
     <?php if ($game_code) : ?>
       <button type="button" data-demo-open
         data-title="<?php echo esc_attr(get_the_title()); ?> — <?php esc_attr_e('Demo', 'solaire'); ?>"
-        class="btn-press inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white/10 px-8 py-4 text-center font-display text-lg font-bold text-white ring-1 ring-white/20 transition hover:bg-white/15 sm:w-auto sm:text-xl">
-        <?php echo solaire_icon('bolt', 'h-5 w-5 text-orange'); // phpcs:ignore ?>
+        class="btn-press inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white/10 px-8 py-4 text-center font-display text-lg text-white ring-1 ring-white/20 transition hover:bg-white/15 sm:w-auto sm:text-xl">
         <?php esc_html_e('Try Demo', 'solaire'); ?>
       </button>
     <?php endif; ?>
@@ -146,9 +145,9 @@ while (have_posts()) :
     <div class="mb-3 flex items-center justify-between">
       <h2 class="font-display text-lg font-bold sm:text-xl"><?php esc_html_e('More Games', 'solaire'); ?></h2>
       <div class="flex items-center gap-2">
-        <a href="<?php echo esc_url($view_all_url); ?>" class="rounded-md bg-white/10 px-3 py-1.5 text-xs font-semibold text-orange transition"><?php esc_html_e('View All', 'solaire'); ?></a>
-        <button data-prev aria-label="<?php esc_attr_e('Previous', 'solaire'); ?>" class="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-orange transition hover:bg-white/20 disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/25 disabled:hover:bg-white/5"><?php echo solaire_icon('arrow-left', 'h-4 w-4', '2.5'); // phpcs:ignore ?></button>
-        <button data-next aria-label="<?php esc_attr_e('Next', 'solaire'); ?>" class="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-orange transition hover:bg-white/20 disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/25 disabled:hover:bg-white/5"><?php echo solaire_icon('arrow-right', 'h-4 w-4', '2.5'); // phpcs:ignore ?></button>
+        <a href="<?php echo esc_url($view_all_url); ?>" class="rounded-md bg-white/10 px-3 py-1.5 text-xs font-semibold text-secondary transition"><?php esc_html_e('View All', 'solaire'); ?></a>
+        <button data-prev aria-label="<?php esc_attr_e('Previous', 'solaire'); ?>" class="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-secondary transition hover:bg-white/20 disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/25 disabled:hover:bg-white/5"><?php echo solaire_icon('arrow-left', 'h-4 w-4', '2.5'); // phpcs:ignore ?></button>
+        <button data-next aria-label="<?php esc_attr_e('Next', 'solaire'); ?>" class="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-secondary transition hover:bg-white/20 disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/25 disabled:hover:bg-white/5"><?php echo solaire_icon('arrow-right', 'h-4 w-4', '2.5'); // phpcs:ignore ?></button>
       </div>
     </div>
     <div data-track class="game-row-track no-scrollbar snap-row flex gap-3 overflow-x-auto pb-2 pt-3 sm:gap-4">

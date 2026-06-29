@@ -207,8 +207,8 @@ function solaire_game_card($post, $args = [])
                 <h3 class="truncate font-display text-sm font-bold"><?php echo esc_html($title); ?></h3>
             </div>
             <div class="mt-1 flex items-center justify-between border-t border-white/5 px-3 py-2 text-[10px] uppercase tracking-wide text-slatey">
-                <span>RTP <b class="text-gold"><?php echo esc_html($rtp ?: '—'); ?></b></span>
-                <span>Vol <b class="text-orange"><?php echo esc_html($vol ?: '—'); ?></b></span>
+                <span>RTP: <b class="text-gold"><?php echo esc_html($rtp ?: '—'); ?></b></span>
+                <span>Vol: <b class="text-orange"><?php echo esc_html($vol ?: '—'); ?></b></span>
             </div>
         </a>
         <?php

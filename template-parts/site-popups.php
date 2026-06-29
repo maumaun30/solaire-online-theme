@@ -48,10 +48,6 @@ $cookie_btn   = get_field('so_cookie_button_text', 'option') ?: 'I Accept';
 
 /* ---- Responsible gaming content ---- */
 $rg_heading = get_field('so_rg_heading', 'option') ?: 'Responsible Gaming Guidelines';
-$rg_intro   = get_field('so_rg_intro', 'option') ?: 'The following persons are *NOT ALLOWED* to register and/or play in the online gaming website:';
-$rg_footer  = get_field('so_rg_footer', 'option');
-$rg_pagcor  = get_field('so_rg_pagcor_image', 'option');
-$rg_age     = get_field('so_rg_age_image', 'option');
 $rg_terms_t = get_field('so_rg_terms_text', 'option') ?: 'Terms & Conditions';
 $rg_terms_u = get_field('so_rg_terms_url', 'option');
 $rg_priv_t  = get_field('so_rg_privacy_text', 'option') ?: 'Privacy Policy';
@@ -60,17 +56,9 @@ $rg_accept  = get_field('so_rg_accept_text', 'option') ?: 'Accept';
 $rg_decline = get_field('so_rg_decline_text', 'option') ?: 'I Do Not Accept';
 $rg_decline_url = get_field('so_rg_decline_url', 'option') ?: 'https://www.google.com';
 
-$rg_items = get_field('so_rg_items', 'option');
-if (!$rg_items) {
-    // PAGCOR responsible-gaming defaults when none are configured.
-    $rg_items = [
-        ['text' => 'Government official or employee connected directly with the operation of the Government or any of its agencies', 'url' => ''],
-        ['text' => 'Member of the Armed Forces of the Philippines, including the Army, Navy, Air Force or the Philippine National Police', 'url' => ''],
-        ['text' => 'Person under 21 years of age', 'url' => ''],
-        ['text' => 'Persons included in the National Database of Restricted Persons (NDRP)', 'url' => ''],
-        ['text' => 'Gaming employees, unless on official duty', 'url' => ''],
-    ];
-}
+/* ---- Gaming Guide: dynamic RG body (Gaming Guide ACF options page) ---- */
+$gg_contents     = get_field('so_gaming_guidelines_contents', 'option');
+$gg_subparagraph = get_field('so_gaming_guidelines_subparagraph', 'option');
 ?>
 
 <?php if ($cookie_on) : ?>
@@ -99,46 +87,49 @@ if (!$rg_items) {
       <div class="pointer-events-none absolute -top-20 left-1/2 h-48 w-48 -translate-x-1/2 rounded-full bg-brandred/40 blur-[90px]"></div>
       <div class="relative z-10 overflow-y-auto px-6 py-7 sm:px-8">
         <div class="text-center">
-          <span class="mx-auto flex h-12 w-12 items-center justify-center text-orange">
-            <svg viewBox="0 0 24 24" class="h-9 w-9" fill="currentColor" aria-hidden="true"><path d="M12 2c.5 3-1.5 4.5-2.8 6C7.7 9.7 7 11.3 7 13a5 5 0 0 0 10 0c0-1.7-.8-3.2-2-4.5C13.2 6.7 14 4 12 2Zm0 16a2.5 2.5 0 0 1-2.5-2.5c0-1.2.8-2 1.5-2.8.4 1 1.2 1.4 1.8 2 .5.5.7 1 .7 1.8A2 2 0 0 1 12 18Z"/></svg>
-          </span>
           <h2 id="rg-modal-title" class="mt-2 font-display text-xl font-extrabold text-orange sm:text-2xl"><?php echo esc_html($rg_heading); ?></h2>
         </div>
 
-        <p class="mt-5 text-xs leading-relaxed text-white/80 sm:text-sm"><?php echo solaire_popup_emphasis($rg_intro); // phpcs:ignore ?></p>
+        <?php if ($gg_contents) : ?>
+          <div class="mt-5 text-xs leading-relaxed text-white/80 sm:text-sm [&_a]:font-semibold [&_a]:text-orange [&_a]:underline hover:[&_a]:text-white [&_ul]:mt-3 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5 [&_li]:marker:text-orange [&_p]:mb-3 [&_p:last-child]:mb-0"><?php echo wp_kses_post($gg_contents); ?></div>
+        <?php endif; ?>
 
-        <ul class="mt-3 space-y-2 text-xs leading-relaxed text-white/75 sm:text-sm">
-          <?php foreach ($rg_items as $item) :
-              $txt = $item['text'] ?? '';
-              if ($txt === '') {
-                  continue;
-              }
-              $url = $item['url'] ?? '';
-          ?>
-            <li class="flex gap-2">
-              <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-orange"></span>
-              <?php if ($url) : ?>
-                <a href="<?php echo esc_url($url); ?>" class="font-semibold text-orange transition hover:text-white"><?php echo esc_html($txt); ?></a>
-              <?php else : ?>
-                <span><?php echo esc_html($txt); ?></span>
-              <?php endif; ?>
-            </li>
-          <?php endforeach; ?>
-        </ul>
-
-        <?php if ($rg_pagcor || $rg_age) : ?>
-          <div class="mt-6 flex flex-wrap items-center justify-center gap-8 border-y border-white/10 py-5 sm:justify-between">
-            <?php if ($rg_pagcor) : ?>
-              <img src="<?php echo esc_url($rg_pagcor['url']); ?>" alt="<?php echo esc_attr($rg_pagcor['alt'] ?: 'PAGCOR'); ?>" class="h-10 w-auto max-w-[180px] object-contain" loading="lazy" />
-            <?php endif; ?>
-            <?php if ($rg_age) : ?>
-              <img src="<?php echo esc_url($rg_age['url']); ?>" alt="<?php echo esc_attr($rg_age['alt'] ?: '21+'); ?>" class="h-12 w-auto max-w-[200px] object-contain" loading="lazy" />
-            <?php endif; ?>
+        <?php if (have_rows('so_gaming_guidelines_img_wrapper', 'option')) : ?>
+          <div class="mt-6 flex items-center divide-x divide-white/15 rounded-xl bg-brandred/15 px-2 py-5 ring-1 ring-white/10 sm:px-4">
+            <?php while (have_rows('so_gaming_guidelines_img_wrapper', 'option')) : the_row();
+                $img = get_sub_field('so_gaming_guidelines_img');
+                $src = '';
+                $alt = '';
+                if (is_array($img)) {
+                    $src = $img['url'] ?? '';
+                    $alt = $img['alt'] ?? '';
+                } elseif (is_numeric($img)) {
+                    $src = wp_get_attachment_image_url($img, 'medium');
+                    $alt = get_post_meta($img, '_wp_attachment_image_alt', true);
+                } elseif (is_string($img)) {
+                    $src = $img;
+                }
+                if (!$src) {
+                    continue;
+                }
+            ?>
+              <div class="flex flex-1 items-center justify-center px-3 sm:px-6">
+                <img src="<?php echo esc_url($src); ?>" alt="<?php echo esc_attr($alt); ?>" class="h-11 w-auto max-w-full object-contain sm:h-14" loading="lazy" />
+              </div>
+            <?php endwhile; ?>
           </div>
         <?php endif; ?>
 
-        <?php if ($rg_footer) : ?>
-          <p class="mt-5 text-[11px] leading-relaxed text-white/55 sm:text-xs"><?php echo esc_html($rg_footer); ?></p>
+        <?php if ($gg_subparagraph) :
+            // Split into paragraphs at sentence breaks that have no space
+            // (e.g. "Government.Keep" → two lines), matching the design.
+            $gg_paras = preg_split('/(?<=\.)(?=[A-Z])/', trim($gg_subparagraph));
+        ?>
+          <div class="mt-5 space-y-3 text-xs leading-relaxed text-white/65 sm:text-sm">
+            <?php foreach ($gg_paras as $para) : ?>
+              <p><?php echo esc_html(trim($para)); ?></p>
+            <?php endforeach; ?>
+          </div>
         <?php endif; ?>
 
         <?php if ($rg_terms_u || $rg_priv_u) : ?>
@@ -153,7 +144,7 @@ if (!$rg_items) {
 
       <div class="relative z-10 flex flex-col items-center gap-3 border-t border-white/10 bg-black/20 px-6 py-4 sm:flex-row sm:gap-4 sm:px-8">
         <button type="button" data-rg-accept class="btn-press bg-brand-orange inline-flex w-full items-center justify-center rounded-xl px-8 py-3 font-display text-sm font-bold text-white sm:flex-1 sm:text-base"><?php echo esc_html($rg_accept); ?></button>
-        <button type="button" data-rg-decline class="font-display text-sm font-semibold text-white/55 underline-offset-2 transition hover:text-white hover:underline sm:shrink-0"><?php echo esc_html($rg_decline); ?></button>
+        <button type="button" data-rg-decline class="font-display text-sm font-semibold text-white/55 underline-offset-2 transition hover:text-white hover:underline sm:flex-1 sm:text-center"><?php echo esc_html($rg_decline); ?></button>
       </div>
     </div>
   </div>

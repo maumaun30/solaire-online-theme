@@ -371,6 +371,28 @@
     });
   }
 
+  /* ---- Back to top ---------------------------------------- */
+  function initBackToTop() {
+    var btn = document.getElementById("back-to-top");
+    if (!btn) return;
+
+    var hidden = ["pointer-events-none", "opacity-0", "translate-y-3"];
+
+    function toggle() {
+      if (window.scrollY > 400) {
+        btn.classList.remove.apply(btn.classList, hidden);
+      } else {
+        btn.classList.add.apply(btn.classList, hidden);
+      }
+    }
+
+    toggle();
+    window.addEventListener("scroll", toggle, { passive: true });
+    btn.addEventListener("click", function () {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     initDrawer();
     initCarousels();
@@ -380,5 +402,6 @@
     initLoadMore();
     initReadMore();
     initAnim();
+    initBackToTop();
   });
 })();

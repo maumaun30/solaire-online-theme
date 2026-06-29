@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 <?php wp_body_open(); ?>
 
 <!-- ============================ HEADER ============================ -->
-<header class="so-header header-bar relative z-50 border-b border-white/5">
+<header class="so-header header-bar sticky top-0 z-50 border-b border-white/5">
   <div class="relative z-10 mx-auto my-2.5 flex h-[68px] max-w-shell items-center gap-6 rounded-2xl bg-white/[0.06] px-4 ring-1 ring-white/10 backdrop-blur-sm sm:px-6">
 
     <!-- Logo -->
@@ -43,11 +43,11 @@ if (!defined('ABSPATH')) {
     </nav>
 
     <!-- Right actions -->
-    <div class="ml-auto flex items-center gap-4">
-      <a href="#" class="hidden text-sm font-semibold text-orange transition-colors hover:text-orange-bright sm:inline"><?php esc_html_e('Sign Up', 'solaire'); ?></a>
-      <a href="#" class="btn-press hidden rounded-md bg-brand-orange px-5 py-2 text-sm font-bold text-white shadow-lg shadow-orange/20 sm:inline-block"><?php esc_html_e('Sign In', 'solaire'); ?></a>
-      <button id="nav-toggle" aria-label="<?php esc_attr_e('Open menu', 'solaire'); ?>" class="flex h-10 w-10 items-center justify-center rounded-lg text-white lg:hidden">
-        <?php echo solaire_icon('menu', 'h-6 w-6'); // phpcs:ignore ?>
+    <div class="ml-auto flex items-center gap-2 sm:gap-4">
+      <a href="#" class="whitespace-nowrap text-xs text-secondary transition-colors hover:text-orange-bright sm:text-sm"><?php esc_html_e('Sign Up', 'solaire'); ?></a>
+      <a href="#" class="btn-press whitespace-nowrap rounded-md bg-brand-orange px-2.5 py-1.5 text-xs text-white shadow-lg shadow-orange/20 sm:px-5 sm:py-2 sm:text-sm"><?php esc_html_e('Sign In', 'solaire'); ?></a>
+      <button id="nav-toggle" aria-label="<?php esc_attr_e('Open menu', 'solaire'); ?>" class="btn-press flex h-7 w-7 items-center justify-center rounded-md bg-brand-orange text-white shadow-lg shadow-orange/20 sm:h-9 sm:w-9 lg:hidden">
+        <?php echo solaire_icon('menu', 'h-5 w-5'); // phpcs:ignore ?>
       </button>
     </div>
   </div>

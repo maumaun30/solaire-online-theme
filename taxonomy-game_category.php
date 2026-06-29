@@ -71,7 +71,7 @@ $terms = get_terms([
 
   <!-- LOAD MORE -->
   <div class="mt-8 flex justify-center">
-    <button data-load-more data-load-target="#games-grid" data-step="12" class="btn-press rounded-lg border border-orange/70 bg-orange/10 px-8 py-3 text-sm font-bold uppercase tracking-wide text-orange transition hover:bg-orange hover:text-white"><?php esc_html_e('Load More Games', 'solaire'); ?></button>
+    <button data-load-more data-load-target="#games-grid" data-step="12" class="btn-press rounded-lg border border-orange/70 bg-orange/10 px-8 py-3 text-sm uppercase tracking-wide transition hover:bg-orange hover:text-white"><?php esc_html_e('Load More Games', 'solaire'); ?></button>
   </div>
 
   <!-- ===================== CONTENT BLOCK ===================== -->

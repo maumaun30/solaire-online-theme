@@ -28,8 +28,8 @@ $rows = (int) ceil($per_page / 2);
         <h2 class="font-display text-lg font-bold sm:text-xl"><?php echo esc_html($title); ?></h2>
         <div class="flex items-center gap-2">
           <?php if ($slides > 1) : ?>
-            <button data-prev aria-label="<?php esc_attr_e('Previous', 'solaire'); ?>" class="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-orange transition hover:bg-white/20 disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/25 disabled:hover:bg-white/5"><?php echo solaire_icon('arrow-left', 'h-4 w-4', '2.5'); // phpcs:ignore ?></button>
-            <button data-next aria-label="<?php esc_attr_e('Next', 'solaire'); ?>" class="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-orange transition hover:bg-white/20 disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/25 disabled:hover:bg-white/5"><?php echo solaire_icon('arrow-right', 'h-4 w-4', '2.5'); // phpcs:ignore ?></button>
+            <button data-prev aria-label="<?php esc_attr_e('Previous', 'solaire'); ?>" class="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-secondary transition hover:bg-white/20 disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/25 disabled:hover:bg-white/5"><?php echo solaire_icon('arrow-left', 'h-4 w-4', '2.5'); // phpcs:ignore ?></button>
+            <button data-next aria-label="<?php esc_attr_e('Next', 'solaire'); ?>" class="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-secondary transition hover:bg-white/20 disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/25 disabled:hover:bg-white/5"><?php echo solaire_icon('arrow-right', 'h-4 w-4', '2.5'); // phpcs:ignore ?></button>
           <?php endif; ?>
         </div>
       </div>
@@ -71,7 +71,7 @@ $rows = (int) ceil($per_page / 2);
               <p class="mt-0.5 hidden text-xs leading-relaxed text-slatey lg:block"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 38)); ?></p>
             </div>
             <div class="flex shrink-0 flex-col gap-2">
-              <a href="<?php echo esc_url($play); ?>" class="btn-press rounded-md bg-brand-orange px-4 py-2 text-center text-xs font-bold text-white sm:text-sm"><?php esc_html_e('Play now', 'solaire'); ?></a>
+              <a href="<?php echo esc_url($play); ?>" class="btn-press rounded-md bg-brand-orange px-4 py-2 text-center text-xs text-white sm:text-sm"><?php esc_html_e('Play now', 'solaire'); ?></a>
               <?php
                 // Demo button only renders when the game has an `so_game_code`.
                 echo solaire_demo_trigger(

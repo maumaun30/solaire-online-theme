@@ -37,7 +37,7 @@ $title_rest  = $title_parts[1] ?? '';
           <p data-anim data-anim-delay="120" class="max-w-md text-sm text-white/90 sm:text-base"><?php echo esc_html($subtitle); ?></p>
         <?php endif; ?>
         <?php if ($btn_text) : ?>
-          <a data-anim data-anim-delay="240" href="<?php echo esc_url($btn_url ?: '#'); ?>" class="btn-press mt-2 inline-block w-fit rounded-full bg-gradient-to-r from-brandred to-orange-bright px-7 py-2.5 text-sm font-bold text-white shadow-lg shadow-black/30 transition-opacity hover:opacity-90"><?php echo esc_html($btn_text); ?></a>
+          <a data-anim data-anim-delay="240" href="<?php echo esc_url($btn_url ?: '#'); ?>" class="btn-press mt-2 inline-block w-fit rounded-md bg-gradient-to-r from-brandred to-orange-bright px-7 py-2.5 text-sm text-white shadow-lg shadow-black/30 transition-opacity hover:opacity-90"><?php echo esc_html($btn_text); ?></a>
         <?php endif; ?>
       </div>
     </div>
