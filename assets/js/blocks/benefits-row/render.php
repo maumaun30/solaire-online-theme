@@ -17,14 +17,14 @@ $benefits = $attributes['benefits'] ?? [];
     <?php if ($heading) : ?>
       <h2 data-anim class="text-center font-display text-2xl font-extrabold sm:text-3xl"><?php echo esc_html($heading); ?></h2>
     <?php endif; ?>
-    <div class="mt-10 grid gap-8 text-center md:grid-cols-3">
+    <div class="mt-10 grid grid-cols-4 gap-y-12 text-center md:grid-cols-3 md:gap-8">
       <?php foreach ($benefits as $i => $b) :
           $icon  = $b['icon'] ?? 'bolt';
           $title = $b['title'] ?? '';
           $text  = $b['text'] ?? '';
           $delay = $i * 100;
       ?>
-        <div data-anim <?php echo $delay ? 'data-anim-delay="' . esc_attr($delay) . '"' : ''; ?> class="flex flex-col items-center px-4">
+        <div data-anim <?php echo $delay ? 'data-anim-delay="' . esc_attr($delay) . '"' : ''; ?> class="col-span-2 flex flex-col items-center px-4 [&:last-child:nth-child(odd)]:col-start-2 md:col-span-1 md:[&:last-child:nth-child(odd)]:col-start-auto">
           <span class="flex h-14 w-14 items-center justify-center rounded-full bg-white/5 text-orange ring-1 ring-orange/30"><?php echo solaire_icon($icon, 'h-6 w-6'); // phpcs:ignore ?></span>
           <h3 class="mt-4 font-display text-lg font-bold"><?php echo esc_html($title); ?></h3>
           <p class="mt-2 max-w-xs text-sm leading-relaxed text-slatey"><?php echo esc_html($text); ?></p>

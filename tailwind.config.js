@@ -15,6 +15,7 @@ module.exports = {
         panel: "#2b2e31",
         brandred: "#c42b29",
         orange: { DEFAULT: "#df6a2e", bright: "#ef7b00" },
+        secondary: "var(--secondary-color)",
         gold: { DEFAULT: "#f5b335", soft: "#f8ab3e" },
         slatey: "#94a3b8"
       },

@@ -24,6 +24,7 @@
   --c-gold-soft: #f8ab3e;
   --c-slate: #94a3b8; /* muted text */
   --c-slate-2: #abb2ba;
+  --secondary-color: #f0a434;
 }
 
 @layer base {
@@ -113,7 +114,8 @@
 
   /* Full-width header bar: warm red-orange glow bleeds from the left edge into the dark base */
   .header-bar {
-    position: relative;
+    position: sticky;
+    top: 0;
     background-color: #15171a;
     background-image: radial-gradient(
       100% 190% at -2% 50%,
