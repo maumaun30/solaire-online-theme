@@ -25,6 +25,7 @@
   --c-slate: #94a3b8; /* muted text */
   --c-slate-2: #abb2ba;
   --secondary-color: #f0a434;
+  --modal-highlighted-text: #f5993d;
 }
 
 @layer base {
@@ -72,6 +73,10 @@
   /* ---- Brand gradients & fills ------------------------------ */
   .bg-brand-orange {
     background: linear-gradient(92deg, #ef7b00 0%, #df6a2e 60%, #d2242a 100%);
+  }
+  /* Popup CTA — amber → orange → red (Cookie / RG accept buttons) */
+  .bg-cta-orange {
+    background: linear-gradient(259deg, #ca1800 0%, #ef7b00 50%, #f8ab3e 100%);
   }
   .bg-gold-cta {
     background: linear-gradient(180deg, #f5c451 0%, #d99a2c 100%);
