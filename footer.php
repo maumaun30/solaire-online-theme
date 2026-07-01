@@ -15,9 +15,9 @@ $footer_responsible = get_field('so_footer_responsible_gaming', 'option');
 <!-- ============================ FOOTER ============================ -->
 <footer class="footer-glow relative bg-deep">
   <div class="relative z-10 mx-auto max-w-shell px-4 py-14">
-    <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
-      <div class="text-center md:text-left lg:col-span-2 lg:max-w-sm">
-        <div class="flex justify-center md:justify-start">
+    <div class="grid gap-10 lg:grid-cols-3 lg:gap-x-10">
+      <div class="text-center lg:text-left lg:max-w-sm">
+        <div class="flex justify-center lg:justify-start">
           <?php if (has_custom_logo()) : ?>
             <?php the_custom_logo(); ?>
           <?php else : ?>
@@ -32,7 +32,7 @@ $footer_responsible = get_field('so_footer_responsible_gaming', 'option');
         <?php endif; ?>
         <?php if ($footer_social) : ?>
           <p class="mt-6 text-sm font-bold">Solaire Online Communities</p>
-          <div class="mt-3 flex flex-wrap justify-center gap-3 md:justify-start">
+          <div class="mt-3 flex flex-wrap justify-center gap-3 lg:justify-start">
             <?php foreach ($footer_social as $social) :
                 $icon = $social['so_social_media_icon'] ?? null;
                 $url  = $social['so_social_media_url'] ?? '';
@@ -47,7 +47,7 @@ $footer_responsible = get_field('so_footer_responsible_gaming', 'option');
           </div>
         <?php endif; ?>
       </div>
-      <div class="grid grid-cols-2 gap-8 md:contents">
+      <div class="grid grid-cols-2 gap-8 rounded-2xl bg-white/[0.03] p-6 lg:col-start-3 lg:flex lg:justify-between lg:rounded-none lg:bg-transparent lg:p-0 lg:pr-10">
         <?php if (has_nav_menu('footer-legal')) : ?>
           <div>
             <h3 class="inline-block border-b-2 border-orange pb-1 font-display text-base font-bold">Legal</h3>
@@ -77,14 +77,16 @@ $footer_responsible = get_field('so_footer_responsible_gaming', 'option');
   </div>
   <?php if ($footer_responsible) : ?>
     <div class="border-t border-white/10 bg-white/[0.02]">
-      <div class="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-10 px-4 py-5 sm:justify-between">
+      <div class="mx-auto grid max-w-3xl grid-cols-2 gap-3 px-4 py-5 lg:flex lg:flex-wrap lg:items-center lg:justify-between lg:gap-10">
         <?php foreach ($footer_responsible as $row) :
             $img = $row['so_responsible_gaming_image'] ?? null;
             if (!$img) {
                 continue;
             }
         ?>
-          <img src="<?php echo esc_url($img['url']); ?>" alt="<?php echo esc_attr($img['alt'] ?: ''); ?>" class="h-9 w-auto max-w-[200px] object-contain" loading="lazy" />
+          <div class="flex items-center justify-center rounded-xl bg-white/[0.03] p-4 lg:rounded-none lg:bg-transparent lg:p-0">
+            <img src="<?php echo esc_url($img['url']); ?>" alt="<?php echo esc_attr($img['alt'] ?: ''); ?>" class="h-10 w-auto max-w-full object-contain lg:h-16 lg:max-w-[240px]" loading="lazy" />
+          </div>
         <?php endforeach; ?>
       </div>
     </div>
