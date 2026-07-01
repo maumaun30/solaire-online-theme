@@ -358,3 +358,11 @@
 .so-header {
   padding: 10px;
 }
+
+/* Footer */
+@media (max-width: 767px) {
+  footer.footer-glow .py-14 {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+}

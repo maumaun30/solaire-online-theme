@@ -80,26 +80,27 @@ $gg_subparagraph = get_field('so_gaming_guidelines_subparagraph', 'option') ?: '
   <!-- ===================== RESPONSIBLE GAMING ===================== -->
   <!-- Anchored bottom-center on all breakpoints (items-end + justify-center). -->
   <div data-rg-modal data-decline-url="<?php echo esc_url($rg_decline_url); ?>" class="fixed inset-0 z-[9990] hidden items-end justify-center bg-black/80 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="rg-modal-title" aria-hidden="true">
-    <!-- No inner scroll: the sheet sizes to its content instead of clipping/scrolling. -->
-    <div class="relative flex w-full max-w-3xl flex-col overflow-hidden rounded-t-2xl ring-1 ring-white/10 shadow-2xl sm:mx-0 sm:rounded-2xl" style="background: radial-gradient(100% 80% at center top, rgb(83, 29, 30) 0%, rgba(35, 38, 41, 0.46) 100%), rgb(35, 38, 41);">
-      <div class="relative z-10 px-5 py-5 sm:px-8 sm:py-7">
-        <div class="flex items-center justify-center gap-3 sm:gap-4">
+    <!-- Height is capped to the viewport; the content area scrolls internally so
+         nothing is clipped off-screen on short/small mobile displays. -->
+    <div class="relative flex max-h-[92dvh] w-full max-w-3xl flex-col overflow-hidden rounded-t-2xl ring-1 ring-white/10 shadow-2xl sm:mx-0 sm:max-h-[90dvh] sm:rounded-2xl" style="background: radial-gradient(100% 80% at center top, rgb(83, 29, 30) 0%, rgba(35, 38, 41, 0.46) 100%), rgb(35, 38, 41);">
+      <div class="relative z-10 min-h-0 flex-1 overflow-y-auto px-5 py-3 sm:px-8 sm:py-7">
+        <div class="flex items-center justify-center gap-2.5 sm:gap-4">
           <?php if (is_array($rg_logo) && !empty($rg_logo['url'])) : ?>
-            <img src="<?php echo esc_url($rg_logo['url']); ?>" alt="<?php echo esc_attr($rg_logo['alt'] ?: ''); ?>" class="h-12 w-auto shrink-0 sm:h-16" loading="lazy" />
+            <img src="<?php echo esc_url($rg_logo['url']); ?>" alt="<?php echo esc_attr($rg_logo['alt'] ?: ''); ?>" class="h-10 w-auto shrink-0 sm:h-16" loading="lazy" />
           <?php endif; ?>
-          <h2 id="rg-modal-title" class="font-display text-xl font-semibold leading-tight text-center text-modal-highlight sm:text-2xl"><?php echo esc_html($rg_heading); ?></h2>
+          <h2 id="rg-modal-title" class="font-display text-m font-medium leading-tight text-center text-modal-highlight sm:text-2xl"><?php echo esc_html($rg_heading); ?></h2>
         </div>
 
         <?php if ($gg_contents) : ?>
-          <div class="mt-3 text-xs leading-relaxed text-white sm:mt-5 sm:text-sm [&_a]:font-light [&_a]:text-modal-highlight [&_a]:underline [&_strong]:text-[color:var(--modal-highlighted-text)] [&_b]:text-[color:var(--modal-highlighted-text)] [&_ul]:mt-2 [&_ul]:list-disc [&_ul]:space-y-1.5 [&_ul]:pl-5 sm:[&_ul]:mt-3 sm:[&_ul]:space-y-2 [&_li]:marker:text-modal-highlight [&_li]:text-[#FCE5CF] [&_li]:font-light [&_p]:mb-2 sm:[&_p]:mb-3 [&_p:last-child]:mb-0"><?php echo wp_kses_post($gg_contents); ?></div>
+          <div class="mt-2 text-xs leading-snug text-white sm:mt-5 sm:text-sm sm:leading-relaxed [&_a]:font-light [&_a]:text-modal-highlight [&_a]:underline [&_strong]:text-[color:var(--modal-highlighted-text)] [&_b]:text-[color:var(--modal-highlighted-text)] [&_ul]:mt-1.5 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5 sm:[&_ul]:mt-3 sm:[&_ul]:space-y-2 [&_li]:marker:text-modal-highlight [&_li]:text-[#FCE5CF] [&_li]:font-light [&_p]:mb-1.5 sm:[&_p]:mb-3 [&_p:last-child]:mb-0"><?php echo wp_kses_post($gg_contents); ?></div>
         <?php endif; ?>
 
         <?php if (have_rows('so_gaming_guidelines_img_wrapper', 'option') || $gg_logo_info) : ?>
           <!-- PAGCOR / 21+ box: logos on top (#552324), "Funds or credits..." +
                "Keep online gaming private..." paragraphs below (#732626/40%) -->
-          <div class="mt-4 overflow-hidden rounded-xl ring-1 ring-white/10 sm:mt-6">
+          <div class="mt-3 overflow-hidden rounded-xl ring-1 ring-white/10 sm:mt-6">
             <?php if (have_rows('so_gaming_guidelines_img_wrapper', 'option')) : ?>
-              <div class="flex items-center justify-around divide-x divide-white/15 bg-[#552324] px-2 py-3 sm:px-4 sm:py-5">
+              <div class="flex items-center justify-around divide-x divide-white/15 bg-[#552324] px-2 py-2.5 sm:px-4 sm:py-5">
                 <?php while (have_rows('so_gaming_guidelines_img_wrapper', 'option')) : the_row();
                     $img = get_sub_field('so_gaming_guidelines_img');
                     $src = '';
@@ -118,14 +119,14 @@ $gg_subparagraph = get_field('so_gaming_guidelines_subparagraph', 'option') ?: '
                     }
                 ?>
                   <div class="flex flex-1 items-center justify-center px-3 sm:px-6">
-                    <img src="<?php echo esc_url($src); ?>" alt="<?php echo esc_attr($alt); ?>" class="h-11 w-auto max-w-full object-contain sm:h-14" loading="lazy" />
+                    <img src="<?php echo esc_url($src); ?>" alt="<?php echo esc_attr($alt); ?>" class="h-9 w-auto max-w-full object-contain sm:h-14" loading="lazy" />
                   </div>
                 <?php endwhile; ?>
               </div>
             <?php endif; ?>
 
             <?php if ($gg_logo_info) : ?>
-              <div class="space-y-1.5 bg-[#732626]/40 px-4 py-3 text-xs leading-relaxed text-white/70 sm:space-y-2 sm:px-6 sm:py-4 sm:text-sm [&_p]:mb-1.5 sm:[&_p]:mb-2 [&_p:last-child]:mb-0">
+              <div class="space-y-1 bg-[#732626]/40 px-4 py-2.5 text-xs leading-snug text-white/70 sm:space-y-2 sm:px-6 sm:py-4 sm:text-sm sm:leading-relaxed [&_p]:mb-1 sm:[&_p]:mb-2 [&_p:last-child]:mb-0">
                 <?php echo wp_kses_post($gg_logo_info); ?>
               </div>
             <?php endif; ?>
@@ -136,14 +137,14 @@ $gg_subparagraph = get_field('so_gaming_guidelines_subparagraph', 'option') ?: '
           <!-- so_gaming_guidelines_subparagraph is now a WYSIWYG field, so the
                "Terms & conditions" / "Privacy Policy" links are expected to be
                typed/linked directly inside its content. -->
-          <div class="mt-3 text-[11px] leading-relaxed text-white/55 sm:mt-4 sm:text-xs [&_a]:font-light [&_a]:text-modal-highlight [&_a]:underline [&_p]:mb-1.5 sm:[&_p]:mb-2 [&_p:last-child]:mb-0">
+          <div class="mt-2 text-[11px] leading-snug text-white/55 sm:mt-4 sm:text-xs sm:leading-relaxed [&_a]:font-light [&_a]:text-modal-highlight [&_a]:underline [&_p]:mb-1 sm:[&_p]:mb-2 [&_p:last-child]:mb-0">
             <?php echo wp_kses_post($gg_subparagraph); ?>
           </div>
         <?php endif; ?>
       </div>
 
-      <div class="relative z-10 flex flex-col items-center gap-2 border-t border-white/10 px-5 py-3 sm:flex-row sm:gap-4 sm:px-8 sm:py-4">
-        <button type="button" data-rg-accept class="btn-press bg-cta-orange inline-flex w-full items-center justify-center rounded-xl px-8 py-3 font-display text-sm font-bold text-white sm:flex-1 sm:text-base"><?php echo esc_html($rg_accept); ?></button>
+      <div class="relative z-10 flex flex-col items-center gap-1.5 border-t border-white/10 px-5 py-2.5 sm:flex-row sm:gap-4 sm:px-8 sm:py-4">
+        <button type="button" data-rg-accept class="btn-press bg-cta-orange inline-flex w-full items-center justify-center rounded-xl px-8 py-2.5 font-display text-sm font-bold text-white sm:flex-1 sm:py-3 sm:text-base"><?php echo esc_html($rg_accept); ?></button>
         <button type="button" data-rg-decline class="font-display text-sm font-semibold text-white/55 underline-offset-2 transition hover:text-white hover:underline sm:flex-1 sm:text-center"><?php echo esc_html($rg_decline); ?></button>
       </div>
     </div>
