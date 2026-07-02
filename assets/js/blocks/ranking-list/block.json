@@ -12,9 +12,13 @@
   "supports": { "html": false },
   "attributes": {
     "title": { "type": "string", "default": "Local Region Ranking" },
+    "source": { "type": "string", "default": "auto" },
+    "games": { "type": "array", "default": [] },
     "category": { "type": "string", "default": "" },
     "count": { "type": "number", "default": 7 },
     "perPage": { "type": "number", "default": 7 },
+    "countMobile": { "type": "number", "default": 6 },
+    "perPageMobile": { "type": "number", "default": 3 },
     "viewAllUrl": { "type": "string", "default": "" }
   }
 }

@@ -49,6 +49,9 @@
       var dots = [];
 
       function pageCount() {
+        // A hidden carousel (e.g. the mobile/desktop variant not shown at the
+        // current breakpoint) has clientWidth 0 — guard against dividing by it.
+        if (!track.clientWidth) return 1;
         return Math.max(1, Math.round(track.scrollWidth / track.clientWidth));
       }
       function currentPage() {
@@ -223,39 +226,82 @@
     });
   }
 
-  /* ---- Category filter chips + grid "Load more" -----------
-     A single visibility model drives both: an item is shown when it
-     matches the active category filter AND falls within the current
-     "shown" cap. Each grid (`[data-grid]`) owns its own state. */
+  /* ---- Category filter chips + grid "Load more" (AJAX) -----
+     The grid is server-rendered with page 1; the filter chips and the
+     "Load more" button fetch additional pages from admin-ajax so every
+     game is reachable (there can be thousands, far more than the DOM
+     holds). Filtering by child category re-queries the server rather
+     than hiding already-rendered cards. Each `[data-grid]` owns its
+     own state. */
   function gridState(grid) {
     if (!grid.__solaire) {
       grid.__solaire = {
-        filter: "all",
-        step: parseInt(grid.getAttribute("data-step") || "12", 10)
+        parent:  grid.getAttribute("data-parent") || "",
+        filter:  "all",
+        paged:   parseInt(grid.getAttribute("data-page") || "1", 10),
+        step:    parseInt(grid.getAttribute("data-step") || "12", 10),
+        hasMore: grid.getAttribute("data-has-more") === "1",
+        loading: false
       };
-      grid.__solaire.shown = grid.__solaire.step;
     }
     return grid.__solaire;
   }
 
-  function renderGrid(grid) {
-    var st = gridState(grid);
-    var loadMore = document.querySelector('[data-load-more][data-load-target="#' + grid.id + '"]')
+  function loadMoreBtnFor(grid) {
+    return document.querySelector('[data-load-more][data-load-target="#' + grid.id + '"]')
       || (grid.parentElement && grid.parentElement.querySelector("[data-load-more]"));
-    var shownCount = 0, matchCount = 0;
-    grid.querySelectorAll("[data-grid-item]").forEach(function (item) {
-      var cats = (item.getAttribute("data-category") || "").split(/\s+/);
-      var matches = st.filter === "all" || cats.indexOf(st.filter) !== -1;
-      if (matches) {
-        matchCount++;
-        var withinCap = shownCount < st.shown;
-        item.classList.toggle("hidden", !withinCap);
-        if (withinCap) shownCount++;
-      } else {
-        item.classList.add("hidden");
-      }
+  }
+
+  /* Fetch a page of cards. When `replace` is true the grid is cleared
+     first (filter switch); otherwise the results are appended (load more). */
+  function fetchGames(grid, replace) {
+    if (typeof window.SolaireAjax === "undefined") return;
+    var st = gridState(grid);
+    if (st.loading) return;
+    st.loading = true;
+
+    var btn = loadMoreBtnFor(grid);
+    if (btn) { btn.setAttribute("aria-busy", "true"); btn.disabled = true; }
+    if (replace) grid.setAttribute("aria-busy", "true");
+
+    var body = new URLSearchParams({
+      action:   "solaire_load_games",
+      nonce:    window.SolaireAjax.nonce,
+      parent:   st.parent,
+      filter:   st.filter,
+      paged:    String(st.paged),
+      per_page: String(st.step)
     });
-    if (loadMore) loadMore.classList.toggle("hidden", matchCount <= st.shown);
+
+    fetch(window.SolaireAjax.url, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: body.toString()
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        st.loading = false;
+        if (btn) { btn.removeAttribute("aria-busy"); btn.disabled = false; }
+        grid.removeAttribute("aria-busy");
+        if (!res || !res.success) return;
+
+        var html = res.data.html || "";
+        if (replace) {
+          grid.innerHTML = html
+            || '<p class="col-span-full rounded-xl bg-white/[0.03] p-6 text-sm text-slatey ring-1 ring-white/5">No games found.</p>';
+        } else if (html) {
+          grid.insertAdjacentHTML("beforeend", html);
+        }
+
+        st.hasMore = !!res.data.hasMore;
+        if (btn) btn.classList.toggle("hidden", !st.hasMore);
+      })
+      .catch(function () {
+        st.loading = false;
+        if (btn) { btn.removeAttribute("aria-busy"); btn.disabled = false; }
+        grid.removeAttribute("aria-busy");
+      });
   }
 
   function initFilters() {
@@ -267,23 +313,25 @@
         chip.addEventListener("click", function () {
           chips.forEach(function (c) { c.classList.toggle("is-active", c === chip); });
           var st = gridState(grid);
-          st.filter = chip.getAttribute("data-filter");
-          st.shown = st.step; // reset cap when the filter changes
-          renderGrid(grid);
+          st.filter = chip.getAttribute("data-filter") || "all";
+          st.paged  = 1;
+          fetchGames(grid, true); // reset + replace with page 1 of the filter
         });
       });
     });
   }
 
   function initLoadMore() {
-    document.querySelectorAll("[data-grid]").forEach(function (grid) { renderGrid(grid); });
     document.querySelectorAll("[data-load-more]").forEach(function (btn) {
       var grid = document.querySelector(btn.getAttribute("data-load-target") || "[data-grid]");
       if (!grid) return;
+      var st = gridState(grid);
+      btn.classList.toggle("hidden", !st.hasMore);
       btn.addEventListener("click", function () {
-        var st = gridState(grid);
-        st.shown += st.step;
-        renderGrid(grid);
+        var s = gridState(grid);
+        if (s.loading || !s.hasMore) return;
+        s.paged += 1;
+        fetchGames(grid, false); // append next page
       });
     });
   }

@@ -33,7 +33,7 @@ $heading_html = nl2br(esc_html($heading));
         <?php if ($features) : ?>
           <div class="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-4">
             <?php foreach ($features as $f) : ?>
-              <div class="flex flex-col items-start gap-2">
+              <div class="flex flex-col items-center gap-2 text-center sm:items-start sm:text-left">
                 <span class="text-orange"><?php echo solaire_icon($f['icon'] ?? 'phone', 'h-6 w-6', '1.8'); // phpcs:ignore ?></span>
                 <span class="text-[11px] font-semibold uppercase leading-tight tracking-wide text-slatey"><?php echo esc_html($f['label'] ?? ''); ?></span>
               </div>

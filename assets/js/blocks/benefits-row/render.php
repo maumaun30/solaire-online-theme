@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 $heading  = $attributes['heading'] ?? '';
 $benefits = $attributes['benefits'] ?? [];
 ?>
-<section <?php echo get_block_wrapper_attributes(['class' => 'bg-surface py-16']); ?>>
+<section <?php echo get_block_wrapper_attributes(['class' => 'bg-surface py-8 sm:py-16']); ?>>
   <div class="mx-auto max-w-shell px-4">
     <?php if ($heading) : ?>
       <h2 data-anim class="text-center font-display text-2xl font-extrabold sm:text-3xl"><?php echo esc_html($heading); ?></h2>
