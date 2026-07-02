@@ -365,4 +365,21 @@
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
   }
+
+  .wp-block-solaire-benefits-row .py-16 {
+    padding-bottom: 2rem;
+    padding-top: 2rem;
+  }
+
+  /* Shorter mobile header: trim the wrapper padding and scale the logo down to
+     fit the reduced bar height (h-[52px] set in header.php). */
+  .so-header {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  .so-header .custom-logo {
+    max-height: 32px;
+    width: auto;
+  }
 }

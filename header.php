@@ -22,7 +22,7 @@ if (!defined('ABSPATH')) {
 
   <!-- ============================ HEADER ============================ -->
   <header class="so-header header-bar sticky top-0 z-50 border-b border-white/5">
-    <div class="relative z-10 mx-auto my-2.5 flex h-[68px] max-w-shell items-center gap-6 rounded-2xl bg-white/[0.06] px-4 ring-1 ring-white/10 backdrop-blur-sm sm:px-6">
+    <div class="relative z-10 mx-auto my-1.5 flex h-[52px] max-w-shell items-center gap-6 rounded-2xl bg-white/[0.06] px-4 ring-1 ring-white/10 backdrop-blur-sm sm:my-2.5 sm:h-[68px] sm:px-6">
 
       <!-- Logo -->
       <a href="<?php echo esc_url(home_url('/')); ?>" class="flex shrink-0 flex-col leading-none">

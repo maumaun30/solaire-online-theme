@@ -57,7 +57,16 @@ $terms = get_terms([
   </div>
 
   <!-- ===================== GAME GRID ===================== -->
-  <div id="games-grid" data-grid data-step="12" class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+  <?php
+  $grid_step     = defined('SOLAIRE_GAMES_PER_PAGE') ? SOLAIRE_GAMES_PER_PAGE : 12;
+  $grid_has_more = ($GLOBALS['wp_query']->max_num_pages ?? 1) > 1;
+  ?>
+  <div id="games-grid" data-grid
+       data-step="<?php echo esc_attr($grid_step); ?>"
+       data-parent="<?php echo esc_attr(isset($current_term->slug) ? $current_term->slug : ''); ?>"
+       data-page="1"
+       data-has-more="<?php echo $grid_has_more ? '1' : '0'; ?>"
+       class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
     <?php
     if (have_posts()) :
         while (have_posts()) : the_post();
@@ -71,7 +80,7 @@ $terms = get_terms([
 
   <!-- LOAD MORE -->
   <div class="mt-8 flex justify-center">
-    <button data-load-more data-load-target="#games-grid" data-step="12" class="btn-press rounded-lg border border-orange/70 bg-orange/10 px-8 py-3 text-sm uppercase tracking-wide transition hover:bg-orange hover:text-white"><?php esc_html_e('Load More Games', 'solaire'); ?></button>
+    <button data-load-more data-load-target="#games-grid" data-step="<?php echo esc_attr($grid_step); ?>" class="btn-press rounded-lg border border-orange/70 bg-orange/10 px-8 py-3 text-sm uppercase tracking-wide transition hover:bg-orange hover:text-white disabled:cursor-not-allowed<?php echo $grid_has_more ? '' : ' hidden'; ?>"><?php esc_html_e('Load More Games', 'solaire'); ?></button>
   </div>
 
   <!-- ===================== CONTENT BLOCK ===================== -->

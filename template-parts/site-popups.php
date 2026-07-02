@@ -80,9 +80,10 @@ $gg_subparagraph = get_field('so_gaming_guidelines_subparagraph', 'option') ?: '
   <!-- ===================== RESPONSIBLE GAMING ===================== -->
   <!-- Anchored bottom-center on all breakpoints (items-end + justify-center). -->
   <div data-rg-modal data-decline-url="<?php echo esc_url($rg_decline_url); ?>" class="fixed inset-0 z-[9990] hidden items-end justify-center bg-black/80 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="rg-modal-title" aria-hidden="true">
-    <!-- Height is capped to the viewport; the content area scrolls internally so
-         nothing is clipped off-screen on short/small mobile displays. -->
-    <div class="relative flex max-h-[92dvh] w-full max-w-3xl flex-col overflow-hidden rounded-t-2xl ring-1 ring-white/10 shadow-2xl sm:mx-0 sm:max-h-[90dvh] sm:rounded-2xl" style="background: radial-gradient(100% 80% at center top, rgb(83, 29, 30) 0%, rgba(35, 38, 41, 0.46) 100%), rgb(35, 38, 41);">
+    <!-- Bottom sheet: height follows the content, capped at the viewport. Short
+         content leaves the empty space at the top (above the logo); tall content
+         grows to the full height (no top gap) and scrolls internally only then. -->
+    <div class="relative flex max-h-[100dvh] w-full max-w-3xl flex-col overflow-hidden rounded-t-2xl ring-1 ring-white/10 shadow-2xl sm:mx-0 sm:max-h-[90dvh] sm:rounded-2xl" style="background: radial-gradient(100% 80% at center top, rgb(83, 29, 30) 0%, rgba(35, 38, 41, 0.46) 100%), rgb(35, 38, 41);">
       <div class="relative z-10 min-h-0 flex-1 overflow-y-auto px-5 py-3 sm:px-8 sm:py-7">
         <div class="flex items-center justify-center gap-2.5 sm:gap-4">
           <?php if (is_array($rg_logo) && !empty($rg_logo['url'])) : ?>

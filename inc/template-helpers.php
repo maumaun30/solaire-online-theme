@@ -80,7 +80,7 @@ function solaire_categories()
 /**
  * Query game posts.
  *
- * @param array $args  Accepts: category (term slug), count, orderby, order.
+ * @param array $args  Accepts: category (term slug), tag (game-tag term slug), count, orderby, order.
  * @return WP_Query
  */
 function solaire_query_games($args = [])
@@ -88,6 +88,7 @@ function solaire_query_games($args = [])
     $defaults = [
         'count'    => 8,
         'category' => '',
+        'tag'      => '',
         'orderby'  => 'menu_order date',
         'order'    => 'ASC',
         'exclude'  => [],
@@ -103,12 +104,26 @@ function solaire_query_games($args = [])
         'no_found_rows'  => true,
     ];
 
+    $tax_query = [];
     if ($args['category']) {
-        $q['tax_query'] = [[
+        $tax_query[] = [
             'taxonomy' => 'game_category',
             'field'    => 'slug',
             'terms'    => $args['category'],
-        ]];
+        ];
+    }
+    if ($args['tag']) {
+        $tax_query[] = [
+            'taxonomy' => 'game-tag',
+            'field'    => 'slug',
+            'terms'    => $args['tag'],
+        ];
+    }
+    if ($tax_query) {
+        if (count($tax_query) > 1) {
+            $tax_query['relation'] = 'AND';
+        }
+        $q['tax_query'] = $tax_query;
     }
 
     return new WP_Query($q);
@@ -176,6 +191,8 @@ function solaire_game_card($post, $args = [])
     $img     = get_the_post_thumbnail_url($post, 'large');
     // Show the "Demo" badge only when the game has a playable demo code.
     $badge   = trim((string) get_field('so_game_code', $post->ID)) !== '';
+    // Show the "Hot" badge when the game carries the `hot` game-tag term.
+    $is_hot  = has_term('hot', 'game-tag', $post->ID);
 
     $cats = wp_get_post_terms($post->ID, 'game_category', ['fields' => 'slugs']);
     $cat_attr = esc_attr(implode(' ', (array) $cats));
@@ -185,9 +202,22 @@ function solaire_game_card($post, $args = [])
         ? sprintf('<img src="%s" alt="%s" class="absolute inset-0 h-full w-full object-cover" loading="lazy" />', esc_url($img), esc_attr($title))
         : solaire_card_logo_face();
 
-    $badge_html = $badge
-        ? '<span class="absolute right-2 top-2 z-10 rounded bg-brand-orange px-1.5 py-0.5 text-[10px] font-bold uppercase">Demo</span>'
-        : '';
+    // Demo + Hot badges stack in the top-right corner sharing one pill design:
+    // Demo on top, Hot directly below it. The flex wrapper keeps them aligned
+    // whether one or both are present.
+    // Stretch both pills to the same (widest) width and center their labels so
+    // Demo and Hot line up as equal-size badges.
+    $badges = '';
+    if ($badge || $is_hot) {
+        $badges = '<div class="absolute right-2 top-2 z-10 flex flex-col gap-1 text-center">';
+        if ($badge) {
+            $badges .= '<span class="rounded bg-brand-orange px-1.5 py-0.5 text-[10px] font-bold uppercase">Demo</span>';
+        }
+        if ($is_hot) {
+            $badges .= '<span class="rounded bg-brand-orange px-1.5 py-0.5 text-[10px] font-bold uppercase">Hot</span>';
+        }
+        $badges .= '</div>';
+    }
 
     if ($variant === 'grid') {
         $rtp = get_field('rtp', $post->ID);
@@ -201,7 +231,7 @@ function solaire_game_card($post, $args = [])
            class="card-lift group block overflow-hidden rounded-xl bg-panel ring-1 ring-white/5 <?php echo esc_attr($extra); ?>">
             <div class="game-card relative overflow-hidden">
                 <?php echo $media; // phpcs:ignore ?>
-                <?php echo $badge_html; // phpcs:ignore ?>
+                <?php echo $badges; // phpcs:ignore ?>
             </div>
             <div class="px-3 pt-2">
                 <h3 class="truncate font-display text-sm font-bold"><?php echo esc_html($title); ?></h3>
@@ -221,7 +251,7 @@ function solaire_game_card($post, $args = [])
     <a href="<?php echo esc_url($url); ?>" data-category="<?php echo $cat_attr; ?>"
        class="card-lift game-card group relative block overflow-hidden rounded-xl <?php echo esc_attr($extra); ?>">
         <?php echo $media; // phpcs:ignore ?>
-        <?php echo $badge_html; // phpcs:ignore ?>
+        <?php echo $badges; // phpcs:ignore ?>
         <?php if (!$img) : ?>
             <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent px-2.5 pb-2 pt-7">
                 <h3 class="truncate text-center font-display text-xs font-bold text-white sm:text-sm"><?php echo esc_html($title); ?></h3>

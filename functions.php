@@ -94,6 +94,11 @@ function solaire_enqueue_assets()
             filemtime($solaire_js),
             true
         );
+        // AJAX endpoint + nonce for the category grid "Load More" / filtering.
+        wp_localize_script('solaire-main', 'SolaireAjax', [
+            'url'   => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('solaire_games'),
+        ]);
     }
 }
 add_action('wp_enqueue_scripts', 'solaire_enqueue_assets');
