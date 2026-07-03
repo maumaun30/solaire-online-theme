@@ -128,12 +128,23 @@
   function initSitePopups() {
     var COOKIE_KEY = "solaire_cookie_ok";
     var RG_KEY = "solaire_rg_ok";
+    var COOKIE_TTL = 24 * 60 * 60 * 1000; // "I Accept" is honoured for 24h.
 
     function remembered(key) {
       try { return localStorage.getItem(key) === "1"; } catch (e) { return false; }
     }
     function remember(key) {
       try { localStorage.setItem(key, "1"); } catch (e) {}
+    }
+    // Cookie acceptance is time-limited: "I Accept" stores an expiry
+    // timestamp so the modal returns 24h later. Closing with X stores
+    // nothing, so it keeps reappearing on every visit until accepted.
+    function cookieValid() {
+      try { return parseInt(localStorage.getItem(COOKIE_KEY) || "0", 10) > Date.now(); }
+      catch (e) { return false; }
+    }
+    function acceptCookie() {
+      try { localStorage.setItem(COOKIE_KEY, String(Date.now() + COOKIE_TTL)); } catch (e) {}
     }
     function lock() { document.body.style.overflow = "hidden"; }
     function unlock() { document.body.style.overflow = ""; }
@@ -153,18 +164,26 @@
 
     var cookie = document.querySelector("[data-cookie-modal]");
     var rg = document.querySelector("[data-rg-modal]");
-    var needCookie = cookie && !remembered(COOKIE_KEY);
+    var needCookie = cookie && !cookieValid();
     var needRg = rg && !remembered(RG_KEY);
 
     function showRg() {
       if (needRg) { show(rg); } else { unlock(); }
     }
 
-    // Cookie: accept and close both dismiss, then open the RG gate.
+    // Cookie: "I Accept" remembers for 24h; the X only dismisses for
+    // now (no timestamp), so the modal returns on the next visit. Both
+    // then open the RG gate so the site stays usable.
     if (cookie) {
       cookie.querySelectorAll("[data-cookie-accept]").forEach(function (btn) {
         btn.addEventListener("click", function () {
-          remember(COOKIE_KEY);
+          acceptCookie();
+          hide(cookie);
+          showRg();
+        });
+      });
+      cookie.querySelectorAll("[data-cookie-close]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
           hide(cookie);
           showRg();
         });
