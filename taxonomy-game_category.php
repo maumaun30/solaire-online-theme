@@ -50,9 +50,9 @@ $terms = get_terms([
 
   <!-- ===================== FILTERS ===================== -->
   <div class="no-scrollbar mt-8 flex items-center gap-3 overflow-x-auto pb-2" data-filter-group data-filter-target="#games-grid">
-    <button data-filter="all" class="solaire-chip btn-press is-active shrink-0"><?php esc_html_e('Popular Games', 'solaire'); ?></button>
+    <button data-filter="all" class="solaire-chip is-active shrink-0"><?php esc_html_e('Popular Games', 'solaire'); ?></button>
     <?php foreach ($terms as $term) : ?>
-      <button data-filter="<?php echo esc_attr($term->slug); ?>" class="solaire-chip btn-press shrink-0"><?php echo esc_html($term->name); ?></button>
+      <button data-filter="<?php echo esc_attr($term->slug); ?>" class="solaire-chip shrink-0"><?php echo esc_html($term->name); ?></button>
     <?php endforeach; ?>
   </div>
 
