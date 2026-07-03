@@ -155,6 +155,19 @@
     scroll-snap-align: start;
   }
 
+  /* ---- AJAX grid: instant feedback on filter switch --------
+     Filtering re-queries the server (admin-ajax), so there's an
+     unavoidable round trip. Dim + soften the grid the moment a
+     chip is tapped so the click registers instantly, then let the
+     new cards fade back in when they land — hides the abrupt swap. */
+  [data-grid] {
+    transition: opacity 0.2s ease;
+  }
+  [data-grid][aria-busy="true"] {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
   /* ---- Game card aspect ratio — single source of truth -------
      Defined globally (not just in the category-tiles block style) so
      game cards keep their shape on every template: homepage rows, the
