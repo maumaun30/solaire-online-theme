@@ -17,7 +17,7 @@ $items    = $attributes['items'] ?? [];
 
 $heading_html = nl2br(esc_html($heading));
 ?>
-<section <?php echo get_block_wrapper_attributes(['class' => 'bg-deep py-16']); ?>>
+<section <?php echo get_block_wrapper_attributes(['class' => 'bg-deep py-8 sm:py-16']); ?>>
   <div class="mx-auto max-w-shell px-4">
     <?php if ($overline) : ?>
       <p class="text-xs font-bold uppercase tracking-[0.28em] text-orange"><?php echo esc_html($overline); ?></p>

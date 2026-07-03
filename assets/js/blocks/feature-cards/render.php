@@ -14,7 +14,7 @@ $heading    = $attributes['heading'] ?? '';
 $subheading = $attributes['subheading'] ?? '';
 $cards      = $attributes['cards'] ?? [];
 ?>
-<section <?php echo get_block_wrapper_attributes(['class' => 'relative mt-14 overflow-hidden bg-gradient-to-b from-[#2a1410] via-deep to-deep py-16']); ?>>
+<section <?php echo get_block_wrapper_attributes(['class' => 'relative mt-14 overflow-hidden bg-gradient-to-b from-[#2a1410] via-deep to-deep py-8 sm:py-16']); ?>>
   <div class="mx-auto max-w-shell px-4 text-center">
     <?php if ($overline) : ?>
       <p data-anim class="text-xs font-bold uppercase tracking-[0.28em] text-orange"><?php echo esc_html($overline); ?></p>
