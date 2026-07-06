@@ -133,6 +133,14 @@ function solaire_ajax_load_games()
     $paged  = max(1, (int) ($_POST['paged'] ?? 1));
     $per    = min(48, max(1, (int) ($_POST['per_page'] ?? SOLAIRE_GAMES_PER_PAGE)));
 
+    // Multi-select filters: comma-separated slugs → sanitized arrays.
+    $slug_list = static function ($raw) {
+        $out = array_filter(array_map('sanitize_title', explode(',', (string) $raw)));
+        return array_values(array_unique($out));
+    };
+    $tags      = isset($_POST['tags']) ? $slug_list(wp_unslash($_POST['tags'])) : [];
+    $providers = isset($_POST['providers']) ? $slug_list(wp_unslash($_POST['providers'])) : [];
+
     // Scope to the active child filter when set, otherwise the whole parent
     // category (its descendants included).
     $term_slug = ($filter && $filter !== 'all') ? $filter : $parent;
@@ -146,13 +154,41 @@ function solaire_ajax_load_games()
         'order'               => 'ASC',
         'ignore_sticky_posts' => true,
     ];
+
+    // Combine category + Themes + Providers with AND so every active filter
+    // must match. Within each multi-select the operator is also AND: a game
+    // must carry *all* the chosen terms (e.g. pick 3 providers → only games
+    // assigned to all 3), not merely any one of them.
+    $tax_query = [];
     if ($term_slug) {
-        $args['tax_query'] = [[
+        $tax_query[] = [
             'taxonomy'         => 'game_category',
             'field'            => 'slug',
             'terms'            => $term_slug,
             'include_children' => true,
-        ]];
+        ];
+    }
+    if ($tags) {
+        $tax_query[] = [
+            'taxonomy' => 'game-tag',
+            'field'    => 'slug',
+            'terms'    => $tags,
+            'operator' => 'AND',
+        ];
+    }
+    if ($providers) {
+        $tax_query[] = [
+            'taxonomy' => 'provider',
+            'field'    => 'slug',
+            'terms'    => $providers,
+            'operator' => 'AND',
+        ];
+    }
+    if ($tax_query) {
+        if (count($tax_query) > 1) {
+            $tax_query['relation'] = 'AND';
+        }
+        $args['tax_query'] = $tax_query;
     }
 
     $q = new WP_Query($args);

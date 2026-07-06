@@ -276,6 +276,8 @@
       grid.__solaire = {
         parent:  grid.getAttribute("data-parent") || "",
         filter:  "all",
+        tags:      [],
+        providers: [],
         paged:   parseInt(grid.getAttribute("data-page") || "1", 10),
         step:    parseInt(grid.getAttribute("data-step") || "12", 10),
         hasMore: grid.getAttribute("data-has-more") === "1",
@@ -303,12 +305,14 @@
     if (replace) grid.setAttribute("aria-busy", "true");
 
     var body = new URLSearchParams({
-      action:   "solaire_load_games",
-      nonce:    window.SolaireAjax.nonce,
-      parent:   st.parent,
-      filter:   st.filter,
-      paged:    String(st.paged),
-      per_page: String(st.step)
+      action:    "solaire_load_games",
+      nonce:     window.SolaireAjax.nonce,
+      parent:    st.parent,
+      filter:    st.filter,
+      tags:      st.tags.join(","),
+      providers: st.providers.join(","),
+      paged:     String(st.paged),
+      per_page:  String(st.step)
     });
 
     fetch(window.SolaireAjax.url, {
@@ -342,20 +346,191 @@
       });
   }
 
+  /* Filter dropdowns: a single-select "Popular Games" (child category)
+     plus multi-select "Games" (tags) and "Provider" menus. Any change
+     re-queries page 1 and rebuilds the selected-filter pills. */
   function initFilters() {
     document.querySelectorAll("[data-filter-group]").forEach(function (group) {
       var grid = document.querySelector(group.getAttribute("data-filter-target") || "[data-grid]");
       if (!grid) return;
-      var chips = group.querySelectorAll("[data-filter]");
-      chips.forEach(function (chip) {
-        chip.addEventListener("click", function () {
-          chips.forEach(function (c) { c.classList.toggle("is-active", c === chip); });
-          var st = gridState(grid);
-          st.filter = chip.getAttribute("data-filter") || "all";
-          st.paged  = 1;
-          fetchGames(grid, true); // reset + replace with page 1 of the filter
+
+      var dropdowns    = group.querySelectorAll("[data-dd]");
+      var pillsWrap    = group.querySelector("[data-filter-pills]");
+      var pillsList    = group.querySelector("[data-filter-pills-list]");
+      var clearBtns    = group.querySelectorAll("[data-filter-clear]");
+      var panel        = group.querySelector("[data-filters-panel]");
+      var panelToggle  = group.querySelector("[data-filters-toggle]");
+      var panelClose   = group.querySelector("[data-filters-close]");
+      var toggleLabel  = group.querySelector("[data-filters-toggle-label]");
+      var toggleBase   = toggleLabel ? toggleLabel.textContent : "";
+
+      /* Re-read every dropdown into grid state, refresh the pills, and
+         fetch page 1 of the combined filter. */
+      function apply() {
+        var st = gridState(grid);
+        st.tags = [];
+        st.providers = [];
+        st.filter = "all";
+
+        dropdowns.forEach(function (dd) {
+          var type = dd.getAttribute("data-dd-type");
+          if (type === "category") {
+            var active = dd.querySelector("[data-dd-option].is-active");
+            st.filter = (active && active.getAttribute("data-value")) || "all";
+          } else {
+            var bucket = type === "provider" ? st.providers : st.tags;
+            dd.querySelectorAll("[data-dd-check]:checked").forEach(function (cb) {
+              bucket.push(cb.value);
+            });
+          }
+          syncTitle(dd);
+        });
+
+        renderPills();
+        st.paged = 1;
+        fetchGames(grid, true);
+      }
+
+      /* Update a dropdown button label + highlight to reflect selections. */
+      function syncTitle(dd) {
+        var type  = dd.getAttribute("data-dd-type");
+        var title = dd.querySelector("[data-dd-title]");
+        var menu  = dd.querySelector("[data-dd-menu]");
+        var base  = (menu && menu.getAttribute("data-dd-default")) || (title && title.textContent) || "";
+        if (type === "category") {
+          var active = dd.querySelector("[data-dd-option].is-active");
+          var val    = active ? active.getAttribute("data-value") : "all";
+          if (title) title.textContent = (val && val !== "all") ? active.textContent.trim() : base;
+          dd.classList.toggle("has-value", !!(val && val !== "all"));
+        } else {
+          var n = dd.querySelectorAll("[data-dd-check]:checked").length;
+          if (title) title.textContent = n ? base + " (" + n + ")" : base;
+          dd.classList.toggle("has-value", n > 0);
+        }
+      }
+
+      /* Removable pills for every selected tag / provider. */
+      function renderPills() {
+        if (!pillsList) return;
+        pillsList.innerHTML = "";
+        var checks = group.querySelectorAll('[data-dd-type="tag"] [data-dd-check]:checked, [data-dd-type="provider"] [data-dd-check]:checked');
+        checks.forEach(function (cb) {
+          var pill = document.createElement("span");
+          pill.className = "solaire-pill";
+          var label = document.createElement("span");
+          label.textContent = cb.getAttribute("data-label") || cb.value;
+          var x = document.createElement("button");
+          x.type = "button";
+          x.setAttribute("aria-label", "Remove " + label.textContent);
+          x.innerHTML = '<svg class="h-3 w-3" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 5l10 10M15 5L5 15" stroke-linecap="round"/></svg>';
+          x.addEventListener("click", function () {
+            cb.checked = false;
+            apply();
+          });
+          pill.appendChild(label);
+          pill.appendChild(x);
+          pillsList.appendChild(pill);
+        });
+        if (pillsWrap) pillsWrap.style.display = checks.length ? "flex" : "none";
+        // Mobile "Filters" button reflects how many tag/provider filters are on.
+        if (toggleLabel) toggleLabel.textContent = checks.length ? toggleBase + " (" + checks.length + ")" : toggleBase;
+      }
+
+      dropdowns.forEach(function (dd) {
+        var toggle = dd.querySelector("[data-dd-toggle]");
+        var menu   = dd.querySelector("[data-dd-menu]");
+        var search = dd.querySelector("[data-dd-search]");
+
+        if (toggle && menu) {
+          toggle.addEventListener("click", function (e) {
+            e.stopPropagation();
+            var willOpen = menu.classList.contains("hidden");
+            closeAll();
+            menu.classList.toggle("hidden", !willOpen);
+            dd.classList.toggle("is-open", willOpen);
+            toggle.setAttribute("aria-expanded", willOpen ? "true" : "false");
+          });
+          // Keep clicks inside the menu from bubbling to the outside-close.
+          menu.addEventListener("click", function (e) { e.stopPropagation(); });
+        }
+
+        // Category = single-select radio behaviour.
+        if (dd.getAttribute("data-dd-type") === "category") {
+          dd.querySelectorAll("[data-dd-option]").forEach(function (opt) {
+            opt.addEventListener("click", function () {
+              dd.querySelectorAll("[data-dd-option]").forEach(function (o) {
+                o.classList.toggle("is-active", o === opt);
+              });
+              closeAll();
+              apply();
+            });
+          });
+        } else {
+          // Tag / provider = multi-select checkboxes.
+          dd.querySelectorAll("[data-dd-check]").forEach(function (cb) {
+            cb.addEventListener("change", apply);
+          });
+        }
+
+        // Provider search: filter visible options live.
+        if (search) {
+          var noResults = dd.querySelector("[data-dd-noresults]");
+          search.addEventListener("input", function () {
+            var q = search.value.trim().toLowerCase();
+            var shown = 0;
+            dd.querySelectorAll("[data-dd-option]").forEach(function (opt) {
+              var hay = opt.getAttribute("data-search") || opt.textContent.toLowerCase();
+              var match = !q || hay.indexOf(q) !== -1;
+              opt.classList.toggle("is-hidden", !match);
+              if (match) shown++;
+            });
+            if (noResults) noResults.classList.toggle("hidden", shown > 0);
+          });
+        }
+      });
+
+      function closeAll() {
+        dropdowns.forEach(function (dd) {
+          var m = dd.querySelector("[data-dd-menu]");
+          var t = dd.querySelector("[data-dd-toggle]");
+          if (m) m.classList.add("hidden");
+          dd.classList.remove("is-open");
+          if (t) t.setAttribute("aria-expanded", "false");
+        });
+      }
+
+      clearBtns.forEach(function (clearBtn) {
+        clearBtn.addEventListener("click", function () {
+          dropdowns.forEach(function (dd) {
+            dd.querySelectorAll("[data-dd-check]").forEach(function (cb) { cb.checked = false; });
+            var opts = dd.querySelectorAll("[data-dd-option]");
+            opts.forEach(function (o, i) { o.classList.toggle("is-active", i === 0 && dd.getAttribute("data-dd-type") === "category"); });
+          });
+          closeAll();
+          apply();
         });
       });
+
+      // Mobile: the "Filters" toggle expands/collapses the Games/Provider panel.
+      if (panelToggle && panel) {
+        function setPanel(open) {
+          panel.classList.toggle("is-open", open);
+          panelToggle.setAttribute("aria-expanded", open ? "true" : "false");
+        }
+        panelToggle.addEventListener("click", function (e) {
+          e.stopPropagation();
+          setPanel(!panel.classList.contains("is-open"));
+        });
+        if (panelClose) {
+          panelClose.addEventListener("click", function () {
+            closeAll();
+            setPanel(false);
+          });
+        }
+      }
+
+      // Close any open menu when clicking elsewhere.
+      document.addEventListener("click", closeAll);
     });
   }
 

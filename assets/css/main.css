@@ -272,6 +272,239 @@
     box-shadow: 0 10px 15px -3px rgba(223, 106, 46, 0.2);
   }
 
+  /* ---- Filter dropdowns (category archive) -----------------
+     Replaces the old horizontal chip slider with three dropdown
+     menus: Popular Games (child categories, single-select),
+     Games (game-tag terms, multi-select) and Provider (provider
+     terms, multi-select + search). */
+  .solaire-dd-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    min-width: 12rem;
+    border-radius: 0.5rem;
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+    transition:
+      background 0.2s ease,
+      box-shadow 0.2s ease,
+      color 0.2s ease;
+    cursor: pointer;
+  }
+  .solaire-dd-btn:hover {
+    background: rgba(255, 255, 255, 0.09);
+  }
+  /* Highlight the button while its menu is open or when it carries a
+     selection, so active filters read at a glance. */
+  .solaire-dd.is-open .solaire-dd-btn,
+  .solaire-dd.has-value .solaire-dd-btn {
+    color: #fff;
+    box-shadow: inset 0 0 0 1px rgba(223, 106, 46, 0.7);
+  }
+  .solaire-dd-caret {
+    flex-shrink: 0;
+    transition: transform 0.25s ease;
+  }
+  .solaire-dd.is-open .solaire-dd-caret {
+    transform: rotate(180deg);
+  }
+
+  /* Mobile: the menu opens in-flow and pushes the following filters down
+     (matches the stacked mobile layout). Desktop upgrades it to an
+     absolutely-positioned overlay below. */
+  .solaire-dd-menu {
+    position: static;
+    z-index: 40;
+    width: 100%;
+    margin-top: 0.5rem;
+    max-height: 20rem;
+    overflow-y: auto;
+    border-radius: 0.75rem;
+    padding: 0.375rem;
+    background: #1d1f22;
+    box-shadow:
+      0 20px 40px -12px rgba(0, 0, 0, 0.6),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+  @media (min-width: 640px) {
+    .solaire-dd-menu {
+      position: absolute;
+      top: calc(100% + 0.5rem);
+      left: 0;
+      width: max(100%, 16rem);
+      margin-top: 0;
+    }
+    /* Provider menu is the longest list — anchor it to the right edge so a
+       wide menu never overflows the viewport on the far-right button. */
+    .solaire-dd--right .solaire-dd-menu {
+      left: auto;
+      right: 0;
+    }
+  }
+
+  /* ---- Mobile filters panel ("Filters" toggle) ------------- */
+  .solaire-filters-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    border-radius: 9999px;
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--c-orange, #df6a2e);
+    background: transparent;
+    box-shadow: inset 0 0 0 1px rgba(223, 106, 46, 0.7);
+    transition: background 0.2s ease;
+    cursor: pointer;
+  }
+  .solaire-filters-toggle:hover {
+    background: rgba(223, 106, 46, 0.08);
+  }
+
+  /* Collapsed on mobile; the "Filters" toggle reveals it. On desktop the
+     wrapper dissolves (display:contents) so its children lay out inline
+     with Popular Games. */
+  .solaire-filters-panel {
+    display: none;
+  }
+  .solaire-filters-panel.is-open {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-top: 0.75rem;
+    margin-top: 0.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  @media (min-width: 640px) {
+    .solaire-filters-panel,
+    .solaire-filters-panel.is-open {
+      display: contents;
+      border: 0;
+      padding: 0;
+      margin: 0;
+    }
+  }
+
+  .solaire-filters-clear {
+    width: 100%;
+    border-radius: 9999px;
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--c-orange, #df6a2e);
+    background: transparent;
+    box-shadow: inset 0 0 0 1px rgba(223, 106, 46, 0.7);
+    transition: background 0.2s ease;
+    cursor: pointer;
+  }
+  .solaire-filters-clear:hover {
+    background: rgba(223, 106, 46, 0.08);
+  }
+
+  .solaire-dd-search {
+    position: sticky;
+    top: 0;
+    margin-bottom: 0.25rem;
+    padding: 0.5rem;
+    background: #1d1f22;
+  }
+  .solaire-dd-search input {
+    width: 100%;
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  }
+  .solaire-dd-search input::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+  }
+  .solaire-dd-search input:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 1px rgba(223, 106, 46, 0.7);
+  }
+
+  .solaire-dd-option {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: 100%;
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.625rem;
+    font-size: 0.875rem;
+    text-align: left;
+    color: rgba(255, 255, 255, 0.82);
+    cursor: pointer;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
+  }
+  .solaire-dd-option:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+  }
+  /* Single-select (category) active row. */
+  .solaire-dd-option.is-active {
+    color: #fff;
+    font-weight: 600;
+    background: rgba(223, 106, 46, 0.16);
+  }
+  /* Hidden by provider search. */
+  .solaire-dd-option.is-hidden {
+    display: none;
+  }
+  .solaire-dd-option input[type="checkbox"] {
+    flex-shrink: 0;
+    width: 1.05rem;
+    height: 1.05rem;
+    accent-color: #df6a2e;
+    cursor: pointer;
+  }
+  .solaire-dd-empty {
+    padding: 0.75rem 0.625rem;
+    font-size: 0.8125rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  /* ---- Selected-filter pills ------------------------------- */
+  .solaire-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border-radius: 9999px;
+    padding: 0.25rem 0.375rem 0.25rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.07);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  }
+  .solaire-pill button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.125rem;
+    height: 1.125rem;
+    border-radius: 9999px;
+    color: rgba(255, 255, 255, 0.65);
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
+    cursor: pointer;
+  }
+  .solaire-pill button:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+  }
+
   /* ---- Mobile nav drawer ----------------------------------- */
   #nav-drawer {
     transform: translateX(100%);
