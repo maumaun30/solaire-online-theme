@@ -127,24 +127,41 @@
      in localStorage so the popups don't reappear. */
   function initSitePopups() {
     var COOKIE_KEY = "solaire_cookie_ok";
-    var RG_KEY = "solaire_rg_ok";
+    var RG_KEY = "solaire_rg_ok";       // 24h expiry timestamp (localStorage)
+    var RG_SESSION = "solaire_rg_ok_s"; // "accepted this session" (sessionStorage)
     var COOKIE_TTL = 24 * 60 * 60 * 1000; // "I Accept" is honoured for 24h.
+    var RG_TTL = 24 * 60 * 60 * 1000;     // "hide for 24h" checkbox duration.
 
-    function remembered(key) {
-      try { return localStorage.getItem(key) === "1"; } catch (e) { return false; }
-    }
-    function remember(key) {
-      try { localStorage.setItem(key, "1"); } catch (e) {}
-    }
-    // Cookie acceptance is time-limited: "I Accept" stores an expiry
-    // timestamp so the modal returns 24h later. Closing with X stores
-    // nothing, so it keeps reappearing on every visit until accepted.
+    // Cookie dismissal is stored as an expiry timestamp: while it is in
+    // the future the modal stays hidden. "I Accept" stores a far-future
+    // value so it never returns; the X/close button stores now + 24h so
+    // it reappears the next day until the user actually accepts.
     function cookieValid() {
       try { return parseInt(localStorage.getItem(COOKIE_KEY) || "0", 10) > Date.now(); }
       catch (e) { return false; }
     }
     function acceptCookie() {
+      // Permanent: "I Accept" never brings the modal back.
+      try { localStorage.setItem(COOKIE_KEY, String(Number.MAX_SAFE_INTEGER)); } catch (e) {}
+    }
+    function dismissCookie() {
+      // Temporary: X/close hides it for 24h, then it reappears.
       try { localStorage.setItem(COOKIE_KEY, String(Date.now() + COOKIE_TTL)); } catch (e) {}
+    }
+    // Responsible Gaming gate. Accepting always suppresses the modal for
+    // the rest of the browser session; if the "hide for 24 hours" box is
+    // ticked it also stores a 24h expiry so it stays hidden across visits
+    // (same browser). Otherwise the gate returns on the next visit.
+    function rgValid() {
+      try { if (sessionStorage.getItem(RG_SESSION) === "1") return true; } catch (e) {}
+      try { return parseInt(localStorage.getItem(RG_KEY) || "0", 10) > Date.now(); }
+      catch (e) { return false; }
+    }
+    function acceptRg(hide24h) {
+      try { sessionStorage.setItem(RG_SESSION, "1"); } catch (e) {}
+      if (hide24h) {
+        try { localStorage.setItem(RG_KEY, String(Date.now() + RG_TTL)); } catch (e) {}
+      }
     }
     function lock() { document.body.style.overflow = "hidden"; }
     function unlock() { document.body.style.overflow = ""; }
@@ -165,15 +182,15 @@
     var cookie = document.querySelector("[data-cookie-modal]");
     var rg = document.querySelector("[data-rg-modal]");
     var needCookie = cookie && !cookieValid();
-    var needRg = rg && !remembered(RG_KEY);
+    var needRg = rg && !rgValid();
 
     function showRg() {
       if (needRg) { show(rg); } else { unlock(); }
     }
 
-    // Cookie: "I Accept" remembers for 24h; the X only dismisses for
-    // now (no timestamp), so the modal returns on the next visit. Both
-    // then open the RG gate so the site stays usable.
+    // Cookie: "I Accept" dismisses it permanently; X/close only hides it
+    // for 24h (reappears until accepted). Both then open the RG gate so
+    // the site stays usable.
     if (cookie) {
       cookie.querySelectorAll("[data-cookie-accept]").forEach(function (btn) {
         btn.addEventListener("click", function () {
@@ -184,17 +201,19 @@
       });
       cookie.querySelectorAll("[data-cookie-close]").forEach(function (btn) {
         btn.addEventListener("click", function () {
+          dismissCookie();
           hide(cookie);
           showRg();
         });
       });
     }
 
-    // RG: accept → proceed; decline → redirect away.
+    // RG: accept → proceed (optionally hide for 24h); decline → redirect.
     if (rg) {
       var accept = rg.querySelector("[data-rg-accept]");
       accept && accept.addEventListener("click", function () {
-        remember(RG_KEY);
+        var box = rg.querySelector("[data-rg-remember]");
+        acceptRg(box && box.checked);
         hide(rg);
         unlock();
       });
