@@ -18,13 +18,24 @@ $banner = get_theme_file_uri('/assets/img/slot-2.png');
 // Hero description comes from the category's Description field.
 $blurb = trim(wp_strip_all_tags(term_description()));
 
-// Filter chips = direct child categories of the category being viewed.
+// Popular Games filter = direct child categories of the category being viewed
+// ("All Games" = the parent category itself).
 $current_term = get_queried_object();
-$terms = get_terms([
+$child_terms = get_terms([
     'taxonomy'   => 'game_category',
     'hide_empty' => true,
     'parent'     => isset($current_term->term_id) ? $current_term->term_id : 0,
 ]);
+
+// Games filter = the "Tags" taxonomy (game-tag). Provider filter = the
+// "Providers" taxonomy (provider). Both are multi-select.
+$tag_terms      = get_terms(['taxonomy' => 'game-tag', 'hide_empty' => true]);
+$provider_terms = get_terms(['taxonomy' => 'provider', 'hide_empty' => true]);
+if (is_wp_error($child_terms))    { $child_terms = []; }
+if (is_wp_error($tag_terms))      { $tag_terms = []; }
+if (is_wp_error($provider_terms)) { $provider_terms = []; }
+
+$dd_caret = '<svg class="solaire-dd-caret h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 ?>
 
 <!-- ============================ BANNER ============================ -->
@@ -49,11 +60,91 @@ $terms = get_terms([
 <main class="mx-auto max-w-shell px-4">
 
   <!-- ===================== FILTERS ===================== -->
-  <div class="no-scrollbar mt-8 flex items-center gap-3 overflow-x-auto pb-2" data-filter-group data-filter-target="#games-grid">
-    <button data-filter="all" class="solaire-chip is-active shrink-0"><?php esc_html_e('Popular Games', 'solaire'); ?></button>
-    <?php foreach ($terms as $term) : ?>
-      <button data-filter="<?php echo esc_attr($term->slug); ?>" class="solaire-chip shrink-0"><?php echo esc_html($term->name); ?></button>
-    <?php endforeach; ?>
+  <div class="mt-8" data-filter-group data-filter-target="#games-grid">
+    <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+
+      <!-- Popular Games — child categories (single-select). Always visible. -->
+      <div class="solaire-dd relative w-full sm:w-auto" data-dd data-dd-type="category">
+        <button type="button" data-dd-toggle aria-haspopup="true" aria-expanded="false" class="solaire-dd-btn w-full sm:w-auto">
+          <span data-dd-title><?php esc_html_e('All Games', 'solaire'); ?></span>
+          <?php echo $dd_caret; // phpcs:ignore ?>
+        </button>
+        <div data-dd-menu class="solaire-dd-menu hidden" role="menu" data-dd-default="<?php esc_attr_e('All Games', 'solaire'); ?>">
+          <button type="button" role="menuitemradio" data-dd-option data-value="all" class="solaire-dd-option is-active"><?php esc_html_e('All Games', 'solaire'); ?></button>
+          <?php foreach ($child_terms as $term) : ?>
+            <button type="button" role="menuitemradio" data-dd-option data-value="<?php echo esc_attr($term->slug); ?>" class="solaire-dd-option"><?php echo esc_html($term->name); ?></button>
+          <?php endforeach; ?>
+        </div>
+      </div>
+
+      <!-- Mobile-only toggle that opens the Games/Provider panel below. -->
+      <button type="button" data-filters-toggle aria-expanded="false" class="solaire-filters-toggle sm:hidden">
+        <span data-filters-toggle-label><?php esc_html_e('Filters', 'solaire'); ?></span>
+        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 5h14M6 10h8M9 15h2" stroke-linecap="round"/></svg>
+      </button>
+
+      <!-- Filters panel: collapsible on mobile; flattens inline on desktop. -->
+      <div class="solaire-filters-panel" data-filters-panel>
+
+        <!-- Mobile panel header -->
+        <div class="flex items-center justify-between sm:hidden">
+          <span class="font-display text-lg font-extrabold text-white"><?php esc_html_e('Filters', 'solaire'); ?></span>
+          <button type="button" data-filters-close aria-label="<?php esc_attr_e('Close filters', 'solaire'); ?>" class="p-1 text-white/70 transition hover:text-white">
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <!-- Selected-filter pills -->
+        <div class="hidden flex-wrap items-center gap-2 sm:order-last sm:mt-4 sm:w-full" data-filter-pills>
+          <span class="text-sm text-slatey"><?php esc_html_e('Filters:', 'solaire'); ?></span>
+          <span data-filter-pills-list class="flex flex-wrap items-center gap-2"></span>
+          <button type="button" data-filter-clear class="ml-1 hidden text-sm font-semibold text-orange transition hover:text-white sm:inline"><?php esc_html_e('Clear filters', 'solaire'); ?></button>
+        </div>
+
+        <!-- Games — Tags taxonomy (multi-select) -->
+        <?php if (!empty($tag_terms)) : ?>
+        <div class="solaire-dd solaire-dd--right relative w-full sm:ml-auto sm:w-auto" data-dd data-dd-type="tag">
+          <button type="button" data-dd-toggle aria-haspopup="true" aria-expanded="false" class="solaire-dd-btn w-full sm:w-auto">
+            <span data-dd-title><?php esc_html_e('Themes', 'solaire'); ?></span>
+            <?php echo $dd_caret; // phpcs:ignore ?>
+          </button>
+          <div data-dd-menu class="solaire-dd-menu hidden" role="menu" data-dd-default="<?php esc_attr_e('Themes', 'solaire'); ?>">
+            <?php foreach ($tag_terms as $term) : ?>
+              <label class="solaire-dd-option" data-dd-option>
+                <input type="checkbox" data-dd-check value="<?php echo esc_attr($term->slug); ?>" data-label="<?php echo esc_attr($term->name); ?>" />
+                <span><?php echo esc_html($term->name); ?></span>
+              </label>
+            <?php endforeach; ?>
+          </div>
+        </div>
+        <?php endif; ?>
+
+        <!-- Provider — Providers taxonomy (multi-select + search) -->
+        <?php if (!empty($provider_terms)) : ?>
+        <div class="solaire-dd solaire-dd--right relative w-full sm:w-auto" data-dd data-dd-type="provider">
+          <button type="button" data-dd-toggle aria-haspopup="true" aria-expanded="false" class="solaire-dd-btn w-full sm:w-auto">
+            <span data-dd-title><?php esc_html_e('Provider', 'solaire'); ?></span>
+            <?php echo $dd_caret; // phpcs:ignore ?>
+          </button>
+          <div data-dd-menu class="solaire-dd-menu hidden" role="menu" data-dd-default="<?php esc_attr_e('Provider', 'solaire'); ?>">
+            <div class="solaire-dd-search">
+              <input type="text" data-dd-search placeholder="<?php esc_attr_e('Search text', 'solaire'); ?>" aria-label="<?php esc_attr_e('Search providers', 'solaire'); ?>" />
+            </div>
+            <?php foreach ($provider_terms as $term) : ?>
+              <label class="solaire-dd-option" data-dd-option data-search="<?php echo esc_attr(strtolower($term->name)); ?>">
+                <input type="checkbox" data-dd-check value="<?php echo esc_attr($term->slug); ?>" data-label="<?php echo esc_attr($term->name); ?>" />
+                <span><?php echo esc_html($term->name); ?></span>
+              </label>
+            <?php endforeach; ?>
+            <p class="solaire-dd-empty hidden" data-dd-noresults><?php esc_html_e('No providers found.', 'solaire'); ?></p>
+          </div>
+        </div>
+        <?php endif; ?>
+
+        <!-- Mobile-only full-width Clear Filters -->
+        <button type="button" data-filter-clear class="solaire-filters-clear sm:hidden"><?php esc_html_e('Clear Filters', 'solaire'); ?></button>
+      </div>
+    </div>
   </div>
 
   <!-- ===================== GAME GRID ===================== -->
