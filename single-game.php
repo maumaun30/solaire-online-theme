@@ -29,9 +29,9 @@ while (have_posts()) :
     // Hero short description — ACF text field only (no excerpt fallback).
     $short_desc = get_field('so_game_short_description', $id);
 
-    // Demo embed — driven by the `so_game_code` ACF field. Desktop opens the
-    // game in the modal; mobile opens the iframe URL in a new tab (handled in
-    // the modal script below). wp_is_mobile() reads the UA to pick the device.
+    // Demo embed — driven by the `so_game_code` ACF field. Opens in the modal
+    // on both desktop and mobile. wp_is_mobile() reads the UA so the embed
+    // requests the matching device build.
     $game_code  = get_field('so_game_code', $id);
     $device     = wp_is_mobile() ? 'MOBILE' : 'DESKTOP';
     $game_embed = $game_code
@@ -210,7 +210,7 @@ while (have_posts()) :
           <?php echo solaire_icon('close', 'h-5 w-5', '2.5'); // phpcs:ignore ?>
         </button>
       </div>
-      <div class="relative aspect-video w-full bg-deep [&_iframe]:absolute [&_iframe]:inset-0 [&_iframe]:h-full [&_iframe]:w-full [&_iframe]:border-0">
+      <div class="relative h-[75vh] w-full bg-deep sm:aspect-video sm:h-auto [&_iframe]:absolute [&_iframe]:inset-0 [&_iframe]:h-full [&_iframe]:w-full [&_iframe]:border-0">
         <div data-demo-loading class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-deep text-sm text-slatey">
           <span class="h-10 w-10 animate-spin rounded-full border-[3px] border-white/15 border-t-orange"></span>
           <span><?php esc_html_e('Loading game…', 'solaire'); ?></span>
@@ -229,7 +229,6 @@ while (have_posts()) :
       var titleEl = document.getElementById('demo-modal-title');
       var loadEl  = modal.querySelector('[data-demo-loading]');
       var frame   = modal.querySelector('iframe');
-      var isMobile = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
       function hideLoading() { if (loadEl) loadEl.style.display = 'none'; }
       if (frame) { frame.addEventListener('load', hideLoading); } else { hideLoading(); }
@@ -253,11 +252,6 @@ while (have_posts()) :
         // Buttons with a target belong to the shared modal (solaire_demo_modal).
         if (btn.dataset.demoTarget) return;
         btn.addEventListener('click', function () {
-          // On mobile, open the game full-screen in a new tab instead of the modal.
-          if (isMobile && frame && frame.src && frame.src !== 'about:blank') {
-            window.open(frame.src, '_blank', 'noopener');
-            return;
-          }
           open(this.dataset.title);
         });
       });
