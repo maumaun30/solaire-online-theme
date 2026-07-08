@@ -408,16 +408,49 @@
     background: rgba(223, 106, 46, 0.08);
   }
 
+  /* A menu that carries a search field keeps the search as a fixed header
+     and scrolls only the option list beneath it — so scrolled rows can
+     never slide up behind or above the search. */
+  .solaire-dd-menu:not(.hidden):has(.solaire-dd-search) {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
   .solaire-dd-search {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    /* Bleed over the menu's top/side padding so scrolled rows can't peek
-       through above or beside the sticky search field. */
-    margin: -0.375rem -0.375rem 0.25rem;
+    flex-shrink: 0;
+    margin-bottom: 0.25rem;
     padding: 0.5rem;
     background: #1d1f22;
-    border-radius: 0.5rem 0.5rem 0 0;
+  }
+  .solaire-dd-list {
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  /* Theme the dropdown scrollbars (Themes menu scrolls itself; Provider
+     scrolls its inner list) so they match the dark panel instead of the
+     default OS light scrollbar. */
+  .solaire-dd-menu,
+  .solaire-dd-list {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+  }
+  .solaire-dd-menu::-webkit-scrollbar,
+  .solaire-dd-list::-webkit-scrollbar {
+    width: 8px;
+  }
+  .solaire-dd-menu::-webkit-scrollbar-track,
+  .solaire-dd-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .solaire-dd-menu::-webkit-scrollbar-thumb,
+  .solaire-dd-list::-webkit-scrollbar-thumb {
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.18);
+  }
+  .solaire-dd-menu::-webkit-scrollbar-thumb:hover,
+  .solaire-dd-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(223, 106, 46, 0.75);
   }
   .solaire-dd-search input {
     width: 100%;

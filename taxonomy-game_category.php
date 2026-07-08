@@ -14,7 +14,7 @@ $crumb      = $page_title;
 
 // Banner background — ACF featured image on the term, falling back to a
 // bundled slot image when the field is empty.
-$banner     = get_theme_file_uri('/assets/img/game-cat-fallback.webp');
+$banner     = get_theme_file_uri('/assets/img/coin-combo.webp');
 $banner_alt = '';
 
 // Hero description comes from the category's Description field.
@@ -140,13 +140,15 @@ $dd_caret = '<svg class="solaire-dd-caret h-4 w-4" viewBox="0 0 20 20" fill="non
             <div class="solaire-dd-search">
               <input type="text" data-dd-search placeholder="<?php esc_attr_e('Search text', 'solaire'); ?>" aria-label="<?php esc_attr_e('Search providers', 'solaire'); ?>" />
             </div>
-            <?php foreach ($provider_terms as $term) : ?>
-              <label class="solaire-dd-option" data-dd-option data-search="<?php echo esc_attr(strtolower($term->name)); ?>">
-                <input type="checkbox" data-dd-check value="<?php echo esc_attr($term->slug); ?>" data-label="<?php echo esc_attr($term->name); ?>" />
-                <span><?php echo esc_html($term->name); ?></span>
-              </label>
-            <?php endforeach; ?>
-            <p class="solaire-dd-empty hidden" data-dd-noresults><?php esc_html_e('No providers found.', 'solaire'); ?></p>
+            <div class="solaire-dd-list">
+              <?php foreach ($provider_terms as $term) : ?>
+                <label class="solaire-dd-option" data-dd-option data-search="<?php echo esc_attr(strtolower($term->name)); ?>">
+                  <input type="checkbox" data-dd-check value="<?php echo esc_attr($term->slug); ?>" data-label="<?php echo esc_attr($term->name); ?>" />
+                  <span><?php echo esc_html($term->name); ?></span>
+                </label>
+              <?php endforeach; ?>
+              <p class="solaire-dd-empty hidden" data-dd-noresults><?php esc_html_e('No providers found.', 'solaire'); ?></p>
+            </div>
           </div>
         </div>
         <?php endif; ?>
