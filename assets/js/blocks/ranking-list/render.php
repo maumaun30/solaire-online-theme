@@ -80,7 +80,10 @@ if (!function_exists('solaire_ranking_article')) {
           <?php endif; ?>
           <div class="min-w-0 flex-1">
             <h3 class="font-display text-base font-bold sm:text-lg"><?php echo esc_html($title); ?></h3>
-            <p class="mt-0.5 hidden text-xs leading-relaxed text-slatey lg:block"><?php echo esc_html(wp_trim_words(get_the_excerpt($post_id), 38)); ?></p>
+            <?php $short_desc = get_field('so_game_short_description', $post_id); ?>
+            <?php if ($short_desc) : ?>
+              <p class="mt-0.5 hidden text-xs leading-relaxed text-slatey lg:block"><?php echo esc_html(wp_trim_words($short_desc, 38)); ?></p>
+            <?php endif; ?>
           </div>
           <div class="flex shrink-0 flex-col gap-2">
             <a href="<?php echo esc_url($play); ?>" class="btn-press rounded-md bg-brand-orange px-4 py-2 text-center text-xs text-white sm:text-sm"><?php esc_html_e('Play now', 'solaire'); ?></a>

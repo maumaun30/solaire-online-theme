@@ -16,7 +16,7 @@ while (have_posts()) :
     $art       = get_the_post_thumbnail_url($id, 'large');
     $hero_bg   = get_field('hero_background');
     if (!$hero_bg) {
-        $hero_bg = get_theme_file_uri('/assets/img/coin-combo.png');
+        $hero_bg = get_theme_file_uri('/assets/img/coins-banner.webp');
     }
     $provider  = get_field('provider') ?: 'Solaire Online';
     $rtp       = get_field('rtp') ?: '96.2%';
@@ -39,7 +39,21 @@ while (have_posts()) :
         : '';
 
     $cats      = wp_get_post_terms($id, 'game_category', ['fields' => 'all']);
-    $cat_name  = (!is_wp_error($cats) && $cats) ? $cats[0]->name : __('Featured Game', 'solaire');
+
+    // Breadcrumb shows the top-level parent category, not a child sub-category,
+    // so walk up from the game's primary category to its root ancestor.
+    $crumb_term = null;
+    if (!is_wp_error($cats) && $cats) {
+        $crumb_term = $cats[0];
+        $anc = get_ancestors($crumb_term->term_id, 'game_category', 'taxonomy');
+        if (!empty($anc)) {
+            $top = get_term(end($anc), 'game_category');
+            if ($top && !is_wp_error($top)) {
+                $crumb_term = $top;
+            }
+        }
+    }
+    $cat_name  = $crumb_term ? $crumb_term->name : __('Featured Game', 'solaire');
     $cat_slug  = (!is_wp_error($cats) && $cats) ? $cats[0]->slug : '';
 
     // Stats — ACF repeater, falling back to provider/RTP/volatility.
@@ -80,7 +94,7 @@ while (have_posts()) :
         <nav data-anim class="flex flex-wrap items-center justify-center gap-2 text-sm font-semibold text-white/70 md:justify-start" aria-label="<?php esc_attr_e('Breadcrumb', 'solaire'); ?>">
           <a href="<?php echo esc_url(home_url('/')); ?>" class="transition hover:text-white"><?php esc_html_e('Home', 'solaire'); ?></a>
           <?php if ($cat_name) :
-              $cat_link = (!is_wp_error($cats) && $cats) ? get_term_link($cats[0]) : '';
+              $cat_link = $crumb_term ? get_term_link($crumb_term) : '';
           ?>
             <span class="text-white/30">|</span>
             <?php if ($cat_link && !is_wp_error($cat_link)) : ?>
@@ -210,7 +224,7 @@ while (have_posts()) :
           <?php echo solaire_icon('close', 'h-5 w-5', '2.5'); // phpcs:ignore ?>
         </button>
       </div>
-      <div class="relative h-[75vh] w-full bg-deep sm:aspect-video sm:h-auto [&_iframe]:absolute [&_iframe]:inset-0 [&_iframe]:h-full [&_iframe]:w-full [&_iframe]:border-0">
+      <div class="relative aspect-video w-full bg-deep [&_iframe]:absolute [&_iframe]:inset-0 [&_iframe]:h-full [&_iframe]:w-full [&_iframe]:border-0">
         <div data-demo-loading class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-deep text-sm text-slatey">
           <span class="h-10 w-10 animate-spin rounded-full border-[3px] border-white/15 border-t-orange"></span>
           <span><?php esc_html_e('Loading game…', 'solaire'); ?></span>

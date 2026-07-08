@@ -363,7 +363,6 @@ function solaire_demo_modal()
         var titleEl = modal.querySelector('[data-demo-title]');
         var bodyEl  = modal.querySelector('[data-demo-body]');
         var loadEl  = modal.querySelector('[data-demo-loading]');
-        var isMobile = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
         function showLoading() { if (loadEl) loadEl.style.display = 'flex'; }
         function hideLoading() { if (loadEl) loadEl.style.display = 'none'; }
@@ -386,21 +385,24 @@ function solaire_demo_modal()
           btn.addEventListener('click', function () {
             var tpl = document.getElementById(btn.dataset.demoTarget);
             if (!tpl || !tpl.content) return;
-            var frag  = tpl.content.cloneNode(true);
-            var frame = frag.querySelector('iframe');
-
-            // On mobile, open the game full-screen in a new tab instead.
-            if (isMobile && frame && frame.getAttribute('src')) {
-              window.open(frame.getAttribute('src'), '_blank', 'noopener');
-              return;
-            }
+            var frag    = tpl.content.cloneNode(true);
+            var wrapper = frag.querySelector('.st8gl-wrapper');
+            var frame   = frag.querySelector('iframe');
 
             if (titleEl) titleEl.textContent = btn.dataset.title || '';
             bodyEl.innerHTML = '';
             showLoading();
             if (frame) { frame.addEventListener('load', hideLoading); }
             bodyEl.appendChild(frag);
-            if (!frame) hideLoading();
+
+            // The st8 launcher only auto-inits wrappers present at page load;
+            // a wrapper cloned from the <template> is inert until we launch it
+            // (this fetches the game URL and sets the iframe src).
+            if (wrapper && window.St8GL && typeof window.St8GL.launch === 'function') {
+              window.St8GL.launch(wrapper);
+            } else if (!frame) {
+              hideLoading();
+            }
             open();
           });
         });
