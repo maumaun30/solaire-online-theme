@@ -87,14 +87,7 @@ if (!function_exists('solaire_ranking_article')) {
           </div>
           <div class="flex shrink-0 flex-col gap-2">
             <a href="<?php echo esc_url($play); ?>" class="btn-press rounded-md bg-brand-orange px-4 py-2 text-center text-xs text-white sm:text-sm"><?php esc_html_e('Play now', 'solaire'); ?></a>
-            <?php
-              // Demo button only renders when the game has an `so_game_code`.
-              echo solaire_demo_trigger(
-                  $post_id,
-                  __('Demo', 'solaire'),
-                  'rounded-md bg-white/10 px-4 py-2 text-center text-xs font-semibold text-white/80 transition hover:bg-white/20 sm:text-sm'
-              ); // phpcs:ignore
-            ?>
+            
           </div>
         </article>
         <?php
