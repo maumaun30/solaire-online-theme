@@ -4,13 +4,6 @@ import { PanelBody, TextControl, TextareaControl } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import { Repeater } from '../_shared/controls';
 
-const ICONS = [
-  { label: 'Live Slots', value: 'live-slots' },
-  { label: 'Live Casino', value: 'live-casino' },
-  { label: 'E-Games', value: 'e-games' },
-  { label: 'Sportsbook', value: 'sportsbook' },
-];
-
 export default function Edit({ attributes, setAttributes }) {
   const { overline, heading, subheading, cards } = attributes;
 
@@ -27,10 +20,10 @@ export default function Edit({ attributes, setAttributes }) {
             items={cards}
             onChange={(v) => setAttributes({ cards: v })}
             addLabel={__('Add card', 'solaire')}
-            newItem={{ icon: 'live-slots', title: '', text: '', linkText: 'Explore', linkUrl: '', imageId: 0, imageUrl: '' }}
+            newItem={{ icon: { id: 0, url: '' }, title: '', text: '', linkText: 'Explore', linkUrl: '', image: { id: 0, url: '' } }}
             fields={[
               { name: 'image', label: __('Image', 'solaire'), type: 'media' },
-              { name: 'icon', label: __('Icon', 'solaire'), type: 'select', options: ICONS },
+              { name: 'icon', label: __('Icon', 'solaire'), type: 'media' },
               { name: 'title', label: __('Title', 'solaire'), type: 'text' },
               { name: 'text', label: __('Text', 'solaire'), type: 'textarea' },
               { name: 'linkText', label: __('Link text', 'solaire'), type: 'text' },
