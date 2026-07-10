@@ -17,9 +17,9 @@
     "cards": {
       "type": "array",
       "default": [
-        { "icon": "live-slots", "title": "Live Slots", "text": "Experience real-time slot machines with live results. Feel the mechanical pull and digital thrill as you engage with the most popular titles directly from the Solaire floor.", "linkText": "Explore Slots", "linkUrl": "", "imageId": 0, "imageUrl": "feature-machine.png" },
-        { "icon": "live-casino", "title": "Live Casino Games", "text": "Interact with professional dealers in real time. Our high-definition streams bring Baccarat, Roulette, and Blackjack tables to your device with crystal clear clarity.", "linkText": "Explore Live Casino", "linkUrl": "", "imageId": 0, "imageUrl": "game-5.jpg" },
-        { "icon": "e-games", "title": "Exclusive e-Games", "text": "Dive into a massive library of digital titles. From traditional favorites to modern cinematic experiences, our e-games collection is curated for variety and high win potential.", "linkText": "Explore e-Games", "linkUrl": "", "imageId": 0, "imageUrl": "game-2.png" }
+        { "icon": { "id": 0, "url": "" }, "title": "Live Slots", "text": "Experience real-time slot machines with live results. Feel the mechanical pull and digital thrill as you engage with the most popular titles directly from the Solaire floor.", "linkText": "Explore Slots", "linkUrl": "", "imageId": 0, "imageUrl": "feature-machine.png" },
+        { "icon": { "id": 0, "url": "" }, "title": "Live Casino Games", "text": "Interact with professional dealers in real time. Our high-definition streams bring Baccarat, Roulette, and Blackjack tables to your device with crystal clear clarity.", "linkText": "Explore Live Casino", "linkUrl": "", "imageId": 0, "imageUrl": "game-5.jpg" },
+        { "icon": { "id": 0, "url": "" }, "title": "Exclusive e-Games", "text": "Dive into a massive library of digital titles. From traditional favorites to modern cinematic experiences, our e-games collection is curated for variety and high win potential.", "linkText": "Explore e-Games", "linkUrl": "", "imageId": 0, "imageUrl": "game-2.png" }
       ]
     }
   }

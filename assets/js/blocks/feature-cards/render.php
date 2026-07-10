@@ -28,18 +28,20 @@ $cards      = $attributes['cards'] ?? [];
 
     <div class="mt-10 grid gap-5 text-left md:grid-cols-3">
       <?php foreach ($cards as $i => $card) :
-          $img   = solaire_img_src($card['imageUrl'] ?? '');
-          $icon  = $card['icon'] ?? 'live-slots';
-          $title = $card['title'] ?? '';
-          $text  = $card['text'] ?? '';
-          $ltext = $card['linkText'] ?? '';
-          $lurl  = $card['linkUrl'] ?? '';
+          // Prefer an image picked in the editor (stored as { id, url }),
+          // otherwise fall back to the default filename in imageUrl.
+          if (!empty($card['image']['url'])) {
+              $img = $card['image']['url'];
+          } else {
+              $img = solaire_img_src($card['imageUrl'] ?? '');
+          }
+          $iconImg = is_array($card['icon'] ?? null) ? ($card['icon']['url'] ?? '') : '';
+          $title   = $card['title'] ?? '';
+          $text    = $card['text'] ?? '';
+          $ltext   = $card['linkText'] ?? '';
+          $lurl    = $card['linkUrl'] ?? '';
           if (!$lurl) {
-              $term = get_term_by('slug', $icon, 'game_category');
-              $lurl = ($term && !is_wp_error($term)) ? get_term_link($term) : '#';
-              if (is_wp_error($lurl)) {
-                  $lurl = '#';
-              }
+              $lurl = '#';
           }
           $delay = $i * 100;
       ?>
@@ -50,7 +52,9 @@ $cards      = $attributes['cards'] ?? [];
             <?php else : ?>
               <div class="ph absolute inset-0"><?php echo esc_html($title); ?></div>
             <?php endif; ?>
-            <span class="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-md bg-black/55 text-orange"><?php echo solaire_icon($icon, 'h-4 w-4'); // phpcs:ignore ?></span>
+            <?php if ($iconImg) : ?>
+              <span class="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-md bg-black/55"><img src="<?php echo esc_url($iconImg); ?>" alt="" class="h-4 w-4 object-contain" /></span>
+            <?php endif; ?>
           </div>
           <div class="p-5">
             <h3 class="font-display text-lg font-bold"><?php echo esc_html($title); ?></h3>
