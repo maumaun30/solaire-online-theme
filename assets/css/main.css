@@ -117,18 +117,47 @@
     z-index: 0;
   }
 
-  /* Full-width header bar: warm red-orange glow bleeds from the left edge into the dark base */
+  /* Full-width header bar (design: Group 90). Rectangle 48 is a vertical
+     burnt-orange gradient; Rectangle 49 lays a 12% white wash with a 20px
+     backdrop blur over it for a subtle frosted-glass sheen. */
   .header-bar {
     position: sticky;
     top: 0;
-    background-color: #15171a;
-    background-image: radial-gradient(
-      100% 190% at -2% 50%,
-      rgba(223, 106, 46, 0.75) 0%,
-      rgba(210, 36, 42, 0.62) 14%,
-      rgba(170, 45, 41, 0.32) 32%,
-      rgba(21, 23, 26, 0) 50%
-    );
+    background-color: #2a0b04;
+    background-image: linear-gradient(
+        rgba(255, 255, 255, 0.12),
+        rgba(255, 255, 255, 0.12)
+      ),
+      linear-gradient(
+        180deg,
+        #f15a00 0%,
+        #bb3200 45%,
+        #822404 75%,
+        #2a0b04 100%
+      );
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      0 12px 30px -12px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Mobile drawer head — same Group 90 gradient band as the header bar,
+     spanning the top of the drawer behind the logo + close button. */
+  .drawer-head {
+    background-color: #2a0b04;
+    background-image: linear-gradient(
+        rgba(255, 255, 255, 0.12),
+        rgba(255, 255, 255, 0.12)
+      ),
+      linear-gradient(
+        180deg,
+        #f15a00 0%,
+        #bb3200 45%,
+        #822404 75%,
+        #2a0b04 100%
+      );
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      0 10px 24px -14px rgba(0, 0, 0, 0.6);
   }
 
   /* ---- Accent border used on section title bars ------------- */
@@ -640,6 +669,43 @@
 /* Header */
 .so-header {
   padding: 10px;
+}
+
+/* Keep the logo from crowding the header buttons. Capped at every width so
+   the mid range (768–1023px, where the desktop nav is still hidden but the
+   logo would otherwise render full size) stays balanced. */
+.so-header .custom-logo {
+  max-height: 40px;
+  width: auto;
+}
+
+/* Desktop nav — animated underline on hover (grows in from the left) */
+.so-nav-underline {
+  position: relative;
+}
+
+.so-nav-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.28s ease;
+}
+
+.group:hover .so-nav-underline::after,
+.so-nav-underline.is-active::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .so-nav-underline::after {
+    transition: none;
+  }
 }
 
 /* Footer */
