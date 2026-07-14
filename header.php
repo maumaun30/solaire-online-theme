@@ -21,8 +21,8 @@ if (!defined('ABSPATH')) {
   <?php wp_body_open(); ?>
 
   <!-- ============================ HEADER ============================ -->
-  <header class="so-header header-bar sticky top-0 z-50 border-b border-white/5">
-    <div class="relative z-10 mx-auto my-1.5 flex h-[52px] max-w-shell items-center gap-6 rounded-2xl bg-white/[0.06] px-4 ring-1 ring-white/10 backdrop-blur-sm sm:my-2.5 sm:h-[68px] sm:px-6">
+  <header class="so-header header-bar sticky top-0 z-50">
+    <div class="relative z-10 mx-auto flex h-[52px] max-w-shell items-center gap-6 px-4 sm:h-[68px] sm:px-6">
 
       <!-- Logo -->
       <a href="<?php echo esc_url(home_url('/')); ?>" class="flex shrink-0 flex-col leading-none">
@@ -47,9 +47,9 @@ if (!defined('ABSPATH')) {
 
       <!-- Right actions -->
       <div class="ml-auto flex items-center gap-2 sm:gap-4">
-        <a href="https://www.solaireonline.com/register" class="whitespace-nowrap rounded-md bg-brand-orange px-2.5 py-1.5 text-xs text-white shadow-lg shadow-orange/20 transition-colors sm:px-5 sm:py-2 sm:text-sm lg:rounded-none lg:bg-transparent lg:bg-none lg:px-0 lg:py-0 lg:text-secondary lg:shadow-none lg:hover:text-orange-bright"><?php esc_html_e('Sign Up', 'solaire'); ?></a>
-        <a href="https://www.solaireonline.com/login" class="btn-press hidden whitespace-nowrap rounded-md bg-brand-orange px-2.5 py-1.5 text-xs text-white shadow-lg shadow-orange/20 sm:px-5 sm:py-2 sm:text-sm lg:inline-block"><?php esc_html_e('Sign In', 'solaire'); ?></a>
-        <button id="nav-toggle" aria-label="<?php esc_attr_e('Open menu', 'solaire'); ?>" class="btn-press flex h-7 w-7 items-center justify-center rounded-md bg-brand-orange text-white shadow-lg shadow-orange/20 sm:h-9 sm:w-9 lg:hidden">
+        <a href="https://www.solaireonline.com/register" class="btn-press inline-block whitespace-nowrap rounded-lg bg-[#222529] px-2.5 py-1.5 text-xs font-semibold text-[#f5993d] ring-1 ring-white/15 backdrop-blur-sm transition-colors hover:text-orange-bright hover:ring-orange/40 sm:px-5 sm:py-2 sm:text-sm"><?php esc_html_e('Sign Up', 'solaire'); ?></a>
+        <a href="https://www.solaireonline.com/login" class="btn-press inline-block whitespace-nowrap rounded-lg bg-[#222529] px-2.5 py-1.5 text-xs font-semibold text-[#f5993d] ring-1 ring-white/15 backdrop-blur-sm transition-colors hover:text-orange-bright hover:ring-orange/40 sm:px-5 sm:py-2 sm:text-sm"><?php esc_html_e('Login', 'solaire'); ?></a>
+        <button id="nav-toggle" aria-label="<?php esc_attr_e('Open menu', 'solaire'); ?>" class="btn-press flex h-7 w-7 items-center justify-center rounded-lg bg-[#222529] text-[#f5993d] ring-1 ring-white/15 backdrop-blur-sm sm:h-9 sm:w-9 lg:hidden">
           <?php echo solaire_icon('menu', 'h-5 w-5'); // phpcs:ignore 
           ?>
         </button>
@@ -60,7 +60,7 @@ if (!defined('ABSPATH')) {
   <!-- Mobile drawer -->
   <div id="nav-overlay" class="fixed inset-0 z-50 hidden bg-black/60 opacity-0 lg:hidden"></div>
   <aside id="nav-drawer" class="fixed right-0 top-0 z-[60] flex h-full w-full flex-col bg-deep p-6 shadow-2xl sm:w-80 sm:max-w-[80vw] lg:hidden">
-    <div class="mb-8 flex items-center justify-between">
+    <div class="drawer-head -mx-6 -mt-6 mb-8 flex items-center justify-between px-6 py-5">
       <a href="<?php echo esc_url(home_url('/')); ?>" class="flex shrink-0 flex-col leading-none">
         <?php if (has_custom_logo()) : ?>
           <?php the_custom_logo(); ?>

@@ -562,14 +562,16 @@ class Solaire_Nav_Walker extends Walker_Nav_Menu
             return;
         }
 
-        $cls  = $active ? 'text-orange hover:text-orange-bright' : 'text-white/90 hover:text-orange';
-        $icon = solaire_nav_icon_html($item, $active);
+        $cls       = $active ? 'text-white' : 'text-white/90 hover:text-white';
+        $label_cls = 'so-nav-underline' . ($active ? ' is-active' : '');
+        $icon      = solaire_nav_icon_html($item, $active);
         $output .= sprintf(
-            '<a href="%s" class="group flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors %s"%s>%s<span>%s</span></a>',
+            '<a href="%s" class="group flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors %s"%s><span class="flex shrink-0 text-white">%s</span><span class="%s">%s</span></a>',
             esc_url($url),
             esc_attr($cls),
             $active ? ' aria-current="page"' : '',
             $icon, // phpcs:ignore
+            esc_attr($label_cls),
             esc_html($label)
         );
     }
