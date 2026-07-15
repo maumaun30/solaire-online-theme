@@ -1,0 +1,142 @@
+/* ── Posts Slider ─────────────────────────────────────────────────── */
+.posts-slider {
+  font-family: 'Montserrat', sans-serif;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* ── Header: heading left, nav arrows right ───────────────────────── */
+.posts-slider__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.posts-slider__heading {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(1.125rem, 2vw, 1.25rem);
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.posts-slider__nav {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Arrows mirror the ranking-list nav buttons: small translucent squares with
+   the amber secondary colour for the icon; both arrows share the same style. */
+.posts-slider__arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--secondary-color, #f0a434);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.posts-slider__arrow:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.posts-slider__arrow:disabled {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.25);
+  cursor: not-allowed;
+}
+
+/* ── Viewport + track ─────────────────────────────────────────────── */
+.posts-slider__viewport {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+.posts-slider__track {
+  display: flex;
+  will-change: transform;
+  transition: transform 0.5s ease;
+}
+
+.posts-slider__slide {
+  flex: 0 0 100%;
+  width: 100%;
+  display: block;
+  line-height: 0;
+}
+
+.posts-slider__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 5;
+  object-fit: cover;
+}
+
+.posts-slider__image--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 7;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  text-align: center;
+  padding: 16px;
+}
+
+/* ── Editor-only preview tweaks ───────────────────────────────────── */
+.posts-slider--editor {
+  background-color: var(--bg-dark-3, #060d1a);
+  border-radius: 12px;
+}
+
+.posts-slider--editor .posts-slider__viewport {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.posts-slider--editor .posts-slider__slide img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 7;
+  object-fit: cover;
+}
+
+.posts-slider--editor .posts-slider__empty,
+.posts-slider--editor .posts-slider__no-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 7;
+  padding: 24px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 767px) {
+  .posts-slider {
+    padding: 16px;
+  }
+  .posts-slider__image,
+  .posts-slider__image--placeholder,
+  .posts-slider--editor .posts-slider__slide img,
+  .posts-slider--editor .posts-slider__empty,
+  .posts-slider--editor .posts-slider__no-image {
+    aspect-ratio: 16 / 7;
+  }
+}
