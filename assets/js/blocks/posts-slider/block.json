@@ -1,0 +1,27 @@
+{
+  "apiVersion": 3,
+  "name": "mytheme/posts-slider",
+  "title": "Posts Slider",
+  "category": "design",
+  "icon": "slides",
+  "description": "A slider of post featured images that link to their single posts. Pick any post type (default or ACF CPT) and choose which posts to show.",
+  "editorScript": "file:./build/index.js",
+  "style": "file:./style.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php",
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "default": "Promotion"
+    },
+    "postType": {
+      "type": "string",
+      "default": "post"
+    },
+    "postIds": {
+      "type": "array",
+      "default": [],
+      "items": { "type": "number" }
+    }
+  }
+}

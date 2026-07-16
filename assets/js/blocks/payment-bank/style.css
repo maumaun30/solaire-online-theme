@@ -1,0 +1,193 @@
+.wp-block-mytheme-payment-bank {}
+
+
+/* ── Block wrapper ───────────────────────────────────────────────── */
+.wp-block-mytheme-why-choose-us.mytheme-why-choose-us {
+  background-color: var(--bg-dark-3, #060d1a);
+  padding: 30px 0 0;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.wp-block-mytheme-payment-bank.mytheme-payment-bank {
+  padding: 50px 0 0;
+}
+
+.mytheme-wcu__container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ── Heading ─────────────────────────────────────────────────────── */
+.mytheme-wcu__heading {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.mytheme-wcu__title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(1.35rem, 2.4vw, 1.9rem);
+  font-weight: 900;
+  color: #ffffff;
+  text-transform: uppercase;
+  line-height: 1.25;
+  margin: 0 0 18px;
+}
+
+.mytheme-wcu__subtitle {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.975rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.75;
+  margin: 0 auto;
+  max-width: 826px;
+}
+
+/* ── Marquee (infinite autoplay carousel) ────────────────────────── */
+.mytheme-wcu__marquee {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 32px;
+  /* Fade the logos in/out at the edges so they don't pop on/off abruptly. */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+          mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+.mytheme-wcu__track {
+  display: flex;
+  width: max-content;
+  /* Duration scales with item count; tweak --wcu-marquee-duration to taste. */
+  animation: mytheme-wcu-scroll var(--wcu-marquee-duration, 40s) linear infinite;
+}
+
+/* Renders the aria-hidden copy's cards as direct flex items of the track,
+   so every card is a uniform unit and the -50% loop stays seamless. */
+.mytheme-wcu__track-dupe {
+  display: contents;
+}
+
+/* Pause on hover so visitors can focus on a single logo. */
+.mytheme-wcu__marquee:hover .mytheme-wcu__track {
+  animation-play-state: paused;
+}
+
+@keyframes mytheme-wcu-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* Respect users who prefer no motion. */
+@media (prefers-reduced-motion: reduce) {
+  .mytheme-wcu__track {
+    animation: none;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .mytheme-wcu__marquee {
+    -webkit-mask-image: none;
+            mask-image: none;
+  }
+  .mytheme-wcu__track-dupe {
+    display: none;
+  }
+}
+
+/* ── Card — outer box containing icon + label ────────────────────── */
+.mytheme-wcu__card {
+  flex-shrink: 0;
+  width: /*220px*/ 200px;
+  /* Spacing is baked into the card (margin, not gap) to keep the loop seamless. */
+  margin-right: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: /*28px 20px 24px*/ 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: #1E1E1E;
+  cursor: default;
+  transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+
+/* Highlight the card border on hover */
+.mytheme-wcu__card:hover {
+  border-color: rgb(245 153 61 / var(--tw-text-opacity, 1));
+}
+
+/* ── Icon bg shape — dark rounded square behind the logo ─────────── */
+.mytheme-wcu__icon-bg {
+  width: 240px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+/* ── Logo image / inline SVG ─────────────────────────────────────── */
+.mytheme-payment-logo {
+  display: block;
+  max-width: 70px;
+  max-height: 36px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Inline SVGs inherit colour */
+.mytheme-wcu__icon-bg svg.mytheme-payment-logo {
+  fill: currentColor;
+  color: #ffffff;
+}
+
+/* ── Logo placeholder (no media set) ────────────────────────────── */
+.mytheme-wcu__logo-placeholder {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
+/* ── Card label — inside the card at the bottom ──────────────────── */
+.mytheme-wcu__card-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1;
+}
+
+/* ── Tagline ─────────────────────────────────────────────────────── */
+.mytheme-wcu__tagline {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.45);
+  text-align: center;
+  margin: 0;
+  padding-top: 4px;
+}
+
+@media (max-width: 767px) {
+  .mytheme-wcu__card {
+    width: 160px;
+    margin-right: 12px;
+    /*padding: 22px 16px 18px;*/
+  }
+
+  .mytheme-wcu__icon-bg {
+    width: 120px;
+  }
+
+  .wp-block-mytheme-payment-bank.mytheme-payment-bank {
+    padding: 30px 0 0;
+  }
+}

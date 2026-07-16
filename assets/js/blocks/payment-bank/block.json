@@ -1,0 +1,34 @@
+{
+  "apiVersion": 3,
+  "name": "mytheme/payment-bank",
+  "title": "Payment Bank",
+  "category": "design",
+  "icon": "star-filled",
+  "description": "Payment / feature cards section with logos and repeatable items.",
+  "editorScript": "file:./build/index.js",
+  "style": "file:./style.css",
+  "render": "file:./render.php",
+  "attributes": {
+    "sectionTitle": {
+      "type": "string",
+      "default": "MANAGE YOUR FUNDS USING YOUR PREFERRED PAYMENT OPTIONS"
+    },
+    "sectionSubtitle": {
+      "type": "string",
+      "default": "Keeping track of your funds is a straightforward process. We have partnered with the following trusted payment services providers:"
+    },
+    "sectionTagline": {
+      "type": "string",
+      "default": "Enjoy quick deposits, smooth transactions, and a hassle-free experience every time."
+    },
+    "features": {
+      "type": "array",
+      "default": [
+        { "svgId": 0, "svgUrl": "", "title": "GCASH", "description": "" },
+        { "svgId": 0, "svgUrl": "", "title": "MAYA", "description": "" },
+        { "svgId": 0, "svgUrl": "", "title": "INSTAPAY", "description": "" },
+        { "svgId": 0, "svgUrl": "", "title": "DRAGONPAY", "description": "" }
+      ]
+    }
+  }
+}

@@ -48,7 +48,6 @@ if (!defined('ABSPATH')) {
       <!-- Right actions -->
       <div class="ml-auto flex items-center gap-2 sm:gap-4">
         <a href="https://www.solaireonline.com/register" class="btn-press inline-block whitespace-nowrap rounded-lg bg-[#222529] px-2.5 py-1.5 text-xs font-semibold text-[#f5993d] ring-1 ring-white/15 backdrop-blur-sm transition-colors hover:text-orange-bright hover:ring-orange/40 sm:px-5 sm:py-2 sm:text-sm"><?php esc_html_e('Sign Up', 'solaire'); ?></a>
-        <a href="https://www.solaireonline.com/login" class="btn-press inline-block whitespace-nowrap rounded-lg bg-[#222529] px-2.5 py-1.5 text-xs font-semibold text-[#f5993d] ring-1 ring-white/15 backdrop-blur-sm transition-colors hover:text-orange-bright hover:ring-orange/40 sm:px-5 sm:py-2 sm:text-sm"><?php esc_html_e('Login', 'solaire'); ?></a>
         <button id="nav-toggle" aria-label="<?php esc_attr_e('Open menu', 'solaire'); ?>" class="btn-press flex h-7 w-7 items-center justify-center rounded-lg bg-[#222529] text-[#f5993d] ring-1 ring-white/15 backdrop-blur-sm sm:h-9 sm:w-9 lg:hidden">
           <?php echo solaire_icon('menu', 'h-5 w-5'); // phpcs:ignore 
           ?>
