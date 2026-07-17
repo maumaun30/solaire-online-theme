@@ -19,7 +19,9 @@ $front_id = (int) get_option('page_on_front');
 if ($front_id && ($front = get_post($front_id)) && trim($front->post_content) !== '') {
     while (have_posts()) {
         the_post();
-        the_content();
+        // Core blocks render inside a constrained `.entry-content` box; the
+        // theme's full-bleed solaire/* section blocks render edge-to-edge.
+        echo solaire_render_split_content(get_the_content()); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
     }
 } else {
     echo do_blocks(solaire_homepage_blocks()); // phpcs:ignore WordPress.Security.EscapeOutput

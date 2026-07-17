@@ -15,10 +15,11 @@ export default function Edit({ attributes, setAttributes }) {
             items={tiles}
             onChange={(v) => setAttributes({ tiles: v })}
             addLabel={__('Add tile', 'solaire')}
-            newItem={{ label: '', slug: '', icon: 'live-slots', image: { id: 0, url: '' } }}
+            newItem={{ label: '', slug: '', link: '', icon: 'live-slots', image: { id: 0, url: '' } }}
             fields={[
               { name: 'label', label: __('Label', 'solaire'), type: 'text' },
               { name: 'slug', label: __('Category slug', 'solaire'), type: 'text' },
+              { name: 'link', label: __('Custom link (optional — overrides slug)', 'solaire'), type: 'text' },
               {
                 name: 'icon',
                 label: __('Icon', 'solaire'),

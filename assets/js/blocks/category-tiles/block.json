@@ -14,10 +14,10 @@
     "tiles": {
       "type": "array",
       "default": [
-        { "label": "Live Slots",  "slug": "live-slots",  "icon": "live-slots",  "image": { "id": 0, "url": "" } },
-        { "label": "Live Casino", "slug": "live-casino", "icon": "live-casino", "image": { "id": 0, "url": "" } },
-        { "label": "E-Games",     "slug": "e-games",     "icon": "e-games",     "image": { "id": 0, "url": "" } },
-        { "label": "Sportsbook",  "slug": "sportsbook",  "icon": "sportsbook",  "image": { "id": 0, "url": "" } }
+        { "label": "Live Slots",  "slug": "live-slots",  "link": "", "icon": "live-slots",  "image": { "id": 0, "url": "" } },
+        { "label": "Live Casino", "slug": "live-casino", "link": "", "icon": "live-casino", "image": { "id": 0, "url": "" } },
+        { "label": "E-Games",     "slug": "e-games",     "link": "", "icon": "e-games",     "image": { "id": 0, "url": "" } },
+        { "label": "Sportsbook",  "slug": "sportsbook",  "link": "", "icon": "sportsbook",  "image": { "id": 0, "url": "" } }
       ]
     }
   }
