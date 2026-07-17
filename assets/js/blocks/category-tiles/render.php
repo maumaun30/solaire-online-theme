@@ -24,6 +24,8 @@ $gradients = [
       <?php foreach ($tiles as $tile) :
           $label = $tile['label'] ?? '';
           $slug  = $tile['slug'] ?? '';
+          // Optional custom link — when set, it overrides the category slug.
+          $link  = trim((string) ($tile['link'] ?? ''));
           $icon  = $tile['icon'] ?? 'live-slots';
           // The media picker stores { id, url } under `image`; fall back to the legacy `imageUrl`.
           $image = $tile['image']['url'] ?? ($tile['imageUrl'] ?? '');
@@ -34,13 +36,16 @@ $gradients = [
           }
 
           $url = '#';
-          if ($slug) {
+          if ($link !== '') {
+              // Custom link wins over the category slug.
+              $url = $link;
+          } elseif ($slug) {
               $term = get_term_by('slug', $slug, 'game_category');
               if ($slug === 'live-slots' && (!$term || is_wp_error($term))) {
                   $url = get_post_type_archive_link('game') ?: '#';
               } elseif ($term && !is_wp_error($term)) {
-                  $link = get_term_link($term);
-                  $url = is_wp_error($link) ? '#' : $link;
+                  $term_link = get_term_link($term);
+                  $url = is_wp_error($term_link) ? '#' : $term_link;
               }
           }
           $gradient = $gradients[$slug] ?? 'bg-gradient-to-br from-panel via-deep to-deep';

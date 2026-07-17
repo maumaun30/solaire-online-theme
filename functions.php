@@ -179,6 +179,36 @@ function fix_svg() {
 }
 add_action( 'admin_head', 'fix_svg' );
 
+function so_enqueue_single_post_slider() {
+    if ( ! is_singular( array( 'post', 'promo' ) ) ) {
+        return;
+    }
+
+    wp_enqueue_style(
+        'swiper',
+        'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css',
+        [],
+        '11'
+    );
+    wp_enqueue_script(
+        'swiper',
+        'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js',
+        [],
+        '11',
+        true
+    );
+
+    $fg_js = get_template_directory() . '/assets/js/single-featured-games.js';
+    wp_enqueue_script(
+        'sp-featured-games',
+        get_template_directory_uri() . '/assets/js/single-featured-games.js',
+        [ 'swiper' ],
+        file_exists( $fg_js ) ? filemtime( $fg_js ) : wp_get_theme()->get( 'Version' ),
+        true
+    );
+}
+add_action( 'wp_enqueue_scripts', 'so_enqueue_single_post_slider' );
+
 /* ============================================================
    Theme modules
    ============================================================ */

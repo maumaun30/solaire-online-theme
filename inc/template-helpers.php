@@ -576,3 +576,48 @@ class Solaire_Nav_Walker extends Walker_Nav_Menu
         );
     }
 }
+
+/**
+ * Render page/post content, keeping default Gutenberg (core/*) blocks inside a
+ * width-constrained `.entry-content` box while letting the theme's custom
+ * full-bleed section blocks (solaire/*) render edge-to-edge outside it.
+ *
+ * Without this, a page that mixes a full-bleed section block (e.g. the Solaire
+ * Hero Banner) with normal paragraphs would render those paragraphs edge-to-edge
+ * too. Here we walk the top-level blocks, buffer consecutive core blocks and
+ * flush them wrapped in `.entry-content`, and emit each solaire/* section block
+ * on its own (full-bleed).
+ *
+ * @param string $content Raw post content (unfiltered), e.g. from get_the_content().
+ * @return string Rendered HTML.
+ */
+function solaire_render_split_content($content)
+{
+    $blocks = parse_blocks($content);
+    $html   = '';
+    $buffer = '';
+
+    $flush = function () use (&$buffer, &$html) {
+        if (trim($buffer) !== '') {
+            // do_shortcode() so shortcodes typed inside core blocks still run.
+            $html .= '<div class="entry-content">' . do_shortcode($buffer) . '</div>';
+        }
+        $buffer = '';
+    };
+
+    foreach ($blocks as $block) {
+        $name = $block['blockName'] ?? null;
+
+        // Theme section blocks are full-bleed — render them outside the box.
+        if ($name && strpos($name, 'solaire/') === 0) {
+            $flush();
+            $html .= render_block($block);
+        } else {
+            // core/* blocks (and the whitespace "null" blocks between them).
+            $buffer .= render_block($block);
+        }
+    }
+    $flush();
+
+    return $html;
+}

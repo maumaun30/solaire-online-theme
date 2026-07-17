@@ -13,7 +13,9 @@ get_header();
   <?php
   while (have_posts()) :
       the_post();
-      the_content();
+      // Core blocks render inside a constrained `.entry-content` box; the
+      // theme's full-bleed solaire/* section blocks render edge-to-edge.
+      echo solaire_render_split_content(get_the_content()); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
   endwhile;
   ?>
 </main>

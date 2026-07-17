@@ -3,5 +3,5 @@
    Loaded first to paint the page background instantly and avoid
    a flash before the main Tailwind stylesheet arrives.
    ============================================================ */
-html { background: #232629; }
-body { background: #232629; color: #fff; margin: 0; }
+html { background: #15171A; }
+body { background: #15171A; color: #fff; margin: 0; }

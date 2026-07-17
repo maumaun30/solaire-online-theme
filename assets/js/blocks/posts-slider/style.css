@@ -137,6 +137,6 @@
   .posts-slider--editor .posts-slider__slide img,
   .posts-slider--editor .posts-slider__empty,
   .posts-slider--editor .posts-slider__no-image {
-    aspect-ratio: 16 / 7;
+    aspect-ratio: 16 / 5;
   }
 }

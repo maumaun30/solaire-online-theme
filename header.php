@@ -17,12 +17,12 @@ if (!defined('ABSPATH')) {
   <?php wp_head(); ?>
 </head>
 
-<body <?php body_class('bg-surface text-white'); ?>>
+<body <?php body_class('bg-deep text-white'); ?>>
   <?php wp_body_open(); ?>
 
   <!-- ============================ HEADER ============================ -->
   <header class="so-header header-bar sticky top-0 z-50">
-    <div class="relative z-10 mx-auto flex h-[52px] max-w-shell items-center gap-6 px-4 sm:h-[68px] sm:px-6">
+    <div class="relative z-10 mx-auto flex h-[44px] max-w-shell items-center gap-6 pl-2 pr-4 sm:h-[68px] sm:px-6">
 
       <!-- Logo -->
       <a href="<?php echo esc_url(home_url('/')); ?>" class="flex shrink-0 flex-col leading-none">
@@ -83,7 +83,6 @@ if (!defined('ABSPATH')) {
       ]); ?>
     </nav>
     <div class="mt-auto flex flex-col gap-3 pt-6">
-      <a href="#" class="rounded-md border border-white/15 px-5 py-3 text-center text-sm font-semibold text-white"><?php esc_html_e('Sign Up', 'solaire'); ?></a>
-      <a href="#" class="btn-press rounded-md bg-brand-orange px-5 py-3 text-center text-sm font-bold text-white"><?php esc_html_e('Sign In', 'solaire'); ?></a>
+      <a href="https://www.solaireonline.com/register" class="btn-press rounded-md bg-brand-orange px-5 py-3 text-center text-sm font-bold text-white"><?php esc_html_e('Sign Up', 'solaire'); ?></a>
     </div>
   </aside>

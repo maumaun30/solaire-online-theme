@@ -34,7 +34,7 @@
   }
 
   body {
-    background: var(--c-bg);
+    background: var(--c-bg-deep);
     color: #fff;
     font-family: "Montserrat", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -115,6 +115,20 @@
     );
     pointer-events: none;
     z-index: 0;
+  }
+
+  /* Footer base gradient — near-black warm top blending down into a muted
+     indigo/purple at the bottom (matches the design mock). The red top glow
+     from .footer-glow::before layers over this. */
+  .footer-gradient {
+    background-color: #0f1013;
+    background-image: linear-gradient(
+      170deg,
+      #241211 0%,
+      #16151c 38%,
+      #171527 70%,
+      #211d33 100%
+    );
   }
 
   /* Full-width header bar (design: Group 90). Rectangle 48 is a vertical
@@ -721,14 +735,114 @@
   }
 
   /* Shorter mobile header: trim the wrapper padding and scale the logo down to
-     fit the reduced bar height (h-[52px] set in header.php). */
+     fit the reduced bar height. Total bar = 56px (h-[44px] inner + 6px top/bottom
+     padding below; set in header.php). */
   .so-header {
-    padding-top: 6px;
-    padding-bottom: 6px;
+    padding: 6px 0;
   }
 
   .so-header .custom-logo {
     max-height: 32px;
     width: auto;
+  }
+}
+
+/* ============================================================
+   PAGE CONTENT WIDTH (index.php — pages / blog)
+   ------------------------------------------------------------
+   index.php wraps the regular page blocks (core/*) in
+   .entry-content and renders full-bleed custom section blocks
+   (mytheme/*) outside it. Constrain the wrapper to 1280px so the
+   page text lines up with the section blocks' inner container,
+   while those section blocks keep their full-bleed backgrounds.
+   ============================================================ */
+.entry-content {
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 40px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  border-radius: 6px;
+  box-sizing: border-box;
+  /* Long unbreakable strings (URLs, links) should wrap instead of forcing
+     horizontal overflow on phones. Scoped to the page content box only. */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  overflow-x: hidden;
+  color: #FFFFFF;
+  font-weight: 500;
+}
+
+/* Break overly long links / inline text inside Gutenberg page content so they
+   wrap at any character when there is no normal break point (e.g. a raw URL). */
+.entry-content a,
+.entry-content p,
+.entry-content li,
+.entry-content h1,
+.entry-content h2,
+.entry-content h3,
+.entry-content h4,
+.entry-content h5,
+.entry-content h6 {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  margin-bottom: 20px;
+}
+
+.entry-content p {
+  line-height: 1.6;
+}
+
+/* Media inside page content should never exceed its container either. */
+.entry-content img,
+.entry-content iframe,
+.entry-content video,
+.entry-content table {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+/* Restore list markers inside page content (Tailwind preflight strips them).
+   ul → primary-coloured bullets, ol → numbers. */
+.entry-content ul,
+.entry-content ol {
+  margin: 0 0 1rem;
+  padding-left: 1.5rem;
+}
+
+.entry-content ul {
+  list-style: disc;
+}
+
+.entry-content ol {
+  list-style: decimal;
+}
+
+.entry-content li {
+  margin-bottom: 0.4rem;
+}
+
+/* Colour the ul bullet with the brand primary (number keeps the text colour) */
+.entry-content ul li::marker, .entry-content a{
+  color: var(--modal-highlighted-text);
+}
+
+@media (max-width: 1024px) {
+  .entry-content {
+    padding: 40px;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+}
+
+@media (max-width: 767px) {
+  .entry-content {
+    padding: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
   }
 }

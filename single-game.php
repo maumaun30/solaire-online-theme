@@ -56,21 +56,303 @@ while (have_posts()) :
     $cat_name  = $crumb_term ? $crumb_term->name : __('Featured Game', 'solaire');
     $cat_slug  = (!is_wp_error($cats) && $cats) ? $cats[0]->slug : '';
 
-    // Stats — ACF repeater, falling back to provider/RTP/volatility.
+    // Shared stat tooltips live in Site Settings (ACF Options → Game Tooltip
+    // Data) and are the same across every game.
+    $tip_rtp      = get_field('so_rtp_tooltip', 'option');
+    $tip_vol      = get_field('so_volatility_tooltip', 'option');
+    $tip_provider = get_field('so_provider_tooltip', 'option');
+
+    // Value-specific volatility copy — depends on Low / Medium / High.
+    $tip_vol_value = '';
+    switch (strtolower(trim((string) $vol))) {
+        case 'low':    $tip_vol_value = get_field('so_volatility_low_tooltip', 'option');    break;
+        case 'medium': $tip_vol_value = get_field('so_volatility_medium_tooltip', 'option'); break;
+        case 'high':   $tip_vol_value = get_field('so_volatility_high_tooltip', 'option');   break;
+    }
+
+    // Stats — ACF repeater, falling back to provider/RTP/volatility. Known
+    // stat types (RTP / Volatility / Provider) get their shared tooltip.
     $stats = get_field('stats');
     if (!$stats) {
-        $stats = [['label' => 'RTP', 'value' => $rtp]];
+        $stats = [['label' => 'RTP', 'value' => $rtp, 'tooltip' => $tip_rtp]];
         // Skip the Volatility stat entirely when none is selected.
         if ($vol !== '') {
-            $stats[] = ['label' => 'Volatility', 'value' => $vol];
+            $stats[] = ['label' => 'Volatility', 'value' => $vol, 'tooltip' => $tip_vol, 'value_tooltip' => $tip_vol_value];
         }
-        $stats[] = ['label' => 'Game Provider', 'value' => $provider];
+        $stats[] = ['label' => 'Game Provider', 'value' => $provider, 'tooltip' => $tip_provider];
+    } else {
+        // Match the repeater's own labels to the shared tooltip copy.
+        foreach ($stats as &$stat) {
+            $label = strtolower($stat['label'] ?? '');
+            if (strpos($label, 'rtp') !== false) {
+                $stat['tooltip'] = $tip_rtp;
+            } elseif (strpos($label, 'volatility') !== false) {
+                $stat['tooltip'] = $tip_vol;
+                switch (strtolower(trim((string) ($stat['value'] ?? '')))) {
+                    case 'low':    $stat['value_tooltip'] = get_field('so_volatility_low_tooltip', 'option');    break;
+                    case 'medium': $stat['value_tooltip'] = get_field('so_volatility_medium_tooltip', 'option'); break;
+                    case 'high':   $stat['value_tooltip'] = get_field('so_volatility_high_tooltip', 'option');   break;
+                }
+            } elseif (strpos($label, 'provider') !== false) {
+                $stat['tooltip'] = $tip_provider;
+            }
+        }
+        unset($stat);
     }
     $stat_icons = ['chart', 'bolt', 'grid-rows'];
 
     $rules       = get_field('rules') ?: [];
     $rule_icons  = ['squares', 'star', 'refresh', 'paylines'];
 ?>
+
+<style>
+  /* Stats bar + tooltips. Tooltip copy comes from Site Settings → Game
+     Tooltip Data (ACF Options). Colours use the site palette:
+     accent orange #df6a2e, deep #15171a. */
+  .sg-stats {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+    background: #15171a;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, .08);
+  }
+
+  .sg-stat {
+    display: flex;
+    flex: 1 1 0;
+    min-width: 0;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    position: relative;
+  }
+
+  .sg-stat+.sg-stat::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20%;
+    height: 60%;
+    width: 1px;
+    background: rgba(255, 255, 255, .12);
+  }
+
+  .sg-stat__icon {
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: .6rem;
+    background: rgba(223, 106, 46, .15);
+    color: #df6a2e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Desktop: label and value sit inline (old pattern). Mobile stacks them. */
+  .sg-stat__top {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: .4rem;
+    min-width: 0;
+  }
+
+  .sg-stat__label {
+    font-size: .875rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, .5);
+    white-space: nowrap;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Desktop: a colon separates the label (+ tooltip) from the value, like
+     the old "RTP: value" pattern. Hidden on mobile where they stack. */
+  .sg-stat__label::after {
+    content: ':';
+    margin-left: .15rem;
+  }
+
+  .sg-stat__value {
+    font-size: .875rem;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+    white-space: nowrap;
+    line-height: 1.2;
+  }
+
+  /* Info-icon tooltip next to a stat label */
+  .sg-tip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* Small superscript-style mark raised to the top-right of the label */
+    align-self: flex-start;
+    width: .62rem;
+    height: .62rem;
+    margin-left: .18rem;
+    margin-top: -.02rem;
+    color: rgba(255, 255, 255, .4);
+    cursor: help;
+  }
+
+  .sg-tip__icon {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .sg-tip:hover,
+  .sg-tip:focus,
+  .sg-tip.is-open {
+    color: #df6a2e;
+  }
+
+  /* Value tooltip — hover the Low/Medium/High value itself */
+  .sg-vtip {
+    position: relative;
+    align-self: center;
+    cursor: help;
+    outline: none;
+    border-bottom: 1px dashed rgba(255, 255, 255, .35);
+    transition: color .2s, border-color .2s;
+  }
+
+  .sg-vtip:hover,
+  .sg-vtip:focus,
+  .sg-vtip.is-open {
+    color: #df6a2e;
+    border-bottom-color: #df6a2e;
+  }
+
+  .sg-tip__bubble {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    width: max-content;
+    min-width: 140px;
+    max-width: 220px;
+    background: #15171a;
+    border: 1px solid rgba(255, 255, 255, .15);
+    border-radius: .5rem;
+    padding: .55rem .75rem;
+    font-size: .72rem;
+    font-weight: 400;
+    line-height: 1.4;
+    color: #fff;
+    text-transform: none;
+    letter-spacing: normal;
+    white-space: normal;
+    text-align: left;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
+    z-index: 20;
+  }
+
+  /* Outlined arrow — border-coloured triangle behind a fill-coloured one */
+  .sg-tip__bubble::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 7px solid transparent;
+    border-top-color: rgba(255, 255, 255, .15);
+  }
+
+  .sg-tip__bubble::after {
+    content: '';
+    position: absolute;
+    top: calc(100% - 1px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #15171a;
+  }
+
+  .sg-tip:hover .sg-tip__bubble,
+  .sg-tip:focus .sg-tip__bubble,
+  .sg-tip.is-open .sg-tip__bubble,
+  .sg-vtip:hover .sg-tip__bubble,
+  .sg-vtip:focus .sg-tip__bubble,
+  .sg-vtip.is-open .sg-tip__bubble {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+  }
+
+  @media (max-width: 768px) {
+    .sg-stats {
+      display: flex;
+      width: 100%;
+      flex-wrap: nowrap;
+      justify-content: center;
+      border-radius: 12px;
+    }
+
+    /* Stack each stat vertically: icon on top, then label, then value. */
+    .sg-stat {
+      flex: 1 1 0;
+      min-width: 0;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      justify-content: flex-start;
+      gap: .5rem;
+      padding: 1rem .5rem;
+    }
+
+    .sg-stat__top {
+      flex-direction: column;
+      align-items: center;
+      gap: .2rem;
+    }
+
+    .sg-stat__label {
+      font-size: .72rem;
+    }
+
+    .sg-stat__label::after {
+      content: none;
+    }
+
+    .sg-stat__value {
+      font-size: .9rem;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    /* Centre the value tooltip's dashed underline under the stack. */
+    .sg-vtip {
+      align-self: center;
+    }
+
+    .sg-tip {
+      align-self: center;
+      width: .8rem;
+      height: .8rem;
+      margin-left: .25rem;
+      margin-top: 0;
+    }
+
+    .sg-tip__bubble {
+      font-size: .68rem;
+      max-width: 170px;
+    }
+  }
+</style>
 
 <main class="mx-auto max-w-shell px-4 pt-6">
 
@@ -115,17 +397,56 @@ while (have_posts()) :
   </section>
 
   <!-- ===================== STATS BAR ===================== -->
-  <?php $stat_cols = count($stats) <= 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'; ?>
-  <div class="mt-5 grid gap-px overflow-hidden rounded-xl bg-white/10 ring-1 ring-white/10 <?php echo esc_attr($stat_cols); ?>">
-    <?php foreach (array_values($stats) as $i => $stat) :
-        $icon = $stat_icons[$i % count($stat_icons)];
-    ?>
-      <div class="flex items-center gap-4 bg-surface px-6 py-5">
-        <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-orange/15 text-orange"><?php echo solaire_icon($icon, 'h-5 w-5'); // phpcs:ignore ?></span>
-        <span class="text-sm text-slatey"><?php echo esc_html($stat['label'] ?? ''); ?>: <b class="text-white"><?php echo esc_html($stat['value'] ?? ''); ?></b></span>
-      </div>
-    <?php endforeach; ?>
+  <div class="mt-5">
+    <div class="sg-stats">
+      <?php foreach (array_values($stats) as $i => $stat) :
+          $icon = $stat_icons[$i % count($stat_icons)];
+      ?>
+        <div class="sg-stat">
+          <span class="sg-stat__icon"><?php echo solaire_icon($icon, 'h-5 w-5'); // phpcs:ignore ?></span>
+          <div class="sg-stat__top">
+            <span class="sg-stat__label">
+              <?php echo esc_html($stat['label'] ?? ''); ?>
+              <?php if (!empty($stat['tooltip'])) : ?>
+                <span class="sg-tip" tabindex="0">
+                  <svg class="sg-tip__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="11.5"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                  <span class="sg-tip__bubble"><?php echo esc_html($stat['tooltip']); ?></span>
+                </span>
+              <?php endif; ?>
+            </span>
+            <?php if (!empty($stat['value_tooltip'])) : ?>
+              <span class="sg-stat__value sg-vtip" tabindex="0">
+                <?php echo esc_html($stat['value'] ?? ''); ?>
+                <span class="sg-tip__bubble"><?php echo esc_html($stat['value_tooltip']); ?></span>
+              </span>
+            <?php else : ?>
+              <span class="sg-stat__value"><?php echo esc_html($stat['value'] ?? ''); ?></span>
+            <?php endif; ?>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    </div>
   </div>
+
+  <script>
+    (function () {
+      'use strict';
+      // Stat tooltips — CSS handles hover on desktop; this adds tap-to-toggle
+      // for touch devices and closes any open bubble on an outside click.
+      document.querySelectorAll('.sg-tip, .sg-vtip').forEach(function (t) {
+        t.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var wasOpen = t.classList.contains('is-open');
+          document.querySelectorAll('.sg-tip.is-open, .sg-vtip.is-open').forEach(function (o) { o.classList.remove('is-open'); });
+          t.blur();
+          if (!wasOpen) t.classList.add('is-open');
+        });
+      });
+      document.addEventListener('click', function () {
+        document.querySelectorAll('.sg-tip.is-open, .sg-vtip.is-open').forEach(function (o) { o.classList.remove('is-open'); });
+      });
+    })();
+  </script>
 
   <!-- ===================== CTA ===================== -->
   <div class="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">

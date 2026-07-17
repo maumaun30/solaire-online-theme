@@ -13,7 +13,7 @@ $footer_social      = get_field('so_footer_social', 'option');
 $footer_responsible = get_field('so_footer_responsible_gaming', 'option');
 ?>
 <!-- ============================ FOOTER ============================ -->
-<footer class="footer-glow relative bg-deep">
+<footer class="footer-glow footer-gradient relative">
   <div class="relative z-10 mx-auto max-w-shell px-4 py-14">
     <div class="grid gap-10 lg:grid-cols-3 lg:gap-x-10">
       <div class="text-center lg:text-left lg:max-w-sm">
