@@ -1,0 +1,47 @@
+/* ── Google Fonts ────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+
+.wp-block-mytheme-carousel.mytheme-carousel {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  overflow: hidden;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.wp-block-mytheme-carousel .swiper-wrapper {
+  height: 100%;
+}
+
+/* Dot indicators */
+.wp-block-mytheme-carousel .swiper-pagination {
+  bottom: 48px;
+  z-index: 10;
+}
+
+.wp-block-mytheme-carousel .swiper-pagination-bullet {
+  width: 12px;
+  height: 12px;
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.3);
+  opacity: 1;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.wp-block-mytheme-carousel .swiper-pagination-bullet-active {
+  width: 48px;
+  background: var(--color-primary, #df6a2e);
+}
+
+/* Mobile: make the carousel a square (≈1:1) and drop the dots nearer the
+   bottom edge, matching the mobile design. */
+@media (max-width: 767px) {
+  .wp-block-mytheme-carousel.mytheme-carousel {
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .wp-block-mytheme-carousel .swiper-pagination {
+    bottom: 24px;
+  }
+}

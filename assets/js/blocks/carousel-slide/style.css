@@ -1,0 +1,304 @@
+/* ── Google Fonts ────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700;1,800;1,900&display=swap');
+
+/* ─── Editor Preview ────────────────────────────────────────────── */
+.carousel-slide-editor {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.carousel-slide-editor__bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-color: #15171a;
+}
+
+.carousel-slide-editor__overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.carousel-slide-editor__content {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 48px;
+}
+
+.carousel-slide-editor__inner {
+  max-width: 640px;
+}
+
+.carousel-slide-editor__title {
+  font-size: clamp(2rem, 5vw, 3.5rem) !important;
+  color: #fff !important;
+  line-height: 1.1 !important;
+  margin: 0 0 16px !important;
+  font-weight: 700 !important;
+}
+
+.carousel-slide-editor__subtitle {
+  font-size: 1.25rem !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  margin: 0 0 24px !important;
+}
+
+.carousel-slide-editor__buttons {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.carousel-slide-editor__btn {
+  display: inline-block;
+  padding: 14px 32px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: default;
+}
+
+.carousel-slide-editor__btn--primary {
+  background-color: var(--color-primary, #df6a2e);
+  color: #fff;
+}
+
+.carousel-slide-editor__btn--secondary {
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  color: #fff;
+}
+
+/* ─── Frontend Slide ─────────────────────────────────────────────── */
+.wp-block-mytheme-carousel-slide.mytheme-carousel-slide {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Real <img> made to read like a background: fills the slide and crops to
+   cover, exactly like background-size: cover / background-position: center. */
+.mytheme-carousel-slide__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 8s ease;
+}
+
+.mytheme-carousel-slide__bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    /*background: linear-gradient(
+        90deg,
+        rgba(19, 19, 22, 1) 0%,
+        rgba(19, 19, 22, 0) 100%
+    );*/
+}
+
+.swiper-slide-active .mytheme-carousel-slide__bg {
+  transform: scale(1.05);
+}
+
+.mytheme-carousel-slide__overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.mytheme-carousel-slide__content {
+  position: relative;
+  height: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+}
+
+.mytheme-carousel-slide__inner {
+  /*max-width: 640px;*/
+}
+
+.mytheme-carousel-slide__title {
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  line-height: 1.1;
+  margin: 0 0 20px;
+  font-weight: 900;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  /* Slightly wider gaps between the LIVE / 24/7 / CASINO segments. */
+  word-spacing: 0.08em;
+  /* Soft dark edge under the gold for depth + legibility over bright images.
+     drop-shadow works through the clipped-text glyphs. */
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.45));
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
+
+  font-size: 48px;
+  max-width: 700px;
+}
+
+/* Metallic gold gradient for the title text — cream at the top of the glyphs
+   into a deeper gold at the bottom. Applied to the spans directly because
+   background-clip: text isn't inherited from the parent heading. */
+.mytheme-carousel-slide__title span,
+.highlight-text {
+  background: linear-gradient(180deg, #fbe7b0 0%, #f5c451 45%, #d99a2c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* The middle title segment (e.g. "24/7") is smaller than the LIVE / CASINO
+   segments on either side of it. */
+.highlight-text {
+  font-size: 0.5em;
+  vertical-align: middle;
+}
+
+.mytheme-carousel-slide__subtitle {
+  font-size: clamp(1rem, 2vw, 1.375rem);
+  color: #ffffff;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: -0.02em;
+  margin: 0 0 32px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease 0.4s, transform 0.6s ease 0.4s;
+
+  font-size: 18px;
+  max-width: 672px;
+}
+
+.mytheme-carousel-slide__buttons {
+  display: flex;
+  gap: 16px;
+  flex-wrap: nowrap;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease 0.6s, transform 0.6s ease 0.6s;
+}
+
+/* Animate in on active slide */
+.swiper-slide-active .mytheme-carousel-slide__title,
+.swiper-slide-active .mytheme-carousel-slide__subtitle,
+.swiper-slide-active .mytheme-carousel-slide__buttons {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* The SVG (.mytheme-carousel-slide__btn-shape) is the button background, filled via
+   `color` (fill: currentColor); .mytheme-carousel-slide__btn-label sits on top. */
+.mytheme-carousel-slide__btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  text-decoration: none;
+  isolation: isolate;
+  --decoration: #ffffff; /* bottom-right accent triangle */
+  transition: transform 0.2s ease, filter 0.2s ease;
+  /* reset so the <button> primary matches the <a> secondary */
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.mytheme-carousel-slide__btn-shape {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.mytheme-carousel-slide__btn-label {
+  position: relative;
+  z-index: 1; /* above the shape */
+  padding: 14px 32px;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: -1.2px;
+  color: #FFFFFF;
+  text-align: center;
+}
+
+.mytheme-carousel-slide__btn:hover {
+  transform: translateY(-5px);
+}
+
+.mytheme-carousel-slide__btn--primary:hover {
+  color: #ef7b00;
+}
+a.mytheme-carousel-slide__btn--secondary:hover {
+  color: rgba(57, 57, 60, 0.6);
+}
+
+
+.mytheme-carousel-slide__btn--primary {
+  color: #df6a2e; /* fills the SVG shape */
+}
+
+.mytheme-carousel-slide__btn--secondary {
+  color: rgba(57, 57, 60, 0.6); /* fills the SVG shape */
+  --decoration: rgba(255, 255, 255, 0.5);
+}
+
+@media (max-width: 767px) {
+  /* Anchor the copy to the bottom-left of the (square) slide, left-aligned. */
+  .mytheme-carousel-slide__content {
+    align-items: flex-end;
+    padding: 0 20px 80px;
+  }
+
+  /* Break the last title segment (e.g. CASINO) onto its own line so the mobile
+     heading reads "LIVE 24/7" then "CASINO". */
+  .mytheme-carousel-slide__title-end {
+    display: block;
+  }
+
+  .mytheme-carousel-slide__title {
+    text-align: left;
+    font-size: 40px;
+  }
+
+  .mytheme-carousel-slide__subtitle {
+    text-align: left;
+    font-size: 14px;
+  }
+
+  .mytheme-carousel-slide__buttons {
+    justify-content: flex-start;
+  }
+
+  .mytheme-carousel-slide__btn {
+    width: 150px;
+  }
+
+  .mytheme-carousel-slide__btn-label {
+    font-size: 12px;
+    padding: 15px 25px;
+  }
+}

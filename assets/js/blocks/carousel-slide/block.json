@@ -1,0 +1,62 @@
+{
+  "apiVersion": 3,
+  "name": "mytheme/carousel-slide",
+  "title": "Carousel Slide",
+  "category": "design",
+  "icon": "format-image",
+  "description": "A single hero slide. Use inside a Carousel block.",
+  "parent": ["mytheme/carousel"],
+  "editorScript": "file:./build/index.js",
+  "style": "file:./style.css",
+  "render": "file:./render.php",
+  "attributes": {
+    "imageUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "imageId": {
+      "type": "number",
+      "default": 0
+    },
+    "imageAlt": {
+      "type": "string",
+      "default": ""
+    },
+    "title": {
+      "type": "string",
+      "default": "Your Slide Title"
+    },
+    "titleHighlight": {
+      "type": "string",
+      "default": "Your Slide Title Highlight"
+    },
+    "titleEnd": {
+      "type": "string",
+      "default": ""
+    },
+    "subtitle": {
+      "type": "string",
+      "default": "Add your subtitle or tagline here."
+    },
+    "primaryButtonText": {
+    "type": "string",
+    "default": ""
+    },
+    "showPrimaryButton": {
+      "type": "boolean",
+      "default": true
+    },
+    "secondaryButtonText": {
+      "type": "string",
+      "default": ""
+    },
+    "secondaryButtonUrl": {
+      "type": "string",
+      "default": "#"
+    },
+    "overlayOpacity": {
+      "type": "number",
+      "default": 85
+    }
+  }
+}

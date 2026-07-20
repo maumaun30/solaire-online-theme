@@ -209,6 +209,47 @@ function so_enqueue_single_post_slider() {
 }
 add_action( 'wp_enqueue_scripts', 'so_enqueue_single_post_slider' );
 
+/**
+ * Enqueue Swiper.js + carousel frontend script.
+ *
+ * Add this to your theme's functions.php (or a dedicated assets loader file).
+ * Adjust the version strings as needed.
+ */
+function mytheme_enqueue_carousel_assets() {
+    // Only load on pages that actually have the carousel block
+    if ( ! has_block( 'mytheme/carousel' ) ) {
+        return;
+    }
+ 
+    // Swiper CSS (CDN — swap for local if preferred)
+    wp_enqueue_style(
+        'swiper',
+        'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css',
+        [],
+        '11'
+    );
+ 
+    // Swiper JS (CDN)
+    wp_enqueue_script(
+        'swiper',
+        'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js',
+        [],
+        '11',
+        true // load in footer
+    );
+ 
+    // Our carousel initializer
+    wp_enqueue_script(
+        'mytheme-carousel',
+        get_template_directory_uri() . '/assets/js/mytheme-carousel.js',
+        [ 'swiper' ],
+        wp_get_theme()->get( 'Version' ),
+        true
+    );
+
+}
+add_action( 'wp_enqueue_scripts', 'mytheme_enqueue_carousel_assets' );
+
 /* ============================================================
    Theme modules
    ============================================================ */
