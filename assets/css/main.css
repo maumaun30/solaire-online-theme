@@ -102,74 +102,88 @@
     z-index: 0;
   }
 
-  /* Red glow bleeding down from the top of the footer */
+  /* Warm glow bleeding down from the top-left corner of the footer. Kept tight
+     to the left so it reinforces the corner glow without washing across the top. */
   .footer-glow::before {
     content: "";
     position: absolute;
     inset: 0 0 auto 0;
-    height: 260px;
+    height: 300px;
     background: radial-gradient(
-      75% 100% at 16% -25%,
-      rgba(196, 43, 41, 0.45),
-      rgba(196, 43, 41, 0) 62%
+      45% 100% at 8% -18%,
+      rgba(214, 74, 32, 0.40),
+      rgba(214, 74, 32, 0) 60%
     );
     pointer-events: none;
     z-index: 0;
   }
 
-  /* Footer base gradient — near-black warm top blending down into a muted
-     indigo/purple at the bottom (matches the design mock). The red top glow
-     from .footer-glow::before layers over this. */
+  /* Footer background — near-black with a warm burnt-orange glow anchored in
+     the top-left corner (behind the logo) that fades out to black across the
+     rest of the footer, per the design mock. The .footer-glow::before radial
+     adds a hotter bleed at the very top-left over this. */
   .footer-gradient {
-    background-color: #0f1013;
-    background-image: linear-gradient(
-      170deg,
-      #241211 0%,
-      #16151c 38%,
-      #171527 70%,
-      #211d33 100%
+    background-color: #0a0a0c;
+    background-image: radial-gradient(
+      70% 120% at 3% 4%,
+      rgba(219, 92, 38, 0.55) 0%,
+      rgba(168, 54, 27, 0.34) 22%,
+      rgba(92, 30, 18, 0.14) 42%,
+      rgba(0, 0, 0, 0) 64%
     );
   }
 
-  /* Full-width header bar (design: Group 90). Rectangle 48 is a vertical
-     burnt-orange gradient; Rectangle 49 lays a 12% white wash with a 20px
-     backdrop blur over it for a subtle frosted-glass sheen. */
+  /* Full-width header bar (design: Group 90). A horizontal burnt-orange
+     gradient — bright orange at both edges, deeper red through the middle. The
+     stops are semi-transparent so the backdrop blur frosts content scrolling
+     beneath it (glassmorphism); saturate() keeps the colour punchy despite the
+     transparency. Opaque fallback for browsers without backdrop-filter. */
   .header-bar {
     position: sticky;
     top: 0;
-    background-color: #2a0b04;
+    background-color: #bb3200;
     background-image: linear-gradient(
-        rgba(255, 255, 255, 0.12),
-        rgba(255, 255, 255, 0.12)
-      ),
-      linear-gradient(
-        180deg,
-        #f15a00 0%,
-        #bb3200 45%,
-        #822404 75%,
-        #2a0b04 100%
-      );
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      90deg,
+      #f15a00 0%,
+      #bb3200 45%,
+      #b34019 75%,
+      #df6a2e 100%
+    );
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18),
       0 12px 30px -12px rgba(0, 0, 0, 0.5);
   }
 
-  /* Mobile drawer head — same Group 90 gradient band as the header bar,
-     spanning the top of the drawer behind the logo + close button. */
-  .drawer-head {
-    background-color: #2a0b04;
-    background-image: linear-gradient(
-        rgba(255, 255, 255, 0.12),
-        rgba(255, 255, 255, 0.12)
-      ),
-      linear-gradient(
-        180deg,
-        #f15a00 0%,
-        #bb3200 45%,
-        #822404 75%,
-        #2a0b04 100%
+  @supports (
+      (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+    ) {
+    .header-bar {
+      background-color: rgba(187, 50, 0, 0.55);
+      background-image: linear-gradient(
+        90deg,
+        rgba(241, 90, 0, 0.8) 0%,
+        rgba(187, 50, 0, 0.8) 45%,
+        rgba(179, 64, 25, 0.8) 75%,
+        rgba(223, 106, 46, 0.8) 100%
       );
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+    }
+  }
+
+  /* Mobile drawer head — same Group 90 gradient band as the header bar,
+     spanning the top of the drawer behind the logo + close button. Uses the
+     header's horizontal burnt-orange gradient at full saturation (kept opaque,
+     since it sits on the solid drawer with nothing to frost behind it). */
+  .drawer-head {
+    background-color: #bb3200;
+    background-image: linear-gradient(
+      90deg,
+      #f15a00 0%,
+      #bb3200 45%,
+      #b34019 75%,
+      #df6a2e 100%
+    );
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
       0 10px 24px -14px rgba(0, 0, 0, 0.6);
   }
@@ -735,10 +749,10 @@
   }
 
   /* Shorter mobile header: trim the wrapper padding and scale the logo down to
-     fit the reduced bar height. Total bar = 56px (h-[44px] inner + 6px top/bottom
-     padding below; set in header.php). */
+     fit the reduced bar height. Total bar = 56px (h-[44px] inner + 6px top / 5px
+     bottom padding + 1px .header-bar border-bottom). */
   .so-header {
-    padding: 6px 0;
+    padding: 6px 0 5px;
   }
 
   .so-header .custom-logo {
