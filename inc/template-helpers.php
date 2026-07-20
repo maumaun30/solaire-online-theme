@@ -580,7 +580,8 @@ class Solaire_Nav_Walker extends Walker_Nav_Menu
 /**
  * Render page/post content, keeping default Gutenberg (core/*) blocks inside a
  * width-constrained `.entry-content` box while letting the theme's custom
- * full-bleed section blocks (solaire/*) render edge-to-edge outside it.
+ * full-bleed section blocks (solaire/* and mytheme/*) render edge-to-edge
+ * outside it.
  *
  * Without this, a page that mixes a full-bleed section block (e.g. the Solaire
  * Hero Banner) with normal paragraphs would render those paragraphs edge-to-edge
@@ -609,7 +610,9 @@ function solaire_render_split_content($content)
         $name = $block['blockName'] ?? null;
 
         // Theme section blocks are full-bleed — render them outside the box.
-        if ($name && strpos($name, 'solaire/') === 0) {
+        // Covers both namespaces: original `solaire/*` blocks and the
+        // scaffolded/imported `mytheme/*` blocks (e.g. the carousel).
+        if ($name && (strpos($name, 'solaire/') === 0 || strpos($name, 'mytheme/') === 0)) {
             $flush();
             $html .= render_block($block);
         } else {

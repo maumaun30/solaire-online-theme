@@ -1,0 +1,33 @@
+{
+  "apiVersion": 3,
+  "name": "mytheme/carousel",
+  "title": "Carousel",
+  "category": "design",
+  "icon": "slides",
+  "description": "Full-screen hero carousel container. Add Carousel Slide blocks inside.",
+  "editorScript": "file:./build/index.js",
+  "style": "file:./style.css",
+  "attributes": {
+    "autoplay": {
+      "type": "boolean",
+      "default": true
+    },
+    "autoplayDelay": {
+      "type": "number",
+      "default": 5000
+    },
+    "loop": {
+      "type": "boolean",
+      "default": true
+    },
+    "showIndicators": {
+      "type": "boolean",
+      "default": true
+    },
+    "effect": {
+      "type": "string",
+      "default": "fade"
+    }
+  },
+  "allowedBlocks": ["mytheme/carousel-slide"]
+}
