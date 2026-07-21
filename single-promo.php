@@ -254,7 +254,7 @@ if (! empty($fg_term_ids_by_tax)) {
     padding: var(--section-py) 1.5rem;
     display: grid;
     grid-template-columns: minmax(0, 1fr) 320px;
-    gap: 2rem;
+    gap: 20px;
   }
 
   /* No other promos published — content spans the full width (no empty
@@ -263,7 +263,13 @@ if (! empty($fg_term_ids_by_tax)) {
     grid-template-columns: 1fr;
   }
 
-  @media (max-width: 899px) {
+   @media (max-width: 1024px) {
+    .pr-main {
+      grid-template-columns: minmax(0, 1fr) 220px;
+    }
+  }
+
+  @media (max-width: 767px) {
     .pr-main {
       grid-template-columns: 1fr;
     }
@@ -398,7 +404,7 @@ if (! empty($fg_term_ids_by_tax)) {
     gap: .5rem;
     padding: 14px 28px;
     border-radius: 8px;
-    background: var(--color-primary);
+    background: linear-gradient(92deg, #ef7b00 0%, #df6a2e 60%, #d2242a 100%);
     color: #fff;
     font-family: inherit;
     font-size: .85rem;
