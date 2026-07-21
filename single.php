@@ -150,7 +150,7 @@ $share_title = rawurlencode($title);
 
   /* ── BREADCRUMB ── */
   .sp-bc {
-    max-width: 80rem;
+    max-width: 1440px;
     margin: 0 auto;
     padding: 1.25rem 1.5rem .5rem;
     display: flex;
@@ -184,7 +184,7 @@ $share_title = rawurlencode($title);
 
   /* ── HERO BANNER ── */
   .sp-hero {
-    max-width: 80rem;
+    max-width: 1440px;
     margin: .5rem auto 0;
     padding: 0 1.5rem;
   }
@@ -229,12 +229,12 @@ $share_title = rawurlencode($title);
 
   /* ── MAIN GRID (content + sidebar) ── */
   .sp-main {
-    max-width: 80rem;
+    max-width: 1440px;
     margin: 0 auto;
     padding: var(--section-py) 1.5rem 0;
     display: grid;
     grid-template-columns: minmax(0, 1fr) 320px;
-    gap: 2rem;
+    gap: 20px;
   }
 
   /* No related blogs — content spans the full width (no empty 320px column
@@ -243,7 +243,13 @@ $share_title = rawurlencode($title);
     grid-template-columns: 1fr;
   }
 
-  @media (max-width: 899px) {
+  @media (max-width: 1024px) {
+    .sp-main {
+      grid-template-columns: minmax(0, 1fr) 220px;
+    }
+  }
+
+  @media (max-width: 767px) {
     .sp-main {
       grid-template-columns: 1fr;
     }
@@ -505,7 +511,7 @@ $share_title = rawurlencode($title);
 
   /* ── FEATURED GAMES (SWIPER) ── */
   .sp-fg {
-    max-width: 80rem;
+    max-width: 1440px;
     margin: 0 auto;
     padding: var(--section-py) 1.5rem;
   }
