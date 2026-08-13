@@ -96,7 +96,7 @@ if (!defined('SOLAIRE_GAMES_PER_PAGE')) {
 
 /**
  * Tune the front-end Games archive + category queries: a comfortable per-page
- * count, and order the cards oldest → newest by publish date.
+ * count, and order the cards by the ACF `so_active_player` field, highest first.
  */
 function solaire_game_archive_query($query)
 {
@@ -105,8 +105,9 @@ function solaire_game_archive_query($query)
     }
     if ($query->is_post_type_archive('game') || $query->is_tax('game_category')) {
         $query->set('posts_per_page', SOLAIRE_GAMES_PER_PAGE);
-        $query->set('orderby', 'date');
-        $query->set('order', 'ASC'); // oldest first
+        foreach (solaire_games_order_args() as $key => $value) {
+            $query->set($key, $value);
+        }
     }
 }
 add_action('pre_get_posts', 'solaire_game_archive_query');
@@ -150,10 +151,8 @@ function solaire_ajax_load_games()
         'post_status'         => 'publish',
         'posts_per_page'      => $per,
         'paged'               => $paged,
-        'orderby'             => 'date',
-        'order'               => 'ASC',
         'ignore_sticky_posts' => true,
-    ];
+    ] + solaire_games_order_args();
 
     // Combine category + Themes + Providers with AND so every active filter
     // must match. Within each multi-select the operator is also AND: a game

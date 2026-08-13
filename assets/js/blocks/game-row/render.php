@@ -26,9 +26,10 @@ if (!$query->have_posts() && ($category || $tag)) {
     return;
 }
 
-// "View All" points to the category archive when a category is set, otherwise
-// the game post-type archive.
-$view_all_url = get_post_type_archive_link('game') ?: '#';
+// "View All" points to the category archive. The game post type has no archive,
+// so a row with no category has nowhere to link — the button is hidden instead
+// of rendering a dead link.
+$view_all_url = '';
 if ($category) {
     $term = get_term_by('slug', $category, 'game_category');
     if ($term && !is_wp_error($term)) {
@@ -45,7 +46,9 @@ if ($category) {
       <div class="mb-3 flex items-center justify-between">
         <h2 class="font-display text-lg font-medium sm:text-xl"><?php echo esc_html($title); ?></h2>
         <div class="flex items-center gap-2">
+<?php if ($view_all_url) : ?>
           <a href="<?php echo esc_url($view_all_url); ?>" class="rounded-md bg-white/10 px-3 py-1.5 text-xs text-secondary transition"><?php esc_html_e('View All', 'solaire'); ?></a>
+<?php endif; ?>
           <button data-prev aria-label="<?php esc_attr_e('Previous', 'solaire'); ?>" class="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-secondary transition hover:bg-white/20 disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/25 disabled:hover:bg-white/5"><?php echo solaire_icon('arrow-left', 'h-4 w-4', '2.5'); // phpcs:ignore ?></button>
           <button data-next aria-label="<?php esc_attr_e('Next', 'solaire'); ?>" class="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-secondary transition hover:bg-white/20 disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/25 disabled:hover:bg-white/5"><?php echo solaire_icon('arrow-right', 'h-4 w-4', '2.5'); // phpcs:ignore ?></button>
         </div>

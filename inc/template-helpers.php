@@ -95,7 +95,64 @@ function solaire_categories()
 }
 
 /**
+ * ACF number field the game listings are ranked by, highest first.
+ */
+const SOLAIRE_GAMES_ORDER_META_KEY = 'so_active_player';
+
+/**
+ * WP_Query fragment that orders games by SOLAIRE_GAMES_ORDER_META_KEY, highest
+ * first, treating an unset/blank field as 0.
+ *
+ * Flags the query for `solaire_games_order_clauses()` below rather than
+ * ordering here: meta_query can't express "missing counts as 0" — an
+ * EXISTS/NOT-EXISTS pair leaves blanks as NULL, which always sorts last and so
+ * would rank an unset game below one explicitly set to a negative value.
+ *
+ * @return array  Merge into a WP_Query args array.
+ */
+function solaire_games_order_args()
+{
+    return ['solaire_games_order' => true];
+}
+
+/**
+ * Apply the ordering flagged by `solaire_games_order_args()`.
+ *
+ * LEFT JOIN so games with no row in postmeta are kept (an INNER JOIN, which is
+ * what `meta_key` + `meta_value_num` produces, would silently drop them), then
+ * COALESCE the missing/blank values to 0 so they sort as a real 0 alongside
+ * games explicitly set to 0. Ties fall back to oldest first, which is the order
+ * the listings used before this field existed.
+ */
+function solaire_games_order_clauses($clauses, $query)
+{
+    if (!$query->get('solaire_games_order')) {
+        return $clauses;
+    }
+
+    global $wpdb;
+
+    $key = SOLAIRE_GAMES_ORDER_META_KEY;
+
+    $clauses['join'] .= $wpdb->prepare(
+        " LEFT JOIN {$wpdb->postmeta} AS solaire_order_meta"
+            . " ON (solaire_order_meta.post_id = {$wpdb->posts}.ID"
+            . " AND solaire_order_meta.meta_key = %s)",
+        $key
+    );
+
+    $clauses['orderby'] = "COALESCE(CAST(NULLIF(solaire_order_meta.meta_value, '') AS DECIMAL(20,4)), 0) DESC"
+        . ", {$wpdb->posts}.post_date ASC";
+
+    return $clauses;
+}
+add_filter('posts_clauses', 'solaire_games_order_clauses', 10, 2);
+
+/**
  * Query game posts.
+ *
+ * Default order is highest → lowest `so_active_player`; pass an explicit
+ * `orderby` to opt out.
  *
  * @param array $args  Accepts: category (term slug), tag (game-tag term slug), count, orderby, order.
  * @return WP_Query
@@ -106,7 +163,7 @@ function solaire_query_games($args = [])
         'count'    => 8,
         'category' => '',
         'tag'      => '',
-        'orderby'  => 'menu_order date',
+        'orderby'  => '',
         'order'    => 'ASC',
         'exclude'  => [],
     ];
@@ -115,11 +172,16 @@ function solaire_query_games($args = [])
     $q = [
         'post_type'      => 'game',
         'posts_per_page' => (int) $args['count'],
-        'orderby'        => $args['orderby'],
-        'order'          => $args['order'],
         'post__not_in'   => (array) $args['exclude'],
         'no_found_rows'  => true,
     ];
+
+    if ($args['orderby']) {
+        $q['orderby'] = $args['orderby'];
+        $q['order']   = $args['order'];
+    } else {
+        $q = array_merge($q, solaire_games_order_args());
+    }
 
     $tax_query = [];
     if ($args['category']) {
