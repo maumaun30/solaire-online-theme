@@ -2,7 +2,7 @@
 /**
  * Games custom post type + category taxonomy.
  *
- * Post type key:  game   (archive slug: /games/)
+ * Post type key:  game   (no archive; singles live at /games/{slug}/)
  * Taxonomy key:   game_category   (slug: /game-category/)
  */
 
@@ -35,7 +35,7 @@ function solaire_register_game_cpt()
     register_post_type('game', [
         'labels'        => $labels,
         'public'        => true,
-        'has_archive'   => 'games',
+        'has_archive'   => false,
         'rewrite'       => ['slug' => 'games', 'with_front' => false],
         'menu_icon'     => 'dashicons-games',
         'menu_position' => 5,
