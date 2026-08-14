@@ -501,10 +501,9 @@ while (have_posts()) :
   <?php if (trim(strip_tags(get_the_content())) !== '') : ?>
   <section data-anim class="title-bar mt-12 bg-white/[0.02] p-6 sm:p-8">
     <h2 class="title-tab pl-4 font-display text-xl font-extrabold sm:text-2xl"><?php printf(esc_html__('About %s', 'solaire'), esc_html(get_the_title())); ?></h2>
-    <div data-readmore data-readmore-blocks="1" class="mt-5">
+    <div data-readmore data-readmore-collapsed-height="220" class="mt-5">
       <div class="relative">
         <div data-readmore-body class="text-sm leading-relaxed text-slatey sm:text-base [&_a]:text-orange hover:[&_a]:underline [&_h2]:mb-2 [&_h2]:mt-6 [&_h2]:font-display [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-white [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:font-display [&_h3]:font-semibold [&_h3]:text-white [&_li]:mb-1 [&_ol]:my-4 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-4 [&_p:last-child]:mb-0 [&_ul]:my-4 [&_ul]:list-disc [&_ul]:pl-5"><?php the_content(); ?></div>
-        <div data-readmore-fade class="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#272a2d] transition-opacity duration-300"></div>
       </div>
       <button type="button" data-readmore-toggle data-more="<?php esc_attr_e('Read More', 'solaire'); ?>" data-less="<?php esc_attr_e('Read Less', 'solaire'); ?>" class="mt-4 font-display text-sm font-semibold text-orange transition hover:text-white"><?php esc_html_e('Read More', 'solaire'); ?></button>
     </div>

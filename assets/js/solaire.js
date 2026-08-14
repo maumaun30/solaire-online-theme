@@ -588,6 +588,15 @@
       var fade = root.querySelector("[data-readmore-fade]");
       if (!body || !btn) return;
 
+      // The fade is painted as a mask on the text itself, so it works over any
+      // background instead of stamping a solid-coloured rectangle on top.
+      if (fade) fade.style.display = "none";
+      var maskOn = "";
+      function setFade(on) {
+        body.style.webkitMaskImage = on ? maskOn : "";
+        body.style.maskImage = on ? maskOn : "";
+      }
+
       // Collapsed height: either show the first N block elements
       // (data-readmore-blocks) or a fixed pixel height fallback.
       var blocks = parseInt(root.getAttribute("data-readmore-blocks") || "0", 10);
@@ -602,7 +611,6 @@
       // Short enough to fit — no toggle or fade needed.
       if (body.scrollHeight <= collapsed + 4) {
         btn.style.display = "none";
-        if (fade) fade.style.display = "none";
         return;
       }
 
@@ -610,13 +618,17 @@
       body.style.overflow = "hidden";
       body.style.maxHeight = collapsed + "px";
       body.style.transition = "max-height 0.4s ease";
+      // Never let the fade eat more than a third of what is visible.
+      var fadePx = Math.max(24, Math.min(80, Math.round(collapsed / 3)));
+      maskOn = "linear-gradient(to bottom, #000 " + (collapsed - fadePx) + "px, transparent)";
+      setFade(true);
 
       btn.addEventListener("click", function () {
         open = !open;
         if (open) {
           body.style.maxHeight = body.scrollHeight + "px";
           btn.textContent = btn.getAttribute("data-less") || "Read Less";
-          if (fade) fade.style.opacity = "0";
+          setFade(false);
         } else {
           // Pin to the current height first so the collapse transition fires.
           body.style.maxHeight = body.scrollHeight + "px";
@@ -626,7 +638,7 @@
             });
           });
           btn.textContent = btn.getAttribute("data-more") || "Read More";
-          if (fade) fade.style.opacity = "1";
+          setFade(true);
         }
       });
     });
