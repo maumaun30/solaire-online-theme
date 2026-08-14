@@ -59,9 +59,9 @@ $dd_caret = '<svg class="solaire-dd-caret h-4 w-4" viewBox="0 0 20 20" fill="non
         <span class="text-white/30">|</span>
         <span class="font-semibold text-orange"><?php echo esc_html($crumb); ?></span>
       </nav>
-      <h1 data-anim class="font-display text-4xl font-extrabold uppercase tracking-tight sm:text-6xl"><?php echo esc_html($page_title); ?></h1>
+      <h1 data-anim class="font-display text-4xl font-extrabold uppercase tracking-tight sm:text-6xl">Play <?php echo esc_html($page_title); ?> in the Philippines</h1>
       <?php if ($blurb) : ?>
-        <p data-anim data-anim-delay="120" class="mt-3 max-w-xl text-sm text-white/85 sm:text-base"><?php echo esc_html($blurb); ?></p>
+        <p data-anim data-anim-delay="120" class="mt-3 max-w-3xl text-sm text-white/85 sm:text-base"><?php echo esc_html($blurb); ?></p>
       <?php endif; ?>
     </div>
   </div>
@@ -195,7 +195,6 @@ $dd_caret = '<svg class="solaire-dd-caret h-4 w-4" viewBox="0 0 20 20" fill="non
     <div data-readmore data-readmore-collapsed-height="200">
       <div class="relative">
         <div data-readmore-body class="text-sm leading-relaxed text-slatey sm:text-base [&_a]:text-orange hover:[&_a]:underline [&_h2]:mb-3 [&_h2]:mt-8 [&_h2:first-child]:mt-0 [&_h2]:font-display [&_h2]:text-xl [&_h2]:font-extrabold [&_h2]:text-white sm:[&_h2]:text-2xl [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:font-display [&_h3]:font-semibold [&_h3]:text-white [&_li]:mb-1 [&_ol]:my-4 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-4 [&_p:last-child]:mb-0 [&_ul]:my-4 [&_ul]:list-disc [&_ul]:pl-5"><?php echo $cat_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
-        <div data-readmore-fade class="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#272a2d] transition-opacity duration-300"></div>
       </div>
       <button type="button" data-readmore-toggle data-more="<?php esc_attr_e('Read More', 'solaire'); ?>" data-less="<?php esc_attr_e('Read Less', 'solaire'); ?>" class="mt-4 font-display text-sm font-semibold text-orange transition hover:text-white"><?php esc_html_e('Read More', 'solaire'); ?></button>
     </div>
@@ -224,6 +223,11 @@ $dd_caret = '<svg class="solaire-dd-caret h-4 w-4" viewBox="0 0 20 20" fill="non
               $icon_alt = get_post_meta($icon, '_wp_attachment_image_alt', true);
           } else {
               $icon_url = $icon;
+              $icon_alt = '';
+          }
+          // Fall back to the bundled question mark icon.
+          if (! $icon_url) {
+              $icon_url = get_theme_file_uri('assets/img/Question mark icon.svg');
               $icon_alt = '';
           }
       ?>
