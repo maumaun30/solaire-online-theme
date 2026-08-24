@@ -346,11 +346,92 @@ $share_title = rawurlencode($title);
     color: var(--color-primary);
   }
 
-  .sp-content__body img {
+  /* ── IN-CONTENT IMAGES (Gutenberg) ──
+     Editors just insert an Image block and pick nothing; the template
+     normalizes whatever they upload to a consistent 16:9 card so a tall or
+     oversized source can't blow out the column. --sp-img-ratio is the single
+     knob if the ratio ever needs to change. */
+  .sp-content__body {
+    --sp-img-ratio: 16 / 9;
+  }
+
+  .sp-content__body figure,
+  .sp-content__body .wp-block-image {
+    margin: 1.75rem 0;
     max-width: 100%;
+  }
+
+  .sp-content__body img,
+  .sp-content__body .wp-block-image img {
+    display: block;
+    width: 100%;
     height: auto;
+    max-width: 100%;
+    aspect-ratio: var(--sp-img-ratio);
+    object-fit: cover;
+    object-position: center;
     border-radius: .5rem;
-    margin: 1rem 0;
+    background: var(--bg-dark-4);
+  }
+
+  /* Caption */
+  .sp-content__body figcaption,
+  .sp-content__body .wp-block-image figcaption {
+    font-size: .78rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, .5);
+    text-align: center;
+    margin: .6rem 0 0;
+  }
+
+  /* Left/right floats — half column on desktop, full width on small screens */
+  .sp-content__body .alignleft,
+  .sp-content__body .alignright {
+    max-width: 48%;
+  }
+
+  .sp-content__body .alignleft {
+    float: left;
+    margin: .5rem 1.5rem 1rem 0;
+  }
+
+  .sp-content__body .alignright {
+    float: right;
+    margin: .5rem 0 1rem 1.5rem;
+  }
+
+  .sp-content__body .aligncenter {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* "Wide"/"Full" alignment bleeds past the card's 2rem padding */
+  .sp-content__body .alignwide,
+  .sp-content__body .alignfull {
+    width: calc(100% + 4rem);
+    max-width: calc(100% + 4rem);
+    margin-left: -2rem;
+    margin-right: -2rem;
+  }
+
+  .sp-content__body .alignfull img {
+    border-radius: 0;
+  }
+
+  /* Gallery / columns keep their own grid — don't force the ratio there */
+  .sp-content__body .wp-block-gallery img,
+  .sp-content__body .wp-block-columns img {
+    aspect-ratio: auto;
+    object-fit: contain;
+  }
+
+  /* Logos, icons, emoji and other small assets shouldn't be stretched */
+  .sp-content__body img[width][height][width="150"],
+  .sp-content__body img.no-crop,
+  .sp-content__body .is-not-cropped img {
+    aspect-ratio: auto;
+    object-fit: contain;
+    width: auto;
   }
 
   /* ── SHARE ── */
@@ -631,6 +712,20 @@ $share_title = rawurlencode($title);
   @media(max-width: 600px) {
     .sp-hero__inner {
       height: 150px;
+    }
+
+    /* Floats and wide alignment collapse to plain full-width blocks */
+    .sp-content__body .alignleft,
+    .sp-content__body .alignright {
+      float: none;
+      max-width: 100%;
+      margin: 1.5rem 0;
+    }
+
+    /* Portrait phones: a 16:9 crop gets very short, so give images a
+       slightly taller 4:3 frame instead. */
+    .sp-content__body {
+      --sp-img-ratio: 4 / 3;
     }
 
     .sp-content__title {

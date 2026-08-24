@@ -19,7 +19,6 @@ if (!defined('ABSPATH')) {
 
 <body <?php body_class('bg-deep text-white'); ?>>
   <?php wp_body_open(); ?>
-
   <!-- ============================ HEADER ============================ -->
   <header class="so-header header-bar sticky top-0 z-50">
     <div class="relative z-10 mx-auto flex h-[44px] max-w-shell items-center gap-6 pl-2 pr-4 sm:h-[68px] sm:px-6">
@@ -35,11 +34,11 @@ if (!defined('ABSPATH')) {
       </a>
 
       <!-- Desktop nav -->
-      <nav class="hidden items-center gap-1 lg:flex" aria-label="<?php esc_attr_e('Primary Menu', 'solaire'); ?>">
+      <nav class="so-nav hidden items-center lg:flex" aria-label="<?php esc_attr_e('Primary Menu', 'solaire'); ?>">
         <?php wp_nav_menu([
           'theme_location' => 'primary',
           'container'      => false,
-          'items_wrap'     => '%3$s',
+          'items_wrap'     => '<ul class="so-nav__list flex items-center gap-1">%3$s</ul>',
           'walker'         => new Solaire_Nav_Walker('desktop'),
           'fallback_cb'    => false,
         ]); ?>
@@ -73,11 +72,11 @@ if (!defined('ABSPATH')) {
         ?>
       </button>
     </div>
-    <nav class="flex flex-col gap-1 text-base font-semibold text-center" aria-label="<?php esc_attr_e('Mobile Menu', 'solaire'); ?>">
+    <nav class="so-m-nav text-base font-semibold" aria-label="<?php esc_attr_e('Mobile Menu', 'solaire'); ?>">
       <?php wp_nav_menu([
         'theme_location' => 'primary',
         'container'      => false,
-        'items_wrap'     => '%3$s',
+        'items_wrap'     => '<ul class="so-m-list">%3$s</ul>',
         'walker'         => new Solaire_Nav_Walker('mobile'),
         'fallback_cb'    => false,
       ]); ?>
