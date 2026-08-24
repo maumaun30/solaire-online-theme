@@ -604,8 +604,10 @@ function solaire_nav_icon_html($item, $active)
 }
 
 /**
- * Walker for the header navigation. Renders bare <a> elements (no <ul>/<li>)
- * with icons and active styling, in either the "desktop" or "mobile" variant.
+ * Walker for the header navigation. Renders a nested <ul>/<li> tree with icons,
+ * active styling and child dropdowns, in either the "desktop" or "mobile"
+ * variant. Desktop children open as a hover/focus dropdown panel; mobile
+ * children collapse into an accordion opened by the caret button.
  */
 class Solaire_Nav_Walker extends Walker_Nav_Menu
 {
@@ -616,9 +618,28 @@ class Solaire_Nav_Walker extends Walker_Nav_Menu
         $this->variant = $variant;
     }
 
-    public function start_lvl(&$output, $depth = 0, $args = null) {}
-    public function end_lvl(&$output, $depth = 0, $args = null) {}
-    public function end_el(&$output, $item, $depth = 0, $args = null) {}
+    public function start_lvl(&$output, $depth = 0, $args = null)
+    {
+        if ($this->variant === 'mobile') {
+            // Wrapper so a single element can be animated: the grid-rows
+            // collapse only affects the first row, so the <ul> itself cannot be
+            // the grid when it has several <li> children.
+            $output .= '<div class="so-submenu-wrap"><ul class="so-submenu">';
+            return;
+        }
+
+        $output .= '<ul class="so-dropdown">';
+    }
+
+    public function end_lvl(&$output, $depth = 0, $args = null)
+    {
+        $output .= $this->variant === 'mobile' ? '</ul></div>' : '</ul>';
+    }
+
+    public function end_el(&$output, $item, $depth = 0, $args = null)
+    {
+        $output .= '</li>';
+    }
 
     public function start_el(&$output, $item, $depth = 0, $args = null, $id = 0)
     {
@@ -627,15 +648,42 @@ class Solaire_Nav_Walker extends Walker_Nav_Menu
             || in_array('current-menu-parent', $classes, true)
             || in_array('current-menu-ancestor', $classes, true);
 
+        $has_children = in_array('menu-item-has-children', $classes, true);
+
         $url   = $item->url ?: '#';
         $label = $item->title;
 
+        $caret = '<svg class="so-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>';
+
         if ($this->variant === 'mobile') {
+            $li = '<li class="so-m-item' . ($has_children ? ' has-children' : '') . '">';
             $cls = $active ? 'text-orange' : 'text-white/90';
-            $output .= sprintf(
-                '<a href="%s" class="rounded-lg px-3 py-3 hover:bg-white/5 %s">%s</a>',
+            $li .= sprintf(
+                '<a href="%s" class="so-m-link rounded-lg px-3 py-3 hover:bg-white/5 %s">%s</a>',
                 esc_url($url),
                 esc_attr($cls),
+                esc_html($label)
+            );
+            if ($has_children) {
+                // A separate button rather than the link itself, so a parent
+                // category stays reachable as a destination.
+                $li .= sprintf(
+                    '<button type="button" class="so-submenu-toggle" aria-expanded="false" aria-label="%s">%s</button>',
+                    esc_attr(sprintf(__('Toggle %s submenu', 'solaire'), $label)),
+                    $caret
+                );
+            }
+            $output .= $li;
+            return;
+        }
+
+        if ($depth > 0) {
+            $sub_cls = 'so-dropdown-link' . ($active ? ' is-active' : '');
+            $output .= sprintf(
+                '<li class="so-dropdown-item"><a href="%s" class="%s"%s>%s</a>',
+                esc_url($url),
+                esc_attr($sub_cls),
+                $active ? ' aria-current="page"' : '',
                 esc_html($label)
             );
             return;
@@ -645,13 +693,15 @@ class Solaire_Nav_Walker extends Walker_Nav_Menu
         $label_cls = 'so-nav-underline' . ($active ? ' is-active' : '');
         $icon      = solaire_nav_icon_html($item, $active);
         $output .= sprintf(
-            '<a href="%s" class="group flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors %s"%s><span class="flex shrink-0 text-white">%s</span><span class="%s">%s</span></a>',
+            '<li class="so-nav__item%s"><a href="%s" class="group flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors %s"%s><span class="flex shrink-0 text-white">%s</span><span class="%s">%s</span>%s</a>',
+            $has_children ? ' has-children' : '',
             esc_url($url),
             esc_attr($cls),
             $active ? ' aria-current="page"' : '',
             $icon, // phpcs:ignore
             esc_attr($label_cls),
-            esc_html($label)
+            esc_html($label),
+            $has_children ? $caret : ''
         );
     }
 }

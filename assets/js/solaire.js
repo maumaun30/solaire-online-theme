@@ -33,6 +33,26 @@
     drawer.querySelectorAll("a").forEach(function (a) {
       a.addEventListener("click", close);
     });
+
+    /* Sub-menu accordions — the caret button toggles, the parent link still
+       navigates. Accordion: only one branch stays open at a time. */
+    drawer.querySelectorAll(".so-submenu-toggle").forEach(function (toggle) {
+      toggle.addEventListener("click", function () {
+        var item = toggle.closest(".so-m-item");
+        if (!item) return;
+        var isOpen = item.classList.toggle("is-open");
+        toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        if (!isOpen) return;
+        item.parentElement
+          .querySelectorAll(":scope > .so-m-item.is-open")
+          .forEach(function (other) {
+            if (other === item) return;
+            other.classList.remove("is-open");
+            var t = other.querySelector(":scope > .so-submenu-toggle");
+            if (t) t.setAttribute("aria-expanded", "false");
+          });
+      });
+    });
   }
 
   /* ---- Game-row carousels --------------------------------- */

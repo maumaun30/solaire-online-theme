@@ -736,6 +736,192 @@
   }
 }
 
+/* ── Desktop nav dropdowns ────────────────────────────────────────
+   Parent items open a panel on hover/focus. The panel is kept in the
+   layout (not display:none) so it can fade/slide and stays reachable by
+   keyboard; pointer-events guards the hidden state. */
+.so-nav__list,
+.so-dropdown {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.so-nav__item {
+  position: relative;
+}
+
+.so-caret {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  opacity: 0.8;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+}
+
+.so-nav__item.has-children:hover > a .so-caret,
+.so-nav__item.has-children:focus-within > a .so-caret {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+
+.so-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 100;
+  min-width: 210px;
+  /* The top padding bridges the gap to the parent link, so the pointer
+     never crosses dead space on its way down. */
+  padding: 12px 0 8px;
+  background: var(--c-bg-deep);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+}
+
+/* Invisible bridge across the header's bottom padding. */
+.so-dropdown::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 16px;
+}
+
+.so-nav__item:hover > .so-dropdown,
+.so-nav__item:focus-within > .so-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.so-dropdown-item {
+  width: 100%;
+}
+
+.so-dropdown-link {
+  display: block;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  /* Transparent bar that fills with the brand orange on hover. */
+  border-left: 2px solid transparent;
+  transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+}
+
+.so-dropdown-link:hover,
+.so-dropdown-link:focus-visible,
+.so-dropdown-link.is-active {
+  color: #fff;
+  background: rgba(223, 106, 46, 0.16);
+  border-left-color: var(--c-orange);
+}
+
+/* ── Mobile drawer sub-menus ──────────────────────────────────────
+   Collapsed accordions opened by the caret button; the parent link stays
+   a link, so tapping the label still navigates. */
+.so-m-list,
+.so-submenu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.so-m-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.so-m-link {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+}
+
+.so-m-item.has-children > .so-m-link {
+  padding-right: 4px;
+}
+
+.so-submenu-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease, transform 0.25s ease;
+}
+
+.so-submenu-toggle .so-caret {
+  width: 16px;
+  height: 16px;
+}
+
+.so-submenu-toggle:hover {
+  color: var(--c-orange);
+  background: rgba(223, 106, 46, 0.14);
+}
+
+.so-m-item.is-open > .so-submenu-toggle {
+  transform: rotate(180deg);
+  color: var(--c-orange);
+}
+
+/* The wrapper is the grid so every row collapses; the grid-rows trick
+   animates to the content's real height with no hard-coded max-height. */
+.so-submenu-wrap {
+  flex-basis: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease, margin 0.3s ease;
+}
+
+.so-m-item.is-open > .so-submenu-wrap {
+  grid-template-rows: 1fr;
+  margin: 2px 0 6px;
+}
+
+.so-submenu {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.so-submenu .so-m-link {
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.so-submenu .so-m-link:hover {
+  color: var(--c-orange);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .so-dropdown,
+  .so-submenu-wrap,
+  .so-caret {
+    transition: none;
+  }
+}
+
 /* Footer */
 @media (max-width: 767px) {
   footer.footer-glow .py-14 {
