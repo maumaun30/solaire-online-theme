@@ -502,6 +502,32 @@ $share_title = rawurlencode($title);
   }
 
   /* ── SIDEBAR ── */
+  /* Two-column layout only (>=768px, where .sp-main stops collapsing to one
+     column): the aside pins below the sticky header
+     (68px inner + 10px/10px .so-header padding + 1px .header-bar border = 89px)
+     while the article scrolls past. This only works because the cards below are
+     deliberately compact (21:9 thumb, clamped title + excerpt) — three of them
+     fit the viewport instead of overflowing it. `align-self: start` is required:
+     a grid item stretches to the row height by default, leaving `sticky` no
+     distance to travel. If you ever raise the related-post count or un-clamp the
+     cards, this needs revisiting — an overflowing top-pinned column strands its
+     last card. */
+  @media (min-width: 768px) {
+    .sp-side {
+      position: -webkit-sticky;
+      position: sticky;
+      top: calc(89px + 1.5rem);
+      align-self: start;
+    }
+  }
+
+  /* Respect a reduced-motion preference: no travel, just a static column. */
+  @media (min-width: 768px) and (prefers-reduced-motion: reduce) {
+    .sp-side {
+      position: static;
+    }
+  }
+
   .sp-side__hd {
     font-size: 1rem;
     font-weight: 700;
@@ -514,7 +540,7 @@ $share_title = rawurlencode($title);
   .sp-side__list {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1rem;
   }
 
   .sp-rel {
@@ -533,7 +559,7 @@ $share_title = rawurlencode($title);
 
   .sp-rel__thumb {
     width: 100%;
-    aspect-ratio: 16/9;
+    aspect-ratio: 21/9;
     object-fit: cover;
     display: block;
     background: var(--bg-dark-4);
@@ -545,18 +571,21 @@ $share_title = rawurlencode($title);
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: .75rem;
     background: linear-gradient(135deg, #2b2e31 0%, #232629 50%, #15171a 100%);
+    border-bottom: 1px solid var(--border);
   }
 
   .sp-rel__thumb--logo img {
-    width: 45%;
-    max-width: 120px;
+    width: 60%;
+    max-width: 150px;
+    height: auto;
     object-fit: contain;
     opacity: .95;
   }
 
   .sp-rel__body {
-    padding: 1.1rem 1.1rem 1.25rem;
+    padding: .9rem 1rem 1rem;
   }
 
   .sp-rel__title {
@@ -565,6 +594,13 @@ $share_title = rawurlencode($title);
     line-height: 1.3;
     color: #fff;
     margin: 0 0 .55rem;
+    /* Long headlines ran to 4 lines and blew the sticky column past the
+       viewport; two lines keeps every card a predictable height. */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .sp-rel__excerpt {

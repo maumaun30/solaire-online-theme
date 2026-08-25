@@ -1,0 +1,327 @@
+/* ══════════════════════════════════════════════════════════════
+   Solaire Hero Slider — style.css
+
+   Palette (theme.json / tailwind.config.js):
+     deep   #15171a   surface #232629   panel #2b2e31
+     brandred #c42b29 orange #df6a2e / #ef7b00
+     gold   #f5b335 / #f8ab3e          slate #94a3b8
+
+   CSS var set inline by render.php:
+     --slider-height    default 420px
+══════════════════════════════════════════════════════════════ */
+
+.wp-block-solaire-hero-slider.solaire-hero-slider {
+    --slider-height:   420px;
+    --so-deep:         #15171a;
+    --so-gold:         #f5b335;
+    --so-orange:       #df6a2e;
+    --so-red:          #c42b29;
+    --so-slate:        #94a3b8;
+
+    position:   relative;
+    width:      100%;
+    height:     var(--slider-height);
+    overflow:   hidden;
+    background: var(--so-deep);
+    display:    block;
+    font-family: 'Montserrat', system-ui, sans-serif;
+}
+
+/* Readability scrim — a soft dark fade at the top so the breadcrumb stays
+   legible over bright artwork, and a lighter one at the bottom for the dots.
+   Deliberately not a full-image wash: the middle of the slide stays untouched.
+   Sits above the slides (z-index 1) but below the breadcrumb and dots (10). */
+.wp-block-solaire-hero-slider.solaire-hero-slider::before {
+    content:        '';
+    position:       absolute;
+    inset:          0;
+    z-index:        2;
+    pointer-events: none;
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(21, 23, 26, 0.60) 0%,
+            rgba(21, 23, 26, 0.28) 18%,
+            rgba(21, 23, 26, 0) 38%
+        ),
+        linear-gradient(
+            to top,
+            rgba(21, 23, 26, 0.45) 0%,
+            rgba(21, 23, 26, 0) 22%
+        );
+}
+
+/* ── Track ───────────────────────────────────────────────────── */
+.solaire-hero-slider__track {
+    position: absolute;
+    inset:    0;
+    width:    100%;
+    height:   100%;
+}
+
+/* ── Slide — stacked, opacity crossfade ──────────────────────── */
+.solaire-hero-slider__slide {
+    position:    absolute;
+    inset:       0;
+    opacity:     0;
+    transition:  opacity 0.85s ease;
+    will-change: opacity;
+    z-index:     0;
+}
+
+.solaire-hero-slider__slide.is-active {
+    opacity: 1;
+    z-index: 1;
+}
+
+/* ── Featured image — full bleed, slow drift on the active slide ── */
+.solaire-hero-slider__img {
+    position:        absolute;
+    inset:           0;
+    width:           100%;
+    height:          100%;
+    object-fit:      cover;
+    object-position: center center;
+    display:         block;
+    pointer-events:  none;
+    user-select:     none;
+    transform:       scale(1.04);
+    transition:      transform 6s ease-out;
+}
+
+.solaire-hero-slider__slide.is-active .solaire-hero-slider__img {
+    transform: scale(1);
+}
+
+/* ── Fallback slide — no featured image ──────────────────────────
+   Site logo (or the SOLAIRE ONLINE wordmark) centered on a dark panel,
+   matching single.php's hero and the archive cards.
+   ──────────────────────────────────────────────────────────────── */
+.solaire-hero-slider__fallback {
+    position:        absolute;
+    inset:           0;
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    padding:         2rem;
+    background:      linear-gradient(135deg, #2b2e31 0%, #232629 50%, #15171a 100%);
+}
+
+.solaire-hero-slider__fallback-logo {
+    width:      28%;
+    max-width:  190px;
+    height:     auto;
+    object-fit: contain;
+    opacity:    0.95;
+}
+
+/* Stands in when no Custom Logo is configured. */
+.solaire-hero-slider__wordmark {
+    display:        flex;
+    flex-direction: column;
+    align-items:    center;
+    text-align:     center;
+    line-height:    1;
+}
+
+.solaire-hero-slider__wordmark-main {
+    font-size:      clamp(1.25rem, 3vw, 2rem);
+    font-weight:    600;
+    letter-spacing: 0.3em;
+    color:          rgba(255, 255, 255, 0.9);
+}
+
+.solaire-hero-slider__wordmark-sub {
+    font-size:      clamp(9px, 1.1vw, 14px);
+    letter-spacing: 0.55em;
+    color:          rgba(255, 255, 255, 0.6);
+}
+
+@media (max-width: 767px) {
+    .solaire-hero-slider__fallback-logo {
+        width:     40%;
+        max-width: 130px;
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BREADCRUMB — aligned to the theme shell (max-w 1440px)
+══════════════════════════════════════════════════════════════ */
+.solaire-hero-slider__nav-container {
+    position:    absolute;
+    top:         0;
+    left:        0;
+    right:       0;
+    z-index:     10;
+    display:     flex;
+    align-items: center;
+    width:       100%;
+    padding-top: 1.25rem;
+}
+
+/* Mirrors the .sp-bc breadcrumb in single.php: white links, orange current
+   label, chevron separators. */
+.solaire-hero-slider__breadcrumb {
+    display:     flex;
+    align-items: center;
+    flex-wrap:   wrap;
+    gap:         0.55rem;
+    width:       100%;
+    max-width:   1440px;
+    margin:      0 auto;
+    padding:     0 1.5rem;
+
+    font-size:      0.78rem;
+    font-weight:    600;
+    letter-spacing: 0.04em;
+}
+
+.solaire-hero-slider__breadcrumb .breadcrumb-home {
+    color:           #fff;
+    text-decoration: none;
+    font-weight:     400;
+    transition:      color 0.2s;
+}
+
+.solaire-hero-slider__breadcrumb .breadcrumb-home:hover,
+.solaire-hero-slider__breadcrumb .breadcrumb-home:focus-visible {
+    color: var(--so-orange);
+}
+
+.solaire-hero-slider__breadcrumb .breadcrumb-sep {
+    color:       #fff;
+    flex-shrink: 0;
+}
+
+.solaire-hero-slider__breadcrumb .breadcrumb-current {
+    color: var(--so-orange);
+}
+
+/* ── Bottom edge — brand gradient hairline ───────────────────── */
+.solaire-hero-slider__edge {
+    position:   absolute;
+    left:       0;
+    right:      0;
+    bottom:     0;
+    height:     3px;
+    z-index:    9;
+    background: linear-gradient(
+        90deg,
+        var(--so-red) 0%,
+        var(--so-orange) 45%,
+        var(--so-gold) 100%
+    );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DOT NAVIGATION — pill dots, active fills with the gold gradient
+══════════════════════════════════════════════════════════════ */
+.solaire-hero-slider__dots {
+    position:    absolute;
+    bottom:      22px;
+    left:        50%;
+    transform:   translateX(-50%);
+    z-index:     10;
+    display:     flex;
+    align-items: center;
+    gap:         8px;
+}
+
+.solaire-hero-slider__dot {
+    width:         10px;
+    height:        10px;
+    border-radius: 9999px;
+    background:    rgba(255, 255, 255, 0.28);
+    border:        none;
+    cursor:        pointer;
+    padding:       0;
+    flex-shrink:   0;
+    transition:    background 0.3s ease, width 0.3s ease;
+}
+
+.solaire-hero-slider__dot:hover {
+    background: rgba(245, 179, 53, 0.55);
+}
+
+.solaire-hero-slider__dot:focus-visible {
+    outline:        2px solid var(--so-gold);
+    outline-offset: 3px;
+}
+
+.solaire-hero-slider__dot.is-active {
+    width:      40px;
+    background: linear-gradient(90deg, var(--so-orange) 0%, var(--so-gold) 100%);
+    box-shadow: 0 0 12px rgba(245, 179, 53, 0.45);
+}
+
+/* ── Empty state ─────────────────────────────────────────────── */
+.solaire-hero-slider--empty {
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    min-height:      160px;
+    background:      #232629;
+    border:          1px dashed rgba(245, 179, 53, 0.35);
+}
+
+.solaire-hero-slider--empty p {
+    margin:     0;
+    padding:    2rem;
+    text-align: center;
+    color:      #94a3b8;
+    font-size:  14px;
+}
+
+/* ── Reduced motion ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    .solaire-hero-slider__slide,
+    .solaire-hero-slider__img {
+        transition: none;
+    }
+    .solaire-hero-slider__img {
+        transform: none;
+    }
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 1023px) {
+    .wp-block-solaire-hero-slider.solaire-hero-slider {
+        --slider-height: 320px;
+    }
+}
+
+@media (max-width: 767px) {
+    .wp-block-solaire-hero-slider.solaire-hero-slider {
+        --slider-height: 220px;
+    }
+
+    .solaire-hero-slider__breadcrumb {
+        padding-left:  1rem;
+        padding-right: 1rem;
+    }
+
+    .solaire-hero-slider__dots {
+        bottom: 14px;
+        gap:    6px;
+    }
+
+    .solaire-hero-slider__dot {
+        width:  8px;
+        height: 8px;
+    }
+
+    .solaire-hero-slider__dot.is-active {
+        width: 28px;
+    }
+}
+
+@media (max-width: 480px) {
+    .wp-block-solaire-hero-slider.solaire-hero-slider {
+        --slider-height: 160px;
+    }
+
+    .solaire-hero-slider__breadcrumb {
+        gap:       0.4rem;
+        font-size: 0.7rem;
+    }
+}
