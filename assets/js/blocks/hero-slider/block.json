@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "solaire/hero-slider",
+  "title": "Solaire Hero Slider",
+  "category": "design",
+  "icon": "slides",
+  "description": "Full-width hero image slider from a chosen post type. Shows breadcrumb only.",
+  "editorScript": "file:./build/index.js",
+  "viewScript": "file:./view.js",
+  "style": "file:./style.css",
+  "render": "file:./render.php",
+  "supports": { "html": false },
+  "attributes": {
+    "selectedPostType": { "type": "string", "default": "post" },
+    "slideCount": { "type": "number", "default": 5 },
+    "breadcrumbLabel": { "type": "string", "default": "" },
+    "autoplayDelay": { "type": "number", "default": 5000 },
+    "sliderHeight": { "type": "string", "default": "420px" }
+  }
+}

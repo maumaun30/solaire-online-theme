@@ -1,0 +1,319 @@
+/* ================================================================
+   Solaire — Post Archive Block
+
+   Palette (theme.json / tailwind.config.js):
+     deep #15171a · surface #232629 · panel #2b2e31
+     brandred #c42b29 · orange #df6a2e · gold #f5b335 · slate #94a3b8
+   ================================================================ */
+
+.solaire-post-archive {
+  --so-deep:    #15171a;
+  --so-surface: #232629;
+  --so-panel:   #2b2e31;
+  --so-red:     #c42b29;
+  --so-orange:  #df6a2e;
+  --so-gold:    #f5b335;
+  --so-slate:   #94a3b8;
+
+  padding: 48px 0;
+  font-family: 'Montserrat', system-ui, sans-serif;
+}
+
+.solaire-post-archive__container {
+  max-width: 1440px;
+  margin:    0 auto;
+  padding:   0 24px;
+}
+
+/* ── Section label — gold, with a gradient rule underneath ── */
+.solaire-post-archive__label {
+  position:       relative;
+  display:        inline-block;
+  font-size:      20px;
+  font-weight:    800;
+  line-height:    1.44;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color:          var(--so-gold);
+  margin:         0 0 24px;
+  padding:        0 0 10px;
+}
+
+.solaire-post-archive__label::after {
+  content:       '';
+  position:      absolute;
+  left:          0;
+  bottom:        0;
+  width:         100%;
+  height:        3px;
+  border-radius: 9999px;
+  background:    linear-gradient(90deg, var(--so-red) 0%, var(--so-orange) 50%, var(--so-gold) 100%);
+}
+
+.solaire-post-archive__empty {
+  color:      var(--so-slate);
+  font-size:  0.875rem;
+  text-align: center;
+  padding:    48px 0;
+}
+
+/* ── Grid ── */
+.solaire-post-archive__grid {
+  display:               grid;
+  grid-template-columns: repeat(var(--archive-cols, 2), 1fr);
+  gap:                   24px;
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .solaire-post-archive__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 767px) {
+  .solaire-post-archive__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ================================================================
+   CARD — dark panel, hairline ring, warms to gold on hover
+   ================================================================ */
+.solaire-archive-card {
+  position:       relative;
+  display:        flex;
+  flex-direction: column;
+  overflow:       hidden;
+  background:     var(--so-surface);
+  border-radius:  12px;
+  border:         1px solid rgba(255, 255, 255, 0.07);
+  transition:     transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.solaire-archive-card:hover {
+  transform:    translateY(-4px);
+  border-color: rgba(245, 179, 53, 0.45);
+  box-shadow:   0 16px 40px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(245, 179, 53, 0.12);
+}
+
+/* ── Thumbnail ── */
+.solaire-archive-card__thumb {
+  position:    relative;
+  width:       100%;
+  height:      320px;
+  overflow:    hidden;
+  flex-shrink: 0;
+  background:  var(--so-deep);
+}
+
+/* Direct child only — the logo fallback sizes itself. */
+.solaire-archive-card__thumb > img {
+  width:           100%;
+  height:          100%;
+  object-fit:      cover;
+  object-position: center;
+  display:         block;
+  transition:      transform 0.5s ease;
+}
+
+.solaire-archive-card:hover .solaire-archive-card__thumb > img {
+  transform: scale(1.05);
+}
+
+/* Fallback when a post has no featured image — site logo (or the SOLAIRE
+   ONLINE wordmark) centered on a dark panel, matching single.php's hero and
+   related-post cards. */
+.solaire-archive-card__thumb-placeholder {
+  width:           100%;
+  height:          100%;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  padding:         1rem;
+  background:      linear-gradient(135deg, var(--so-panel) 0%, var(--so-surface) 50%, var(--so-deep) 100%);
+}
+
+.solaire-archive-card__thumb-logo {
+  width:       45%;
+  max-width:   130px;
+  height:      auto;
+  object-fit:  contain;
+  opacity:     0.95;
+  transition:  transform 0.3s ease;
+}
+
+/* The wordmark stands in when no Custom Logo is configured. */
+.solaire-archive-card__wordmark {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  text-align:     center;
+  line-height:    1;
+}
+
+.solaire-archive-card__wordmark-main {
+  font-size:      1rem;
+  font-weight:    600;
+  letter-spacing: 0.3em;
+  color:          rgba(255, 255, 255, 0.9);
+}
+
+.solaire-archive-card__wordmark-sub {
+  font-size:      7px;
+  letter-spacing: 0.55em;
+  color:          rgba(255, 255, 255, 0.6);
+}
+
+/* Fades the image into the card body so there is no hard seam. */
+.solaire-archive-card__overlay {
+  position:       absolute;
+  inset:          0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(21, 23, 26, 0) 40%,
+    rgba(35, 38, 41, 0.85) 100%
+  );
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .solaire-archive-card__thumb { height: 260px; }
+}
+
+@media (max-width: 767px) {
+  .solaire-archive-card__thumb { height: 220px; }
+}
+
+/* ── Content ── */
+.solaire-archive-card__content {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  text-align:     center;
+  gap:            14px;
+  padding:        24px 24px 28px;
+  flex:           1;
+}
+
+.solaire-archive-card__title {
+  font-size:      22px;
+  font-weight:    800;
+  line-height:    1.3;
+  color:          #ffffff;
+  margin:         0;
+}
+
+.solaire-archive-card__excerpt {
+  font-size:   15px;
+  line-height: 1.6;
+  color:       var(--so-slate);
+  margin:      0;
+  flex:        1;
+}
+
+/* ── Read More ──────────────────────────────────────────────────
+   Matches the "Play for Real - Sign Up Now" CTA on single-game.php:
+   the .bg-brand-orange gradient from main.css with white text, and the
+   .btn-press hover/active feel. Declared locally so the block stays
+   self-contained.
+   ──────────────────────────────────────────────────────────────── */
+.solaire-archive-card__btn {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  margin-top:      4px;
+  padding:         10px 26px;
+  border-radius:   12px;
+  background:      linear-gradient(92deg, #ef7b00 0%, #df6a2e 60%, #d2242a 100%);
+  color:           #ffffff !important;
+  font-size:       13px;
+  font-weight:     700;
+  letter-spacing:  0.06em;
+  text-transform:  uppercase;
+  text-decoration: none;
+  white-space:     nowrap;
+  transition:      transform 0.18s ease, box-shadow 0.25s ease, filter 0.25s ease;
+}
+
+.solaire-archive-card__btn:hover,
+.solaire-archive-card__btn:focus-visible {
+  transform:  translateY(-1px);
+}
+
+.solaire-archive-card__btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* ================================================================
+   LOAD MORE — outlined gold, fills on hover
+   ================================================================ */
+.solaire-post-archive__load-more-wrap {
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  gap:             8px;
+  margin-top:      40px;
+}
+
+.solaire-post-archive__load-more {
+  padding:        16px 40px;
+  border-radius:  9999px;
+  border:         1px solid rgba(245, 179, 53, 0.5);
+  background:     transparent;
+  color:          var(--so-gold);
+  font-family:    inherit;
+  font-size:      14px;
+  font-weight:    700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor:         pointer;
+  transition:     transform 0.2s ease, background 0.25s ease, color 0.25s ease, opacity 0.25s ease;
+}
+
+.solaire-post-archive__load-more:hover:not(:disabled) {
+  background: linear-gradient(90deg, var(--so-orange) 0%, var(--so-gold) 100%);
+  color:      var(--so-deep);
+  border-color: transparent;
+}
+
+.solaire-post-archive__load-more:focus-visible {
+  outline:        2px solid var(--so-gold);
+  outline-offset: 3px;
+}
+
+.solaire-post-archive__load-more:disabled {
+  opacity:   0.55;
+  cursor:    default;
+  transform: none;
+}
+
+/* Editor-only note */
+.solaire-post-archive__load-more-note {
+  font-size:  0.7rem;
+  color:      rgba(255, 255, 255, 0.35);
+  margin:     0;
+  font-style: italic;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .solaire-archive-card,
+  .solaire-archive-card__thumb > img,
+  .solaire-archive-card__btn,
+  .solaire-post-archive__load-more {
+    transition: none;
+    transform:  none;
+  }
+}
+
+/* ================================================================
+   EDITOR
+   ================================================================ */
+.editor-styles-wrapper .solaire-post-archive {
+  background: #15171a;
+}
+
+/* The editor preview renders the button as a <span>, not a link. */
+.editor-styles-wrapper .solaire-archive-card__btn {
+  cursor: default;
+}

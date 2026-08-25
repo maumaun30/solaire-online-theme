@@ -139,6 +139,14 @@ function solaire_register_blocks()
         $block_path = $blocks_dir . '/' . $folder;
 
         if (is_dir($block_path) && file_exists($block_path . '/block.json')) {
+            // A block may ship its own PHP (shared templates, AJAX handlers).
+            // Loading it here keeps each block self-contained, so dropping a
+            // block folder onto a server is all that is needed — no separate
+            // edit to this file. Runs on `init`, before any wp_ajax_* action.
+            if (file_exists($block_path . '/functions-helpers.php')) {
+                require_once $block_path . '/functions-helpers.php';
+            }
+
             register_block_type($block_path);
         }
     }
