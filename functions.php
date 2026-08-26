@@ -266,3 +266,4 @@ require_once get_theme_file_path('/inc/acf-fields.php');
 require_once get_theme_file_path('/inc/template-helpers.php');
 require_once get_theme_file_path('/inc/homepage.php');
 require_once get_theme_file_path('/inc/seed.php');
+require_once get_theme_file_path('/inc/schema.php');
