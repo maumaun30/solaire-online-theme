@@ -205,6 +205,17 @@ $dd_caret = '<svg class="solaire-dd-caret h-4 w-4" viewBox="0 0 20 20" fill="non
   <?php
   // FAQ items — ACF repeater on the category term.
   $faq_items = get_field('so_game_category_faq_wrapper', $current_term);
+
+  // Feed the page's FAQPage node (printed in wp_footer by inc/schema.php).
+  if ($faq_items && function_exists('solaire_collect_faq_items')) {
+      solaire_collect_faq_items(array_map(function ($faq) {
+          return [
+              'question' => $faq['so_game_category_faq_question'] ?? '',
+              'answer'   => $faq['so_game_category_faq_answer'] ?? '',
+          ];
+      }, $faq_items));
+  }
+
   if ($faq_items) : ?>
   <section class="mt-14">
     <h2 data-anim class="text-center font-display text-2xl font-extrabold text-gold sm:text-4xl"><?php printf(esc_html__('A Quick Guide to %s Games', 'solaire'), esc_html($page_title)); ?></h2>

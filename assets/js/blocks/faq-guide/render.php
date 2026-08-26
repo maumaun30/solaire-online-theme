@@ -11,6 +11,11 @@ if (!defined('ABSPATH')) {
 
 $heading = $attributes['heading'] ?? '';
 $items   = $attributes['items'] ?? [];
+
+// Feed the page's FAQPage node (printed in wp_footer by inc/schema.php).
+if ($items && function_exists('solaire_collect_faq_items')) {
+    solaire_collect_faq_items($items);
+}
 ?>
 <section <?php echo get_block_wrapper_attributes(['class' => 'mt-14']); ?>>
   <div class="mx-auto max-w-shell px-4">
