@@ -1,0 +1,20 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "solaire/read-more",
+  "title": "Solaire Read More",
+  "category": "design",
+  "icon": "editor-expand",
+  "description": "Bordered panel with an icon heading and a collapsible rich-text body — the same Read More treatment used on the game category pages.",
+  "keywords": ["read more", "panel", "about", "description", "collapse"],
+  "editorScript": "file:./build/index.js",
+  "style": "file:./style.css",
+  "render": "file:./render.php",
+  "supports": { "html": false },
+  "attributes": {
+    "heading": { "type": "string", "default": "About the Game" },
+    "showIcon": { "type": "boolean", "default": true },
+    "collapsible": { "type": "boolean", "default": true },
+    "collapsedHeight": { "type": "number", "default": 200 }
+  }
+}

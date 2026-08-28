@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "solaire/steps",
+  "title": "Solaire Steps",
+  "category": "design",
+  "icon": "list-view",
+  "description": "Numbered how-to steps with icon cards and a connector line.",
+  "editorScript": "file:./build/index.js",
+  "style": "file:./style.css",
+  "render": "file:./render.php",
+  "supports": { "html": false },
+  "attributes": {
+    "heading": { "type": "string", "default": "Create an account now and start playing within minutes" },
+    "subheading": { "type": "string", "default": "You're only a few steps away from the Solaire Online experience. To play:" },
+    "footerText": { "type": "string", "default": "Signing up is deliberately quick and hassle-free so you can get into the action right away." },
+    "steps": {
+      "type": "array",
+      "default": [
+        { "number": "1", "icon": { "id": 0, "url": "" }, "title": "Sign Up", "text": "Sign up and create your account." },
+        { "number": "2", "icon": { "id": 0, "url": "" }, "title": "Verify", "text": "Verify your details to unlock full access." },
+        { "number": "3", "icon": { "id": 0, "url": "" }, "title": "Log In", "text": "Log in and activate your welcome offer." },
+        { "number": "4", "icon": { "id": 0, "url": "" }, "title": "Play", "text": "Deposit and start playing your favorite games." }
+      ]
+    }
+  }
+}

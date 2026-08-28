@@ -122,7 +122,12 @@ function solaire_games_order_args()
  * what `meta_key` + `meta_value_num` produces, would silently drop them), then
  * COALESCE the missing/blank values to 0 so they sort as a real 0 alongside
  * games explicitly set to 0. Ties fall back to oldest first, which is the order
- * the listings used before this field existed.
+ * the listings used before this field existed, and finally to ID so the sort is
+ * total: most games share the same (blank) value and the same bulk-import
+ * post_date, and MySQL orders tied rows arbitrarily per LIMIT/OFFSET query, so
+ * without a unique last key page 2 re-serves cards page 1 already showed (and
+ * silently drops others). DISTINCT guards against a post carrying more than one
+ * row for the order meta key, which the LEFT JOIN would otherwise duplicate.
  */
 function solaire_games_order_clauses($clauses, $query)
 {
@@ -141,8 +146,11 @@ function solaire_games_order_clauses($clauses, $query)
         $key
     );
 
+    $clauses['distinct'] = 'DISTINCT';
+
     $clauses['orderby'] = "COALESCE(CAST(NULLIF(solaire_order_meta.meta_value, '') AS DECIMAL(20,4)), 0) DESC"
-        . ", {$wpdb->posts}.post_date ASC";
+        . ", {$wpdb->posts}.post_date ASC"
+        . ", {$wpdb->posts}.ID DESC";
 
     return $clauses;
 }
