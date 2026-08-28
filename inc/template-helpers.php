@@ -26,12 +26,28 @@ function solaire_icon($name, $class = 'h-[18px] w-[18px]', $sw = '2')
             'viewBox' => '0 0 21 20',
             'path'    => '<path d="M10.6625 1.39999C8.96158 1.39999 7.29886 1.90438 5.8846 2.84936C4.47034 3.79434 3.36805 5.13747 2.71714 6.70892C2.06623 8.28036 1.89592 10.0095 2.22775 11.6778C2.55958 13.346 3.37866 14.8784 4.58139 16.0811C5.78412 17.2838 7.31649 18.1029 8.98473 18.4347C10.653 18.7666 12.3821 18.5963 13.9536 17.9454C15.525 17.2944 16.8682 16.1922 17.8131 14.7779C18.7581 13.3636 19.2625 11.7009 19.2625 9.99999C19.2625 7.71913 18.3564 5.53169 16.7436 3.91888C15.1308 2.30606 12.9434 1.39999 10.6625 1.39999ZM3.37298 9.99999C3.36839 8.49306 3.82575 7.02093 4.68345 5.7819H5.66632L5.46155 7.78857L4.35583 10.5733L3.41394 10.9829C3.37804 10.6565 3.36436 10.3282 3.37298 9.99999ZM16.5187 5.69999C17.3959 6.88783 17.8825 8.31886 17.9111 9.79523L16.5187 10.7781L14.2254 9.50856L14.0206 7.5838L14.9215 5.94571H15.0854L16.5187 5.69999ZM10.4168 6.88761L13.5292 7.74761L13.7339 9.54952L11.7273 11.4333L9.39298 11.0238L8.9425 8.11618L9.18822 7.91142L10.4168 6.88761ZM10.7444 16.1019L7.71393 15.4057L7.09965 12.9486L9.22917 11.4743L11.6044 11.8838L12.2596 14.3819L11.1949 15.6105L10.7444 16.1019ZM4.47869 10.9829L6.64917 12.9486L7.2225 15.4876L6.44441 15.9381C4.93168 14.8591 3.87934 13.2514 3.49584 11.4333L4.47869 10.9829ZM11.072 16.4705L12.6282 14.6686H15.372L15.5358 15.3648C14.3194 16.5038 12.7367 17.1718 11.072 17.2486V16.4705ZM15.8225 14.4638L16.7235 11.2286L17.9111 10.4095C17.8229 12.1237 17.1258 13.7501 15.9454 14.9962L15.8225 14.4638ZM16.1911 5.24952L15.5768 5.37237L14.8396 5.45428L12.9558 3.69333L13.0377 3.11999C14.258 3.5399 15.3457 4.27449 16.1911 5.24952ZM9.96631 4.67618L10.1301 6.51904L8.61489 7.74761L5.95298 7.5838L6.15774 5.61809L7.95964 4.1438L9.96631 4.67618ZM12.5873 2.95619L12.5054 3.61142L10.212 4.22571L8.0825 3.69333L7.9187 3.24285C8.7869 2.8784 9.721 2.69716 10.6625 2.71047C11.312 2.70908 11.9589 2.79167 12.5873 2.95619Z"/>',
         ],
+        // Promotions — megaphone: reads as an offer / advertisement / deal
+        // announcement rather than a generic price tag.
+        'promos' => [
+            'viewBox' => '0 0 24 24',
+            'path'    => '<path d="M21 5v14a1 1 0 0 1-1.53.85L13 15.9V8.1l6.47-4.04A1 1 0 0 1 21 5Z"/>'
+                . '<path d="M11.5 8v8H8a4 4 0 0 1 0-8h3.5Z"/>'
+                . '<path d="M7 15.5h2.4v4.9a1.2 1.2 0 0 1-2.4 0v-4.9Z"/>',
+        ],
+        // Blogs — article page with folded corner and punched-out text lines.
+        'blogs' => [
+            'viewBox'  => '0 0 24 24',
+            'fillRule' => 'evenodd',
+            'path'     => '<path d="M6 2h7.17L20 8.83V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Zm7.5 2.62V8a.5.5 0 0 0 .5.5h3.38L13.5 4.62ZM7.5 11.4h9v1.6h-9v-1.6Zm0 4h9V17h-9v-1.6Zm0-8h4V9h-4V7.4Z"/>',
+        ],
     ];
     if (isset($filled[$name])) {
         return sprintf(
-            '<svg viewBox="%s" class="%s" fill="currentColor" aria-hidden="true">%s</svg>',
+            '<svg viewBox="%s" class="%s" fill="currentColor" fill-rule="%s" clip-rule="%s" aria-hidden="true">%s</svg>',
             esc_attr($filled[$name]['viewBox']),
             esc_attr($class),
+            esc_attr($filled[$name]['fillRule'] ?? 'nonzero'),
+            esc_attr($filled[$name]['fillRule'] ?? 'nonzero'),
             $filled[$name]['path']
         );
     }
@@ -556,7 +572,20 @@ function solaire_nav_icon_key($item)
             return $term->slug;
         }
     }
-    return sanitize_title($item->title);
+    // Menu labels vary by site ("Promotion" / "Promos", "Blog" / "Blogs"), so
+    // fold the variants onto one icon key the way game_category slugs do.
+    $slug    = sanitize_title($item->title);
+    $aliases = [
+        'promo'      => 'promos',
+        'promos'     => 'promos',
+        'promotion'  => 'promos',
+        'promotions' => 'promos',
+        'blog'       => 'blogs',
+        'blogs'      => 'blogs',
+        'news'       => 'blogs',
+    ];
+
+    return $aliases[$slug] ?? $slug;
 }
 
 /**
@@ -619,7 +648,19 @@ function solaire_nav_icon_html($item, $active)
  */
 class Solaire_Nav_Walker extends Walker_Nav_Menu
 {
+    /** Rows a desktop dropdown column may reach before it splits into another. */
+    const DROPDOWN_MAX_ROWS = 8;
+
+    /** Hard cap on columns, so a huge menu never spans the whole header. */
+    const DROPDOWN_MAX_COLS = 3;
+
+    /** menu_item_parent => child count, filled by the filter below. */
+    public static $child_counts = [];
+
     protected $variant;
+
+    /** ID of the item whose start_el ran last, i.e. the parent of the next start_lvl. */
+    protected $current_parent = 0;
 
     public function __construct($variant = 'desktop')
     {
@@ -636,7 +677,21 @@ class Solaire_Nav_Walker extends Walker_Nav_Menu
             return;
         }
 
-        $output .= '<ul class="so-dropdown">';
+        // Long child lists flow into extra columns instead of one column running
+        // down past the fold. Same top-to-bottom-per-column trick as .rank-grid:
+        // the row count is what decides where the next column starts.
+        $count = self::$child_counts[$this->current_parent] ?? 0;
+        $cols  = min(self::DROPDOWN_MAX_COLS, max(1, (int) ceil($count / self::DROPDOWN_MAX_ROWS)));
+
+        if ($cols < 2) {
+            $output .= '<ul class="so-dropdown">';
+            return;
+        }
+
+        $output .= sprintf(
+            '<ul class="so-dropdown is-multicol" style="--dropdown-rows:%d">',
+            (int) ceil($count / $cols)
+        );
     }
 
     public function end_lvl(&$output, $depth = 0, $args = null)
@@ -651,6 +706,9 @@ class Solaire_Nav_Walker extends Walker_Nav_Menu
 
     public function start_el(&$output, $item, $depth = 0, $args = null, $id = 0)
     {
+        // start_lvl() for this item's children runs straight after this call.
+        $this->current_parent = (int) $item->ID;
+
         $classes = (array) $item->classes;
         $active  = in_array('current-menu-item', $classes, true)
             || in_array('current-menu-parent', $classes, true)
@@ -687,12 +745,16 @@ class Solaire_Nav_Walker extends Walker_Nav_Menu
 
         if ($depth > 0) {
             $sub_cls = 'so-dropdown-link' . ($active ? ' is-active' : '');
+            // Third level and deeper opens as a flyout beside the panel; the
+            // caret points into it rather than down.
             $output .= sprintf(
-                '<li class="so-dropdown-item"><a href="%s" class="%s"%s>%s</a>',
+                '<li class="so-dropdown-item%s"><a href="%s" class="%s"%s>%s%s</a>',
+                $has_children ? ' has-children' : '',
                 esc_url($url),
                 esc_attr($sub_cls),
                 $active ? ' aria-current="page"' : '',
-                esc_html($label)
+                esc_html($label),
+                $has_children ? $caret : ''
             );
             return;
         }
@@ -761,3 +823,20 @@ function solaire_render_split_content($content)
 
     return $html;
 }
+
+/**
+ * Tally how many children each menu item has, for Solaire_Nav_Walker::start_lvl()
+ * — the walker is handed one level at a time and cannot count them itself.
+ */
+add_filter('wp_nav_menu_objects', function ($items) {
+    $counts = [];
+    foreach ($items as $item) {
+        $parent = (int) ($item->menu_item_parent ?? 0);
+        if ($parent) {
+            $counts[$parent] = ($counts[$parent] ?? 0) + 1;
+        }
+    }
+    Solaire_Nav_Walker::$child_counts = $counts;
+
+    return $items;
+});
