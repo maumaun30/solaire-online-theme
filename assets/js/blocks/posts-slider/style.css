@@ -4,6 +4,27 @@
   max-width: 1440px;
   margin: 0 auto;
   padding: 24px;
+
+  /* Cards per view. render.php sets --ps-per / --ps-per-tablet /
+     --ps-per-mobile inline; --ps-cur resolves to whichever one applies at the
+     current width, and both the slide width below and view.js read it, so the
+     layout and the arrow step can never disagree. Mobile first. */
+  --ps-cur: var(--ps-per-mobile, 1);
+  --ps-ratio: var(--ps-ratio-mobile, 16 / 5);
+}
+
+@media (min-width: 768px) {
+  .posts-slider {
+    --ps-cur: var(--ps-per-tablet, 1);
+    --ps-ratio: var(--ps-ratio-tablet, 16 / 5);
+  }
+}
+
+@media (min-width: 1024px) {
+  .posts-slider {
+    --ps-cur: var(--ps-per, 1);
+    --ps-ratio: var(--ps-ratio-desktop, 16 / 5);
+  }
 }
 
 /* ── Header: heading left, nav arrows right ───────────────────────── */
@@ -26,8 +47,29 @@
 
 .posts-slider__nav {
   display: flex;
+  align-items: center;
   gap: 8px;
   flex-shrink: 0;
+}
+
+/* "View All" matches the game-row button: same translucent pill, same amber
+   secondary colour as the arrows sitting next to it. */
+.posts-slider__viewall {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 6px 12px;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--secondary-color, #f0a434);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.posts-slider__viewall:hover {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Arrows mirror the ranking-list nav buttons: small translucent squares with
@@ -66,22 +108,31 @@
 
 .posts-slider__track {
   display: flex;
+  gap: var(--ps-gap, 16px);
   will-change: transform;
   transition: transform 0.5s ease;
 }
 
+/* n cards share the row, minus the (n - 1) gaps between them. */
 .posts-slider__slide {
-  flex: 0 0 100%;
-  width: 100%;
+  flex: 0 0 calc((100% - (var(--ps-cur, 1) - 1) * var(--ps-gap, 16px)) / var(--ps-cur, 1));
+  width: calc((100% - (var(--ps-cur, 1) - 1) * var(--ps-gap, 16px)) / var(--ps-cur, 1));
   display: block;
   line-height: 0;
+}
+
+/* Multi-card rows need the corners on the cards themselves — the viewport's
+   own radius only rounds the outer edges of the whole row. */
+.posts-slider__slide > * {
+  border-radius: 14px;
+  overflow: hidden;
 }
 
 .posts-slider__image {
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 16 / 5;
+  aspect-ratio: var(--ps-ratio, 16 / 5);
   object-fit: cover;
 }
 
@@ -89,7 +140,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  aspect-ratio: 16 / 7;
+  aspect-ratio: var(--ps-ratio, 16 / 5);
   background: rgba(255, 255, 255, 0.05);
   color: rgba(255, 255, 255, 0.5);
   font-size: 0.9rem;
@@ -112,7 +163,7 @@
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 16 / 7;
+  aspect-ratio: var(--ps-ratio, 16 / 5);
   object-fit: cover;
 }
 
@@ -121,7 +172,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  aspect-ratio: 16 / 7;
+  aspect-ratio: var(--ps-ratio, 16 / 5);
   padding: 24px;
   text-align: center;
   color: rgba(255, 255, 255, 0.55);
@@ -132,11 +183,8 @@
   .posts-slider {
     padding: 16px;
   }
-  .posts-slider__image,
-  .posts-slider__image--placeholder,
-  .posts-slider--editor .posts-slider__slide img,
   .posts-slider--editor .posts-slider__empty,
   .posts-slider--editor .posts-slider__no-image {
-    aspect-ratio: 16 / 5;
+    aspect-ratio: var(--ps-ratio, 16 / 5);
   }
 }

@@ -6,6 +6,9 @@ import {
   Spinner,
   Button,
   Notice,
+  ToggleControl,
+  TextControl,
+  RangeControl,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
@@ -23,9 +26,45 @@ const EXCLUDED_TYPES = [
   'wp_font_family',
 ];
 
+// Hard ceiling on cards per view. The slide maths and the card proportions are
+// only defined for 1–3; anything past that squashes the cards, so the value is
+// clamped on the way in rather than trusted from the control.
+const MAX_PER_VIEW = 3;
+
+const clampPerView = (value) => {
+  const number = parseInt(value, 10);
+  if (isNaN(number)) return 1;
+  return Math.min(MAX_PER_VIEW, Math.max(1, number));
+};
+
 export default function Edit({ attributes, setAttributes }) {
-  const { heading, postType, postIds } = attributes;
+  const {
+    heading,
+    postType,
+    postIds,
+    slidesPerView,
+    slidesPerViewTablet,
+    slidesPerViewMobile,
+    slideGap,
+    showViewAll,
+    viewAllText,
+    viewAllUrl,
+  } = attributes;
   const [activeIndex, setActiveIndex] = useState(0);
+  const [perViewWarning, setPerViewWarning] = useState('');
+
+  /* RangeControl's number input accepts typed values beyond max, so clamp here
+     and tell the editor why the number snapped back. */
+  const setPerView = (key, label) => (value) => {
+    const clamped = clampPerView(value);
+    const requested = parseInt(value, 10);
+    setPerViewWarning(
+      !isNaN(requested) && requested > MAX_PER_VIEW
+        ? `${label}: ${requested} is more than the maximum of ${MAX_PER_VIEW} cards — set to ${MAX_PER_VIEW}.`
+        : ''
+    );
+    setAttributes({ [key]: clamped });
+  };
 
   // 1. Available post types: default post/page plus any public + REST-enabled
   //    CPT (ACF or code registered). getPostTypes only returns REST-visible types.
@@ -103,10 +142,25 @@ export default function Edit({ attributes, setAttributes }) {
     img: p.featured_media ? mediaMap[p.featured_media] : '',
   }));
 
-  const safeIndex = slides.length ? Math.min(activeIndex, slides.length - 1) : 0;
-  const current = slides[safeIndex];
+  /* The editor canvas is a fixed width, so it previews the desktop count. The
+     tablet/mobile values still ship to the front end via render.php. */
+  const perView = clampPerView(slidesPerView);
+  const maxIndex = Math.max(0, slides.length - perView);
+  const safeIndex = Math.min(activeIndex, maxIndex);
+  const visible = slides.slice(safeIndex, safeIndex + perView);
 
-  const blockProps = useBlockProps({ className: 'posts-slider posts-slider--editor' });
+  const blockProps = useBlockProps({
+    className: 'posts-slider posts-slider--editor',
+    style: {
+      '--ps-per': perView,
+      '--ps-per-tablet': slidesPerViewTablet,
+      '--ps-per-mobile': slidesPerViewMobile,
+      '--ps-cur': perView,
+      '--ps-gap': `${slideGap}px`,
+      // Same count-to-proportion mapping render.php uses.
+      '--ps-ratio': { 1: '16 / 5', 2: '16 / 7', 3: '16 / 9' }[perView],
+    },
+  });
 
   return (
     <>
@@ -169,6 +223,71 @@ export default function Edit({ attributes, setAttributes }) {
             ))}
         </PanelBody>
 
+        <PanelBody title={__('Cards per view', 'solaire')} initialOpen={false}>
+          {perViewWarning && (
+            <Notice status="warning" onRemove={() => setPerViewWarning('')}>
+              {perViewWarning}
+            </Notice>
+          )}
+          <RangeControl
+            label={__('Desktop (1024px and up)', 'solaire')}
+            value={slidesPerView}
+            onChange={setPerView('slidesPerView', __('Desktop', 'solaire'))}
+            min={1}
+            max={MAX_PER_VIEW}
+          />
+          <RangeControl
+            label={__('Tablet (768px and up)', 'solaire')}
+            value={slidesPerViewTablet}
+            onChange={setPerView('slidesPerViewTablet', __('Tablet', 'solaire'))}
+            min={1}
+            max={MAX_PER_VIEW}
+          />
+          <RangeControl
+            label={__('Mobile (under 768px)', 'solaire')}
+            value={slidesPerViewMobile}
+            onChange={setPerView('slidesPerViewMobile', __('Mobile', 'solaire'))}
+            min={1}
+            max={MAX_PER_VIEW}
+          />
+          <RangeControl
+            label={__('Gap between cards (px)', 'solaire')}
+            value={slideGap}
+            onChange={(value) => setAttributes({ slideGap: value })}
+            min={0}
+            max={48}
+            step={4}
+          />
+        </PanelBody>
+
+        <PanelBody title={__('"View All" button', 'solaire')} initialOpen={false}>
+          <ToggleControl
+            label={__('Show "View All" button', 'solaire')}
+            checked={!!showViewAll}
+            onChange={(value) => setAttributes({ showViewAll: value })}
+          />
+          {showViewAll && (
+            <>
+              <TextControl
+                label={__('Button text', 'solaire')}
+                value={viewAllText}
+                onChange={(value) => setAttributes({ viewAllText: value })}
+              />
+              <TextControl
+                label={__('Button URL', 'solaire')}
+                value={viewAllUrl}
+                placeholder="https://"
+                onChange={(value) => setAttributes({ viewAllUrl: value })}
+              />
+              {!viewAllUrl && (
+                <Notice status="warning" isDismissible={false}>
+                  {__('Add a URL — the button stays hidden on the front end until it has one.', 'solaire')}
+                </Notice>
+              )}
+            </>
+          )}
+        </PanelBody>
+
       </InspectorControls>
 
       <div {...blockProps}>
@@ -183,10 +302,15 @@ export default function Edit({ attributes, setAttributes }) {
             allowedFormats={[]}
           />
           <div className="posts-slider__nav" aria-hidden="true">
+            {showViewAll && !!viewAllUrl && (
+              <span className="posts-slider__viewall">
+                {viewAllText || __('View All', 'solaire')}
+              </span>
+            )}
             <button
               type="button"
               className="posts-slider__arrow"
-              onClick={() => setActiveIndex((i) => Math.max(0, i - 1))}
+              onClick={() => setActiveIndex((i) => Math.max(0, i - perView))}
               disabled={safeIndex <= 0}
             >
               <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
@@ -196,8 +320,8 @@ export default function Edit({ attributes, setAttributes }) {
             <button
               type="button"
               className="posts-slider__arrow"
-              onClick={() => setActiveIndex((i) => Math.min(slides.length - 1, i + 1))}
-              disabled={safeIndex >= slides.length - 1}
+              onClick={() => setActiveIndex((i) => Math.min(maxIndex, i + perView))}
+              disabled={safeIndex >= maxIndex}
             >
               <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
                 <path fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" d="m9 5 7 7-7 7" />
@@ -214,15 +338,19 @@ export default function Edit({ attributes, setAttributes }) {
             </div>
           )}
 
-          {current && (
-            <div className="posts-slider__slide">
-              {current.img ? (
-                <img src={current.img} alt={current.title} />
-              ) : (
-                <div className="posts-slider__no-image">
-                  {__('No featured image set for', 'solaire')} “{current.title}”
+          {visible.length > 0 && (
+            <div className="posts-slider__track">
+              {visible.map((slide) => (
+                <div className="posts-slider__slide" key={slide.id}>
+                  {slide.img ? (
+                    <img src={slide.img} alt={slide.title} />
+                  ) : (
+                    <div className="posts-slider__no-image">
+                      {__('No featured image set for', 'solaire')} “{slide.title}”
+                    </div>
+                  )}
                 </div>
-              )}
+              ))}
             </div>
           )}
 

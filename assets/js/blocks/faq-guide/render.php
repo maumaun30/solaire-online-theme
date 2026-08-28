@@ -17,12 +17,12 @@ if ($items && function_exists('solaire_collect_faq_items')) {
     solaire_collect_faq_items($items);
 }
 ?>
-<section <?php echo get_block_wrapper_attributes(['class' => 'mt-14']); ?>>
+<section <?php echo get_block_wrapper_attributes(['class' => 'mt-14 pb-8 sm:pb-16']); ?>>
   <div class="mx-auto max-w-shell px-4">
     <?php if ($heading) : ?>
       <h2 data-anim class="text-center font-display text-2xl font-extrabold text-gold sm:text-4xl"><?php echo esc_html($heading); ?></h2>
     <?php endif; ?>
-    <div data-anim data-accordion data-single class="mx-auto mt-8 flex max-w-4xl flex-col gap-4">
+    <div data-anim data-accordion data-single class="mt-8 flex flex-col gap-4">
       <?php foreach ($items as $i => $item) :
           $open = ($i === 0);
       ?>
