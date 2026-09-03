@@ -840,3 +840,128 @@ add_filter('wp_nav_menu_objects', function ($items) {
 
     return $items;
 });
+
+/* ============================================================
+   Game → primary-nav category resolution
+   ============================================================ */
+
+/**
+ * The `game_category` term that best represents a game in the primary nav.
+ *
+ * A game is usually assigned both a child term and its parent (e.g. "Table
+ * Games" inside "Live Casino"). When the *child* is itself one of the header's
+ * nav items, that child is what the page should present as its category: the
+ * header should underline only that item, and "More Games" should draw from it
+ * rather than from the broader parent.
+ *
+ * Returns the deepest of the game's terms that appears in the primary menu, or
+ * null when none of them do (callers then fall back to the top-level parent).
+ *
+ * @param int $post_id Game post ID.
+ * @return WP_Term|null
+ */
+function solaire_game_nav_term($post_id)
+{
+    static $cache = [];
+
+    $post_id = (int) $post_id;
+    if (array_key_exists($post_id, $cache)) {
+        return $cache[$post_id];
+    }
+
+    $cache[$post_id] = null;
+
+    $terms = wp_get_post_terms($post_id, 'game_category', ['fields' => 'all']);
+    if (is_wp_error($terms) || !$terms) {
+        return null;
+    }
+
+    $nav_term_ids = solaire_primary_nav_category_ids();
+    if (!$nav_term_ids) {
+        return null;
+    }
+
+    // Deepest first, so a child in the nav wins over its parent also being there.
+    $best  = null;
+    $depth = -1;
+    foreach ($terms as $term) {
+        if (!in_array((int) $term->term_id, $nav_term_ids, true)) {
+            continue;
+        }
+        $d = count(get_ancestors($term->term_id, 'game_category', 'taxonomy'));
+        if ($d > $depth) {
+            $best  = $term;
+            $depth = $d;
+        }
+    }
+
+    $cache[$post_id] = $best;
+
+    return $best;
+}
+
+/**
+ * `game_category` term IDs that have their own item in the primary menu.
+ *
+ * @return int[]
+ */
+function solaire_primary_nav_category_ids()
+{
+    static $ids = null;
+
+    if ($ids !== null) {
+        return $ids;
+    }
+
+    $ids       = [];
+    $locations = get_nav_menu_locations();
+    if (empty($locations['primary'])) {
+        return $ids;
+    }
+
+    $items = wp_get_nav_menu_items($locations['primary']);
+    if (!$items) {
+        return $ids;
+    }
+
+    foreach ($items as $item) {
+        if ($item->type === 'taxonomy' && $item->object === 'game_category') {
+            $ids[] = (int) $item->object_id;
+        }
+    }
+
+    return $ids;
+}
+
+/**
+ * On a single game, keep the "current" highlight on one nav item only.
+ *
+ * WordPress marks every menu item whose term the post belongs to — child *and*
+ * ancestors — so a game in "Live Casino › Table Games" underlines both. When
+ * the child has its own nav item we drop the ancestor highlight, leaving a
+ * single active line.
+ */
+add_filter('wp_nav_menu_objects', function ($items, $args) {
+    if (!is_singular('game') || ($args->theme_location ?? '') !== 'primary') {
+        return $items;
+    }
+
+    $nav_term = solaire_game_nav_term(get_the_ID());
+    if (!$nav_term) {
+        return $items;
+    }
+
+    $active_classes = ['current-menu-item', 'current-menu-parent', 'current-menu-ancestor', 'current_page_parent', 'current_page_ancestor'];
+
+    foreach ($items as $item) {
+        if ($item->type !== 'taxonomy' || $item->object !== 'game_category') {
+            continue;
+        }
+        if ((int) $item->object_id === (int) $nav_term->term_id) {
+            continue;
+        }
+        $item->classes = array_values(array_diff((array) $item->classes, $active_classes));
+    }
+
+    return $items;
+}, 10, 2);

@@ -18,10 +18,12 @@ while (have_posts()) :
     if (!$hero_bg) {
         $hero_bg = get_theme_file_uri('/assets/img/coins-banner.webp');
     }
-    $provider  = get_field('provider') ?: 'Solaire Online';
-    $rtp       = get_field('rtp') ?: '96.2%';
+    // No fallbacks for these three: an unset field means the stat is omitted
+    // from the row entirely rather than showing invented copy.
+    $provider  = trim((string) get_field('provider'));
+    $rtp       = trim((string) get_field('rtp'));
     // "Select Volatility" is the unset/placeholder choice — treat it as empty.
-    $vol       = get_field('volatility');
+    $vol       = trim((string) get_field('volatility'));
     if ($vol === 'Select Volatility') {
         $vol = '';
     }
@@ -74,12 +76,17 @@ while (have_posts()) :
     // stat types (RTP / Volatility / Provider) get their shared tooltip.
     $stats = get_field('stats');
     if (!$stats) {
-        $stats = [['label' => 'RTP', 'value' => $rtp, 'tooltip' => $tip_rtp]];
-        // Skip the Volatility stat entirely when none is selected.
+        // Each stat is skipped entirely when its field is empty.
+        $stats = [];
+        if ($rtp !== '') {
+            $stats[] = ['label' => 'RTP', 'value' => $rtp, 'tooltip' => $tip_rtp];
+        }
         if ($vol !== '') {
             $stats[] = ['label' => 'Volatility', 'value' => $vol, 'tooltip' => $tip_vol, 'value_tooltip' => $tip_vol_value];
         }
-        $stats[] = ['label' => 'Game Provider', 'value' => $provider, 'tooltip' => $tip_provider];
+        if ($provider !== '') {
+            $stats[] = ['label' => 'Game Provider', 'value' => $provider, 'tooltip' => $tip_provider];
+        }
     } else {
         // Match the repeater's own labels to the shared tooltip copy.
         foreach ($stats as &$stat) {
@@ -99,7 +106,15 @@ while (have_posts()) :
         }
         unset($stat);
     }
+    // Icons are chosen by stat type, not by position — otherwise a game that
+    // omits RTP would hand RTP's icon to whichever stat happened to land first.
+    // The positional list is only a fallback for custom repeater labels.
     $stat_icons = ['chart', 'bolt', 'grid-rows'];
+    $stat_icon_by_type = [
+        'rtp'        => 'chart',
+        'volatility' => 'bolt',
+        'provider'   => 'grid-rows',
+    ];
 
     $rules       = get_field('rules') ?: [];
     $rule_icons  = ['squares', 'star', 'refresh', 'paylines'];
@@ -127,6 +142,12 @@ while (have_posts()) :
     gap: 1rem;
     padding: 1.25rem 1.5rem;
     position: relative;
+  }
+
+  /* A lone stat stretches across the whole bar, so centre its contents rather
+     than leaving them stranded against the left edge. */
+  .sg-stat:only-child {
+    justify-content: center;
   }
 
   .sg-stat+.sg-stat::before {
@@ -397,10 +418,18 @@ while (have_posts()) :
   </section>
 
   <!-- ===================== STATS BAR ===================== -->
+  <?php if ($stats) : ?>
   <div class="mt-5">
     <div class="sg-stats">
       <?php foreach (array_values($stats) as $i => $stat) :
+          $stat_label = strtolower($stat['label'] ?? '');
           $icon = $stat_icons[$i % count($stat_icons)];
+          foreach ($stat_icon_by_type as $type => $type_icon) {
+              if (strpos($stat_label, $type) !== false) {
+                  $icon = $type_icon;
+                  break;
+              }
+          }
       ?>
         <div class="sg-stat">
           <span class="sg-stat__icon"><?php echo solaire_icon($icon, 'h-5 w-5'); // phpcs:ignore ?></span>
@@ -427,6 +456,7 @@ while (have_posts()) :
       <?php endforeach; ?>
     </div>
   </div>
+  <?php endif; ?>
 
   <script>
     (function () {
@@ -450,7 +480,7 @@ while (have_posts()) :
 
   <!-- ===================== CTA ===================== -->
   <div class="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
-    <a href="https://www.solaireonline.com/login" class="bg-brand-orange text-white btn-press inline-flex w-full items-center justify-center rounded-xl px-8 py-4 text-center font-display text-lg sm:w-auto sm:text-xl"><?php esc_html_e('Play for Real - Sign Up Now', 'solaire'); ?></a>
+    <a href="https://www.solaireonline.com/en" class="bg-brand-orange text-white btn-press inline-flex w-full items-center justify-center rounded-xl px-8 py-4 text-center font-display text-lg sm:w-auto sm:text-xl"><?php esc_html_e('Play for Real - Sign Up Now', 'solaire'); ?></a>
     <?php if ($game_code) : ?>
       <button type="button" data-demo-open
         data-title="<?php echo esc_attr(get_the_title()); ?> — <?php esc_attr_e('Demo', 'solaire'); ?>"
@@ -462,17 +492,39 @@ while (have_posts()) :
 
   <!-- ===================== MORE GAMES ===================== -->
   <?php
-  $more_q = solaire_query_games(['category' => $cat_slug, 'count' => 10, 'exclude' => [$id]]);
+  // Scoped the same way the category archive scopes its grid: the game's
+  // top-level parent term with its children included, ordered by
+  // `so_active_player` (highest first — solaire_query_games' default). Using
+  // $cats[0] here instead meant the row followed whichever term happened to
+  // sort first, usually a subcategory, so it varied game to game.
+  //
+  // Exception: when one of the game's child terms has its own item in the
+  // header nav (e.g. "Table Games" sitting alongside its parent "Live Casino"),
+  // that child is the category the page presents — the header underlines it
+  // alone — so the row and its "View All" follow it instead of the parent.
+  $more_cat_slug = $cat_slug;
+  $more_term     = function_exists('solaire_game_nav_term') ? solaire_game_nav_term($id) : null;
+  if (!$more_term && !is_wp_error($cats) && $cats) {
+      $primary = $cats[0];
+      $anc     = get_ancestors($primary->term_id, 'game_category', 'taxonomy');
+      $top_id  = !empty($anc) ? end($anc) : $primary->term_id;
+      $top     = get_term($top_id, 'game_category');
+      if ($top && !is_wp_error($top)) {
+          $more_term = $top;
+      }
+  }
+  if ($more_term && !is_wp_error($more_term)) {
+      $more_cat_slug = $more_term->slug;
+  }
+
+  $more_q = solaire_query_games(['category' => $more_cat_slug, 'count' => 10, 'exclude' => [$id]]);
   if ($more_q->have_posts()) :
-      // "View All" points to the top-level parent category page.
+      // "View All" points at whichever term the row was scoped to.
       $view_all_url = get_post_type_archive_link('game') ?: '#';
-      if (!is_wp_error($cats) && $cats) {
-          $primary  = $cats[0];
-          $anc      = get_ancestors($primary->term_id, 'game_category', 'taxonomy');
-          $top_id   = !empty($anc) ? end($anc) : $primary->term_id;
-          $top_link = get_term_link($top_id, 'game_category');
-          if (!is_wp_error($top_link)) {
-              $view_all_url = $top_link;
+      if ($more_term && !is_wp_error($more_term)) {
+          $more_link = get_term_link($more_term, 'game_category');
+          if (!is_wp_error($more_link)) {
+              $view_all_url = $more_link;
           }
       }
   ?>

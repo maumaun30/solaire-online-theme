@@ -45,6 +45,21 @@ if (is_wp_error($child_terms))    { $child_terms = []; }
 if (is_wp_error($tag_terms))      { $tag_terms = []; }
 if (is_wp_error($provider_terms)) { $provider_terms = []; }
 
+// When the category has no games at all, skip the filters/grid/load-more
+// entirely rather than rendering an empty toolbar over a "No games found." box.
+$has_games = have_posts();
+
+// H1 = ACF "Game Category Main Title" on the term, falling back to the
+// generated "Play {Category} in the Philippines" headline.
+$main_title = trim((string) get_field('so_game_category_main_title', $current_term));
+if ($main_title === '') {
+    $main_title = sprintf(
+        /* translators: %s: game category name. */
+        __('Play %s in the Philippines', 'solaire'),
+        $page_title
+    );
+}
+
 $dd_caret = '<svg class="solaire-dd-caret h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 ?>
 
@@ -59,7 +74,7 @@ $dd_caret = '<svg class="solaire-dd-caret h-4 w-4" viewBox="0 0 20 20" fill="non
         <span class="text-white/30">|</span>
         <span class="font-semibold text-orange"><?php echo esc_html($crumb); ?></span>
       </nav>
-      <h1 data-anim class="font-display text-4xl font-extrabold uppercase tracking-tight sm:text-6xl">Play <?php echo esc_html($page_title); ?> in the Philippines</h1>
+      <h1 data-anim class="font-display text-4xl font-extrabold uppercase tracking-tight sm:text-6xl"><?php echo esc_html($main_title); ?></h1>
       <?php if ($blurb) : ?>
         <p data-anim data-anim-delay="120" class="mt-3 max-w-3xl text-sm text-white/85 sm:text-base"><?php echo esc_html($blurb); ?></p>
       <?php endif; ?>
@@ -68,6 +83,8 @@ $dd_caret = '<svg class="solaire-dd-caret h-4 w-4" viewBox="0 0 20 20" fill="non
 </section>
 
 <main class="mx-auto max-w-shell px-4">
+
+  <?php if ($has_games) : ?>
 
   <!-- ===================== FILTERS ===================== -->
   <div class="mt-8" data-filter-group data-filter-target="#games-grid">
@@ -171,13 +188,9 @@ $dd_caret = '<svg class="solaire-dd-caret h-4 w-4" viewBox="0 0 20 20" fill="non
        data-has-more="<?php echo $grid_has_more ? '1' : '0'; ?>"
        class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
     <?php
-    if (have_posts()) :
-        while (have_posts()) : the_post();
-            echo solaire_game_card(get_the_ID(), ['variant' => 'grid']); // phpcs:ignore
-        endwhile;
-    else :
-        echo '<p class="col-span-full rounded-xl bg-white/[0.03] p-6 text-sm text-slatey ring-1 ring-white/5">' . esc_html__('No games found.', 'solaire') . '</p>';
-    endif;
+    while (have_posts()) : the_post();
+        echo solaire_game_card(get_the_ID(), ['variant' => 'grid']); // phpcs:ignore
+    endwhile;
     ?>
   </div>
 
@@ -185,6 +198,8 @@ $dd_caret = '<svg class="solaire-dd-caret h-4 w-4" viewBox="0 0 20 20" fill="non
   <div class="mt-8 flex justify-center">
     <button data-load-more data-load-target="#games-grid" data-step="<?php echo esc_attr($grid_step); ?>" class="btn-press rounded-lg border border-orange/70 bg-orange/10 px-8 py-3 text-sm uppercase tracking-wide transition hover:bg-orange hover:text-white disabled:cursor-not-allowed<?php echo $grid_has_more ? '' : ' hidden'; ?>"><?php esc_html_e('Load More Games', 'solaire'); ?></button>
   </div>
+
+  <?php endif; ?>
 
   <!-- ===================== CONTENT BLOCK ===================== -->
   <?php
@@ -216,9 +231,20 @@ $dd_caret = '<svg class="solaire-dd-caret h-4 w-4" viewBox="0 0 20 20" fill="non
       }, $faq_items));
   }
 
+  // FAQ heading = ACF "Game Category FAQ Title" on the term, falling back to
+  // the generated "A Quick Guide to {Category} Games" headline.
+  $faq_title = trim((string) get_field('so_game_category_faq_title', $current_term));
+  if ($faq_title === '') {
+      $faq_title = sprintf(
+          /* translators: %s: game category name. */
+          __('A Quick Guide to %s Games', 'solaire'),
+          $page_title
+      );
+  }
+
   if ($faq_items) : ?>
   <section class="mt-14">
-    <h2 data-anim class="text-center font-display text-2xl font-extrabold text-gold sm:text-4xl"><?php printf(esc_html__('A Quick Guide to %s Games', 'solaire'), esc_html($page_title)); ?></h2>
+    <h2 data-anim class="text-center font-display text-2xl font-extrabold text-gold sm:text-4xl"><?php echo esc_html($faq_title); ?></h2>
     <div data-anim data-accordion data-single class="mt-8 flex flex-col gap-4">
       <?php foreach ($faq_items as $i => $faq) :
           $open     = ($i === 0);
