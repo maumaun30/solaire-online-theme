@@ -86,7 +86,7 @@ if (!function_exists('solaire_ranking_article')) {
             <?php endif; ?>
           </div>
           <div class="flex shrink-0 flex-col gap-2">
-            <a href="<?php echo esc_url($play); ?>" class="btn-press rounded-md bg-brand-orange px-4 py-2 text-center text-xs text-white sm:text-sm"><?php esc_html_e('Play now', 'solaire'); ?></a>
+            <a href="<?php echo esc_url($play); ?>" class="btn-press rounded-md bg-white/10 px-4 py-2 text-center text-xs text-secondary sm:text-sm"><?php esc_html_e('Play now', 'solaire'); ?></a>
             
           </div>
         </article>

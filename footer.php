@@ -31,23 +31,28 @@ $footer_responsible = get_field('so_footer_responsible_gaming', 'option');
           <p class="mt-5 text-sm leading-relaxed"><?php echo esc_html($footer_description); ?></p>
         <?php endif; ?>
         <?php if ($footer_social) : ?>
-          <p class="mt-6 text-sm font-bold">Solaire Online Communities</p>
-          <div class="mt-3 flex flex-wrap justify-center gap-3 lg:justify-start">
-            <?php foreach ($footer_social as $social) :
-                $icon = $social['so_social_media_icon'] ?? null;
-                $url  = $social['so_social_media_url'] ?? '';
-                if (!$icon) {
-                    continue;
-                }
-            ?>
-              <a href="<?php echo esc_url($url ?: '#'); ?>"<?php echo $url ? ' target="_blank" rel="noopener noreferrer"' : ''; ?> class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-white/10 text-white/80 transition hover:bg-orange hover:text-white">
-                <img src="<?php echo esc_url($icon['url']); ?>" alt="<?php echo esc_attr($icon['alt'] ?: ''); ?>" class="h-4 w-4 object-contain" loading="lazy" />
-              </a>
-            <?php endforeach; ?>
+          <!-- On mobile the communities block sits in its own card, matching the
+               stacked card layout of the live site's mobile footer; from lg up it
+               drops back to plain text on the footer background. -->
+          <div class="mt-6 rounded-2xl bg-[#17191c] px-4 py-5 lg:mt-6 lg:rounded-none lg:bg-transparent lg:p-0">
+            <p class="text-sm font-bold">Solaire Online Communities</p>
+            <div class="mt-3 flex flex-wrap justify-center gap-3 lg:justify-start">
+              <?php foreach ($footer_social as $social) :
+                  $icon = $social['so_social_media_icon'] ?? null;
+                  $url  = $social['so_social_media_url'] ?? '';
+                  if (!$icon) {
+                      continue;
+                  }
+              ?>
+                <a href="<?php echo esc_url($url ?: '#'); ?>"<?php echo $url ? ' target="_blank" rel="noopener noreferrer"' : ''; ?> class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-white/10 text-white/80 transition hover:bg-orange hover:text-white">
+                  <img src="<?php echo esc_url($icon['url']); ?>" alt="<?php echo esc_attr($icon['alt'] ?: ''); ?>" class="h-4 w-4 object-contain" loading="lazy" />
+                </a>
+              <?php endforeach; ?>
+            </div>
           </div>
         <?php endif; ?>
       </div>
-      <div class="grid grid-cols-2 gap-8 rounded-2xl bg-white/[0.03] p-6 lg:col-start-3 lg:flex lg:justify-between lg:rounded-none lg:bg-transparent lg:p-0 lg:pr-10">
+      <div class="grid grid-cols-2 gap-8 rounded-2xl bg-[#17191c] p-6 lg:col-start-3 lg:flex lg:justify-between lg:rounded-none lg:bg-transparent lg:p-0 lg:pr-10">
         <?php if (has_nav_menu('footer-legal')) : ?>
           <div>
             <h3 class="inline-block border-b-2 border-orange pb-1 font-display text-base font-bold">Legal</h3>
@@ -84,7 +89,7 @@ $footer_responsible = get_field('so_footer_responsible_gaming', 'option');
                 continue;
             }
         ?>
-          <div class="flex items-center justify-center rounded-xl bg-white/[0.03] p-4 lg:rounded-none lg:bg-transparent lg:p-0">
+          <div class="flex items-center justify-center rounded-xl bg-[#17191c] p-4 lg:rounded-none lg:bg-transparent lg:p-0">
             <img src="<?php echo esc_url($img['url']); ?>" alt="<?php echo esc_attr($img['alt'] ?: ''); ?>" class="h-10 w-auto max-w-full object-contain lg:h-16 lg:max-w-[240px]" loading="lazy" />
           </div>
         <?php endforeach; ?>

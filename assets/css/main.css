@@ -78,6 +78,13 @@
   .bg-cta-orange {
     background: linear-gradient(259deg, #ca1800 0%, #ef7b00 50%, #f8ab3e 100%);
   }
+  /* Popup panel surface — matches solaireonline.com's responsible-gaming
+     drawer: a soft red bloom from the top edge over the dark base layer. */
+  .bg-modal-surface {
+    background:
+      radial-gradient(ellipse at 50% 0, rgba(225, 0, 0, 0.2509803922) 20%, rgba(83, 48, 0, 0) 100%),
+      #000;
+  }
   .bg-gold-cta {
     background: linear-gradient(180deg, #f5c451 0%, #d99a2c 100%);
   }
@@ -102,35 +109,65 @@
     z-index: 0;
   }
 
-  /* Warm glow bleeding down from the top-left corner of the footer. Kept tight
-     to the left so it reinforces the corner glow without washing across the top. */
+  /* Faint warm bleed on the right half, matching the second (weaker) glow in
+     the live site's footer overlay image. */
   .footer-glow::before {
     content: "";
     position: absolute;
-    inset: 0 0 auto 0;
-    height: 300px;
+    inset: 0;
     background: radial-gradient(
-      45% 100% at 8% -18%,
-      rgba(214, 74, 32, 0.40),
-      rgba(214, 74, 32, 0) 60%
+      55% 130% at 88% 78%,
+      rgba(150, 52, 42, 0.16),
+      rgba(150, 52, 42, 0) 62%
     );
     pointer-events: none;
     z-index: 0;
   }
 
-  /* Footer background — near-black with a warm burnt-orange glow anchored in
-     the top-left corner (behind the logo) that fades out to black across the
-     rest of the footer, per the design mock. The .footer-glow::before radial
-     adds a hotter bleed at the very top-left over this. */
+  /* Footer background — near-black with a muted red glow anchored at the
+     bottom-left, ported from solaireonline.com (which paints it as a webp
+     overlay). .footer-glow::before layers the weaker right-side bleed. */
   .footer-gradient {
-    background-color: #0a0a0c;
-    background-image: radial-gradient(
-      70% 120% at 3% 4%,
-      rgba(219, 92, 38, 0.55) 0%,
-      rgba(168, 54, 27, 0.34) 22%,
-      rgba(92, 30, 18, 0.14) 42%,
-      rgba(0, 0, 0, 0) 64%
-    );
+    background-color: #0b0809;
+    /* A 5% white lift over the page black (the live footer's `bg-white/5`)
+       with a muted red glow anchored low on the left edge. Deliberately
+       desaturated — the live overlay is a soft wash, not a hot orange. */
+    background-image:
+      radial-gradient(
+        60% 150% at 4% 82%,
+        rgba(168, 62, 52, 0.42) 0%,
+        rgba(126, 44, 38, 0.22) 30%,
+        rgba(60, 22, 20, 0.08) 55%,
+        rgba(0, 0, 0, 0) 72%
+      ),
+      linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05));
+  }
+
+  /* Mobile uses a different overlay on the live site: a warm red bloom across
+     the top and a cool blue-violet one low on the left, instead of the single
+     bottom-left red wash used on desktop. */
+  @media (max-width: 1023.98px) {
+    .footer-gradient {
+      background-image:
+        radial-gradient(
+          85% 55% at 18% 0%,
+          rgba(190, 52, 40, 0.34) 0%,
+          rgba(140, 40, 32, 0.18) 38%,
+          rgba(0, 0, 0, 0) 70%
+        ),
+        radial-gradient(
+          80% 60% at 38% 88%,
+          rgba(72, 78, 190, 0.24) 0%,
+          rgba(52, 56, 140, 0.12) 42%,
+          rgba(0, 0, 0, 0) 72%
+        ),
+        linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05));
+    }
+
+    /* The desktop right-side bleed doesn't exist in the mobile overlay. */
+    .footer-glow::before {
+      display: none;
+    }
   }
 
   /* Full-width header bar (design: Group 90). A horizontal burnt-orange
@@ -171,25 +208,48 @@
     }
   }
 
-  /* Mobile drawer head — same Group 90 gradient band as the header bar,
-     spanning the top of the drawer behind the logo + close button. Uses the
-     header's horizontal burnt-orange gradient at full saturation (kept opaque,
-     since it sits on the solid drawer with nothing to frost behind it). */
-  .drawer-head {
-    background-color: #bb3200;
-    background-image: linear-gradient(
-      90deg,
-      #f15a00 0%,
-      #bb3200 45%,
-      #b34019 75%,
-      #df6a2e 100%
-    );
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
-      0 10px 24px -14px rgba(0, 0, 0, 0.6);
-    /* Kept out of the scrolling wrapper below rather than made position:sticky
-       — a sticky child inside a transformed scroll container (the drawer keeps
-       its translateX from the slide-in) jitters while scrolling. */
-    flex: 0 0 auto;
+  /* Desktop header — solaireonline.com drops the orange band above the mobile
+     breakpoint. Rather than reuse the narrow falloff across the top of their
+     page, this takes the long vertical ramp that runs down their left sidebar
+     and lays it out horizontally: it peaks just off the left edge and decays
+     smoothly the whole width instead of dying out by 30%. Stops are sampled
+     off the live sidebar, top to bottom, remapped left to right.
+
+     This block MUST stay after the @supports rule above: both target
+     .header-bar at the same specificity, so source order is what wins. */
+  @media (min-width: 1024px) {
+    .header-bar {
+      background-color: #070201;
+      background-image:
+        linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0) 0%,
+          rgba(0, 0, 0, 0.18) 100%
+        ),
+        linear-gradient(
+          90deg,
+          #874a34 0%,
+          #bc4a24 3%,
+          #953a1b 7%,
+          #6c2814 12%,
+          #561c10 18%,
+          #45160e 25%,
+          #3d130b 33%,
+          #37110a 42%,
+          #2e0f08 52%,
+          #250b06 62%,
+          #1b0805 72%,
+          #110503 82%,
+          #0b0302 92%,
+          #070201 100%
+        );
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.6);
+      /* The live desktop header is opaque, not frosted — cancel the blur the
+         mobile @supports rule turns on. */
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
   }
 
   /* ---- Accent border used on section title bars ------------- */

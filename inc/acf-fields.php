@@ -361,7 +361,7 @@ add_action('acf/init', function () {
                 'label'         => 'Decline button text',
                 'name'          => 'so_rg_decline_text',
                 'type'          => 'text',
-                'default_value' => 'I Do Not Accept',
+                'default_value' => 'Exit',
                 'wrapper'       => ['width' => '33'],
             ],
             [
