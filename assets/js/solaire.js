@@ -295,6 +295,7 @@
     if (!grid.__solaire) {
       grid.__solaire = {
         parent:  grid.getAttribute("data-parent") || "",
+        providerScope: grid.getAttribute("data-provider") || "",
         filter:  "all",
         tags:      [],
         providers: [],
@@ -331,6 +332,7 @@
       filter:    st.filter,
       tags:      st.tags.join(","),
       providers: st.providers.join(","),
+      provider_scope: st.providerScope,
       paged:     String(st.paged),
       per_page:  String(st.step)
     });
@@ -664,6 +666,41 @@
     });
   }
 
+  /* ---- Search overlay -------------------------------------
+     Header search button opens a full-screen search sheet. Escape
+     closes it, matching the drawer's behaviour. */
+  function initSearch() {
+    var btn = document.getElementById("search-toggle");
+    var overlay = document.getElementById("search-overlay");
+    var closeBtn = document.getElementById("search-close");
+    if (!btn || !overlay) return;
+
+    var field = overlay.querySelector("input[name='s']");
+
+    function open() {
+      // Start from a blank slate so the previous query isn't pre-filled.
+      if (field) field.value = "";
+      overlay.classList.remove("hidden");
+      overlay.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      requestAnimationFrame(function () { overlay.classList.add("is-open"); });
+      // Focus after the fade so the mobile keyboard doesn't fight the animation.
+      setTimeout(function () { field && field.focus(); }, 200);
+    }
+    function close() {
+      overlay.classList.remove("is-open");
+      overlay.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      setTimeout(function () { overlay.classList.add("hidden"); }, 250);
+    }
+
+    btn.addEventListener("click", open);
+    closeBtn && closeBtn.addEventListener("click", close);
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && overlay.classList.contains("is-open")) close();
+    });
+  }
+
   /* ---- Back to top ---------------------------------------- */
   function initBackToTop() {
     var btn = document.getElementById("back-to-top");
@@ -695,6 +732,7 @@
     initLoadMore();
     initReadMore();
     initAnim();
+    initSearch();
     initBackToTop();
   });
 })();

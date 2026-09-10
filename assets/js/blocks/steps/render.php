@@ -15,6 +15,30 @@ $footer_text = $attributes['footerText'] ?? '';
 $steps       = $attributes['steps'] ?? [];
 $total       = count($steps);
 
+// Column counts are picked in the editor; 0 means "auto", which fits the
+// columns to the number of steps so a 3-step block fills the row instead of
+// leaving a fourth cell empty. Tailwind scans source files for class names,
+// so these have to be written out as complete literals — a built-up string
+// like "lg:grid-cols-$n" would never make it into the CSS.
+$col_classes = [
+    'mobile'  => [1 => 'grid-cols-1', 2 => 'grid-cols-2', 3 => 'grid-cols-3', 4 => 'grid-cols-4'],
+    'desktop' => [1 => 'lg:grid-cols-1', 2 => 'lg:grid-cols-2', 3 => 'lg:grid-cols-3', 4 => 'lg:grid-cols-4', 5 => 'lg:grid-cols-5', 6 => 'lg:grid-cols-6'],
+];
+
+$cols_mobile  = (int) ($attributes['columnsMobile'] ?? 2);
+$cols_desktop = (int) ($attributes['columns'] ?? 0);
+if ($cols_desktop < 1) {
+    $cols_desktop = max(1, min($total, 4));
+}
+if ($total && $cols_mobile > $total) {
+    $cols_mobile = $total;
+}
+
+$grid_cols = implode(' ', [
+    $col_classes['mobile'][$cols_mobile] ?? 'grid-cols-2',
+    $col_classes['desktop'][$cols_desktop] ?? 'lg:grid-cols-4',
+]);
+
 // The section describes an ordered procedure, so it also feeds a HowTo node
 // (printed in wp_footer by inc/schema.php). Emits nothing until two steps
 // carry copy.
@@ -38,7 +62,7 @@ if ($steps && function_exists('solaire_collect_howto')) {
       <p data-anim data-anim-delay="80" class="mx-auto mt-4 max-w-2xl text-sm text-slatey sm:text-base"><?php echo esc_html($subheading); ?></p>
     <?php endif; ?>
 
-    <div class="mt-10 grid grid-cols-2 gap-5 lg:grid-cols-4">
+    <div class="mt-10 grid gap-5 <?php echo esc_attr($grid_cols); ?>">
       <?php foreach ($steps as $i => $step) :
           // A blank number falls back to the step's position, so editors only
           // set it when they want something other than 1, 2, 3...

@@ -13,6 +13,25 @@ $overline   = $attributes['overline'] ?? '';
 $heading    = $attributes['heading'] ?? '';
 $subheading = $attributes['subheading'] ?? '';
 $cards      = $attributes['cards'] ?? [];
+
+// Column counts are picked in the editor. Tailwind scans source files for
+// class names, so the classes have to appear here as complete literals —
+// a built-up string like "md:grid-cols-$n" would never make it into the CSS.
+$col_classes = [
+    'mobile' => [1 => 'grid-cols-1', 2 => 'grid-cols-2', 3 => 'grid-cols-3', 4 => 'grid-cols-4'],
+    'tablet' => [1 => 'sm:grid-cols-1', 2 => 'sm:grid-cols-2', 3 => 'sm:grid-cols-3', 4 => 'sm:grid-cols-4', 5 => 'sm:grid-cols-5', 6 => 'sm:grid-cols-6'],
+    'desktop' => [1 => 'md:grid-cols-1', 2 => 'md:grid-cols-2', 3 => 'md:grid-cols-3', 4 => 'md:grid-cols-4', 5 => 'md:grid-cols-5', 6 => 'md:grid-cols-6'],
+];
+
+$cols_mobile  = (int) ($attributes['columnsMobile'] ?? 1);
+$cols_tablet  = (int) ($attributes['columnsTablet'] ?? 2);
+$cols_desktop = (int) ($attributes['columns'] ?? 3);
+
+$grid_cols = trim(implode(' ', [
+    $col_classes['mobile'][$cols_mobile] ?? 'grid-cols-1',
+    $col_classes['tablet'][$cols_tablet] ?? 'sm:grid-cols-2',
+    $col_classes['desktop'][$cols_desktop] ?? 'md:grid-cols-3',
+]));
 ?>
 <section <?php echo get_block_wrapper_attributes(['class' => 'relative mt-14 overflow-hidden bg-gradient-to-b from-[#2a1410] via-deep to-deep py-8 sm:py-16']); ?>>
   <div class="mx-auto max-w-shell px-4 text-center">
@@ -26,7 +45,7 @@ $cards      = $attributes['cards'] ?? [];
       <p data-anim data-anim-delay="160" class="mx-auto mt-4 max-w-2xl text-sm text-slatey sm:text-base"><?php echo esc_html($subheading); ?></p>
     <?php endif; ?>
 
-    <div class="mt-10 grid gap-5 text-left md:grid-cols-3">
+    <div class="mt-10 grid gap-5 text-left <?php echo esc_attr($grid_cols); ?>">
       <?php foreach ($cards as $i => $card) :
           // Prefer an image picked in the editor (stored as { id, url }),
           // otherwise fall back to the default filename in imageUrl.

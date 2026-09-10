@@ -95,19 +95,28 @@ if (!defined('SOLAIRE_GAMES_PER_PAGE')) {
 }
 
 /**
- * Tune the front-end Games archive + category queries: a comfortable per-page
- * count, and order the cards by the ACF `so_active_player` field, highest first.
+ * Tune the front-end Games archive + category/provider queries: a comfortable
+ * per-page count, and order the cards by the ACF `so_active_player` field,
+ * highest first. The per-page count has to match the AJAX handler's, or the
+ * "Load More" offsets on those archives would skip or repeat cards.
  */
 function solaire_game_archive_query($query)
 {
     if (is_admin() || !$query->is_main_query()) {
         return;
     }
-    if ($query->is_post_type_archive('game') || $query->is_tax('game_category')) {
+    if ($query->is_post_type_archive('game') || $query->is_tax(['game_category', 'provider'])) {
         $query->set('posts_per_page', SOLAIRE_GAMES_PER_PAGE);
         foreach (solaire_games_order_args() as $key => $value) {
             $query->set($key, $value);
         }
+    }
+
+    // Search results use the same card grid (2/3/4/6 columns). WordPress's
+    // default 10 per page leaves a ragged last row at every one of those
+    // breakpoints; 12 divides evenly into all of them.
+    if ($query->is_search()) {
+        $query->set('posts_per_page', SOLAIRE_GAMES_PER_PAGE);
     }
 }
 add_action('pre_get_posts', 'solaire_game_archive_query');
@@ -123,7 +132,7 @@ add_action('pre_get_posts', 'solaire_game_archive_query');
  * were never loaded and child filters matched nothing past the first page.
  *
  * POST params: parent (archive term slug), filter (child slug | 'all'),
- * paged, per_page.
+ * provider_scope (provider archive slug), paged, per_page.
  */
 function solaire_ajax_load_games()
 {
@@ -141,6 +150,15 @@ function solaire_ajax_load_games()
     };
     $tags      = isset($_POST['tags']) ? $slug_list(wp_unslash($_POST['tags'])) : [];
     $providers = isset($_POST['providers']) ? $slug_list(wp_unslash($_POST['providers'])) : [];
+
+    // Provider archive (taxonomy-provider.php): every result stays inside the
+    // provider being viewed, whatever the category/theme filters select. The
+    // category archive leaves this empty.
+    $provider_scope = isset($_POST['provider_scope']) ? sanitize_title(wp_unslash($_POST['provider_scope'])) : '';
+    if ($provider_scope) {
+        $providers[] = $provider_scope;
+        $providers   = array_values(array_unique($providers));
+    }
 
     // Scope to the active child filter when set, otherwise the whole parent
     // category (its descendants included).

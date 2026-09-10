@@ -46,7 +46,7 @@ if (!defined('ABSPATH')) {
 
   <!-- ============================ HEADER ============================ -->
   <header class="so-header header-bar sticky top-0 z-50">
-    <div class="relative z-10 mx-auto flex h-[44px] max-w-shell items-center gap-6 pl-2 pr-4 sm:h-[68px] sm:px-6">
+    <div class="relative z-10 mx-auto flex h-[44px] max-w-shell items-center gap-6 pl-2 pr-4 sm:h-[68px] sm:px-6 lg:max-w-none lg:gap-2 lg:px-4 xl:gap-4 xl:px-6 2xl:max-w-[1720px]">
 
       <!-- Logo -->
       <a href="<?php echo esc_url(home_url('/')); ?>" class="flex shrink-0 flex-col leading-none">
@@ -70,7 +70,11 @@ if (!defined('ABSPATH')) {
       </nav>
 
       <!-- Right actions -->
-      <div class="ml-auto flex shrink-0 items-center gap-2 sm:gap-4">
+      <div class="ml-auto flex shrink-0 items-center gap-2 sm:gap-4 lg:gap-2 xl:gap-3">
+        <button id="search-toggle" aria-label="<?php esc_attr_e('Open search', 'solaire'); ?>" class="btn-press flex h-7 w-7 items-center justify-center rounded-lg bg-[#222529] text-[#f5993d] ring-1 ring-white/15 backdrop-blur-sm transition-colors hover:text-orange-bright hover:ring-orange/40 sm:h-9 sm:w-9">
+          <?php echo solaire_icon('search', 'h-4 w-4 sm:h-[18px] sm:w-[18px]'); // phpcs:ignore 
+          ?>
+        </button>
         <a href="https://www.solaireonline.com/en" class="so-cta btn-press inline-block whitespace-nowrap rounded-lg bg-[#222529] px-2.5 py-1.5 text-xs font-semibold text-[#f5993d] ring-1 ring-white/15 backdrop-blur-sm transition-colors hover:text-orange-bright hover:ring-orange/40 sm:px-5 sm:py-2 sm:text-sm"><?php esc_html_e('Sign Up', 'solaire'); ?></a>
         <button id="nav-toggle" aria-label="<?php esc_attr_e('Open menu', 'solaire'); ?>" class="btn-press flex h-7 w-7 items-center justify-center rounded-lg bg-[#222529] text-[#f5993d] ring-1 ring-white/15 backdrop-blur-sm sm:h-9 sm:w-9 lg:hidden">
           <?php echo solaire_icon('menu', 'h-5 w-5'); // phpcs:ignore 
@@ -112,3 +116,33 @@ if (!defined('ABSPATH')) {
       </div>
     </div>
   </aside>
+
+  <!-- ======================= SEARCH OVERLAY ======================= -->
+  <div id="search-overlay" class="so-search-overlay fixed inset-0 z-[70] hidden items-center justify-center opacity-0" role="dialog" aria-modal="true" aria-hidden="true" aria-label="<?php esc_attr_e('Search', 'solaire'); ?>">
+    <div class="so-search-overlay__body relative w-full max-w-[720px] p-8">
+
+      <button id="search-close" aria-label="<?php esc_attr_e('Close search', 'solaire'); ?>" class="absolute right-8 top-[-1rem] flex h-9 w-9 items-center justify-center text-white/60 transition hover:text-white">
+        <?php echo solaire_icon('close', 'h-7 w-7'); // phpcs:ignore 
+        ?>
+      </button>
+
+      <p class="font-display text-xs font-semibold uppercase tracking-[0.14em] text-orange"><?php esc_html_e('What are you looking for?', 'solaire'); ?></p>
+
+      <form role="search" method="get" class="so-search-form mt-5 flex items-center gap-3" action="<?php echo esc_url(home_url('/')); ?>">
+        <label class="sr-only" for="search-overlay-field"><?php esc_html_e('Search for:', 'solaire'); ?></label>
+        <input
+          type="search"
+          id="search-overlay-field"
+          name="s"
+          value="<?php echo esc_attr(get_search_query()); ?>"
+          placeholder="<?php esc_attr_e('Search for', 'solaire'); ?>"
+          autocomplete="off"
+          class="so-search-field min-w-0 flex-1 bg-transparent font-display text-2xl font-semibold text-white placeholder-white/25 outline-none sm:text-4xl" />
+        <button type="submit" class="btn-press flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-brand-orange text-white sm:h-12 sm:w-12" aria-label="<?php esc_attr_e('Search', 'solaire'); ?>">
+          <?php echo solaire_icon('search', 'h-5 w-5'); // phpcs:ignore 
+          ?>
+        </button>
+      </form>
+
+    </div>
+  </div>

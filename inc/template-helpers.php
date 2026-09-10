@@ -34,6 +34,14 @@ function solaire_icon($name, $class = 'h-[18px] w-[18px]', $sw = '2')
                 . '<path d="M11.5 8v8H8a4 4 0 0 1 0-8h3.5Z"/>'
                 . '<path d="M7 15.5h2.4v4.9a1.2 1.2 0 0 1-2.4 0v-4.9Z"/>',
         ],
+        // Providers — puzzle piece: the game studios (Jili, Evolution, BGaming)
+        // whose catalogues slot into the site. The knob/notch outline is the
+        // convention for "supplier" across casino lobbies, and unlike a
+        // building it can't be read as the Solaire property itself.
+        'providers' => [
+            'viewBox' => '0 0 24 24',
+            'path'    => '<path d="M4 4H9.6A2.4 2.4 0 0 1 14.4 4H20V9.6A2.4 2.4 0 0 0 20 14.4V20H14.4A2.4 2.4 0 0 0 9.6 20H4V14.4A2.4 2.4 0 0 1 4 9.6Z"/>',
+        ],
         // Blogs — article page with folded corner and punched-out text lines.
         'blogs' => [
             'viewBox'  => '0 0 24 24',
@@ -80,6 +88,7 @@ function solaire_icon($name, $class = 'h-[18px] w-[18px]', $sw = '2')
         'paylines'    => '<circle cx="7" cy="12" r="3"/><path d="M10 12h11M18 9l3 3-3 3"/>',
         'chart'       => '<path d="M3 17l6-6 4 4 7-7"/><path d="M17 7h4v4"/>',
         'grid-rows'   => '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/>',
+        'search'      => '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>',
     ];
 
     if (!isset($paths[$name])) {
@@ -583,6 +592,10 @@ function solaire_nav_icon_key($item)
         'blog'       => 'blogs',
         'blogs'      => 'blogs',
         'news'       => 'blogs',
+        'provider'       => 'providers',
+        'providers'      => 'providers',
+        'game-provider'  => 'providers',
+        'game-providers' => 'providers',
     ];
 
     return $aliases[$slug] ?? $slug;

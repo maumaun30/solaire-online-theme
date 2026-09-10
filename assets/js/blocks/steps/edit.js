@@ -1,11 +1,11 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, TextControl, TextareaControl } from '@wordpress/components';
+import { PanelBody, RangeControl, TextControl, TextareaControl } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import { Repeater } from '../_shared/controls';
 
 export default function Edit({ attributes, setAttributes }) {
-  const { heading, subheading, footerText, steps } = attributes;
+  const { heading, subheading, footerText, steps, columns, columnsMobile } = attributes;
 
   return (
     <>
@@ -14,6 +14,23 @@ export default function Edit({ attributes, setAttributes }) {
           <TextareaControl label={__('Heading', 'solaire')} value={heading} onChange={(v) => setAttributes({ heading: v })} />
           <TextareaControl label={__('Subheading', 'solaire')} value={subheading} onChange={(v) => setAttributes({ subheading: v })} />
           <TextareaControl label={__('Footer text', 'solaire')} value={footerText} onChange={(v) => setAttributes({ footerText: v })} />
+        </PanelBody>
+        <PanelBody title={__('Layout', 'solaire')} initialOpen={false}>
+          <RangeControl
+            label={__('Columns (desktop)', 'solaire')}
+            help={__('0 = auto: match the number of steps, up to 4.', 'solaire')}
+            value={columns}
+            onChange={(v) => setAttributes({ columns: v ?? 0 })}
+            min={0}
+            max={6}
+          />
+          <RangeControl
+            label={__('Columns (mobile)', 'solaire')}
+            value={columnsMobile}
+            onChange={(v) => setAttributes({ columnsMobile: v || 1 })}
+            min={1}
+            max={4}
+          />
         </PanelBody>
         <PanelBody title={__('Steps', 'solaire')} initialOpen={false}>
           <Repeater
