@@ -760,6 +760,20 @@
   #nav-drawer.open {
     transform: translateX(0);
   }
+  /* Drawer head wears the mobile header's orange band (the opaque variant —
+     the drawer is solid, so there's nothing behind it to blur). */
+  .drawer-head {
+    background-color: #bb3200;
+    background-image: linear-gradient(
+      90deg,
+      #f15a00 0%,
+      #bb3200 45%,
+      #b34019 75%,
+      #df6a2e 100%
+    );
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  }
   #nav-overlay {
     transition: opacity 0.35s ease;
   }
@@ -858,6 +872,19 @@
 .so-header .custom-logo {
   max-height: 40px;
   width: auto;
+}
+
+/* The logo never gives up width: without this, max-width:100% lets the
+   centring grid squeeze it down to fit a long menu (1280px looked broken)
+   instead of the fit check handing the menu to the drawer. */
+@media (min-width: 1024px) {
+  .so-header .custom-logo {
+    max-width: none;
+  }
+  /* Drawer mode on desktop — match the tablet spacing between the buttons. */
+  html.nav-collapsed .so-header > div > :last-child {
+    gap: 1rem;
+  }
 }
 
 /* Desktop nav — animated underline on hover (grows in from the left) */
@@ -988,6 +1015,29 @@
 @media (min-width: 1024px) {
   .so-nav {
     min-width: 0;
+  }
+}
+
+/* Desktop nav fit — header.php measures whether the full menu fits the bar
+   and sets html.nav-collapsed when it doesn't, so the drawer takes over at any
+   desktop width instead of labels being squeezed out of the header. Id/class
+   selectors here outrank the lg: utilities in the markup. */
+@media (min-width: 1024px) {
+  html.nav-collapsed .so-nav {
+    display: none;
+  }
+  html.nav-collapsed #nav-toggle {
+    display: flex;
+  }
+  html.nav-collapsed #nav-drawer {
+    display: flex;
+  }
+  html.nav-collapsed #nav-overlay:not(.hidden) {
+    display: block;
+  }
+  /* Without the nav the centring grid has nothing to centre. */
+  html.nav-collapsed .so-header > div {
+    display: flex;
   }
 }
 

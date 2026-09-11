@@ -14,49 +14,28 @@ if (!defined('ABSPATH')) {
 <head>
   <meta charset="<?php bloginfo('charset'); ?>">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- Google Tag Manager -->
-  <script>
-    (function(w, d, s, l, i) {
-      w[l] = w[l] || [];
-      w[l].push({
-        'gtm.start': new Date().getTime(),
-        event: 'gtm.js'
-      });
-      var f = d.getElementsByTagName(s)[0],
-        j = d.createElement(s),
-        dl = l != 'dataLayer' ? '&l=' + l : '';
-      j.async = true;
-      j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-      f.parentNode.insertBefore(j, f);
-    })(window, document, 'script', 'dataLayer', 'GTM-M7S9Z7B8');
-  </script>
-  <!-- End Google Tag Manager -->
-
   <?php wp_head(); ?>
 </head>
 
 <body <?php body_class('bg-deep text-white'); ?>>
   <?php wp_body_open(); ?>
-
-  <!-- Google Tag Manager (noscript) -->
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M7S9Z7B8"
-      height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-  <!-- End Google Tag Manager (noscript) -->
-
   <!-- ============================ HEADER ============================ -->
   <header class="so-header header-bar sticky top-0 z-50">
-    <div class="relative z-10 mx-auto flex h-[44px] max-w-shell items-center gap-6 pl-2 pr-4 sm:h-[68px] sm:px-6 lg:max-w-none lg:gap-2 lg:px-4 xl:gap-4 xl:px-6 2xl:max-w-[1720px]">
+    <div class="relative z-10 mx-auto flex h-[44px] max-w-shell items-center gap-6 pl-2 pr-4 sm:h-[68px] sm:px-6 lg:max-w-none lg:gap-2 lg:px-4 xl:gap-4 xl:px-6 lg:grid 2xl:max-w-[1720px] lg:grid-cols-[1fr_auto_1fr]">
 
       <!-- Logo -->
-      <a href="<?php echo esc_url(home_url('/')); ?>" class="flex shrink-0 flex-col leading-none">
+      <?php // the_custom_logo() prints its own <a>, so the wrapper is a div — a
+      // nested link gets split by the browser into an extra header child. ?>
+      <div class="flex shrink-0 flex-col leading-none lg:justify-self-start">
         <?php if (has_custom_logo()) : ?>
           <?php the_custom_logo(); ?>
         <?php else : ?>
-          <span class="font-logo text-2xl font-semibold tracking-[0.32em] text-white sm:text-[28px]">SOLAIRE</span>
-          <span class="font-logo text-[10px] tracking-[0.55em] text-white/70">ONLINE</span>
+          <a href="<?php echo esc_url(home_url('/')); ?>" class="flex flex-col leading-none">
+            <span class="font-logo text-2xl font-semibold tracking-[0.32em] text-white sm:text-[28px]">SOLAIRE</span>
+            <span class="font-logo text-[10px] tracking-[0.55em] text-white/70">ONLINE</span>
+          </a>
         <?php endif; ?>
-      </a>
+      </div>
 
       <!-- Desktop nav -->
       <nav class="so-nav hidden items-center lg:flex" aria-label="<?php esc_attr_e('Primary Menu', 'solaire'); ?>">
@@ -70,7 +49,7 @@ if (!defined('ABSPATH')) {
       </nav>
 
       <!-- Right actions -->
-      <div class="ml-auto flex shrink-0 items-center gap-2 sm:gap-4 lg:gap-2 xl:gap-3">
+      <div class="ml-auto flex shrink-0 items-center gap-2 sm:gap-4 lg:gap-3 lg:justify-self-end">
         <button id="search-toggle" aria-label="<?php esc_attr_e('Open search', 'solaire'); ?>" class="btn-press flex h-7 w-7 items-center justify-center rounded-lg bg-[#222529] text-[#f5993d] ring-1 ring-white/15 backdrop-blur-sm transition-colors hover:text-orange-bright hover:ring-orange/40 sm:h-9 sm:w-9">
           <?php echo solaire_icon('search', 'h-4 w-4 sm:h-[18px] sm:w-[18px]'); // phpcs:ignore 
           ?>
@@ -116,6 +95,57 @@ if (!defined('ABSPATH')) {
       </div>
     </div>
   </aside>
+
+  <script>
+    /* Desktop nav fit: show the full nav whenever it fits the bar, otherwise
+       fall back to the drawer (html.nav-collapsed, styled in main.css). Runs
+       inline so the first paint is already right; re-checks once web fonts
+       land and on resize, since both change the label widths. */
+    (function() {
+      var root = document.documentElement;
+      var bar = document.querySelector('.so-header > div');
+      var nav = bar && bar.querySelector('.so-nav');
+      var list = nav && nav.querySelector('.so-nav__list');
+      if (!list) return;
+      var desktop = window.matchMedia('(min-width: 1024px)');
+
+      function fit() {
+        var wasCollapsed = root.classList.contains('nav-collapsed');
+        root.classList.remove('nav-collapsed');
+        // Compare real edges rather than scrollWidth: the hidden dropdown
+        // panels are laid out too and would count as overflow.
+        var collapse = false;
+        if (desktop.matches) {
+          var l = list.getBoundingClientRect();
+          var logo = bar.firstElementChild.getBoundingClientRect();
+          var acts = bar.lastElementChild.getBoundingClientRect();
+          var b = bar.getBoundingClientRect();
+          var padR = parseFloat(getComputedStyle(bar).paddingRight) || 0;
+          // Require breathing room either side, not just no overlap.
+          var room = 24;
+          collapse = l.left < logo.right + room ||
+            l.right > acts.left - room ||
+            acts.right > b.right - padR + 1;
+        }
+        root.classList.toggle('nav-collapsed', collapse);
+        // Leaving drawer mode with the drawer open would strand the scroll lock.
+        var drawer = document.getElementById('nav-drawer');
+        if (wasCollapsed && !collapse && drawer && drawer.classList.contains('open')) {
+          var close = document.getElementById('nav-close');
+          if (close) close.click();
+        }
+      }
+
+      var queued = false;
+      window.addEventListener('resize', function() {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(function() { queued = false; fit(); });
+      });
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+      fit();
+    })();
+  </script>
 
   <!-- ======================= SEARCH OVERLAY ======================= -->
   <div id="search-overlay" class="so-search-overlay fixed inset-0 z-[70] hidden items-center justify-center opacity-0" role="dialog" aria-modal="true" aria-hidden="true" aria-label="<?php esc_attr_e('Search', 'solaire'); ?>">

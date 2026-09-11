@@ -483,13 +483,13 @@ function solaire_demo_modal()
           modal.classList.remove('hidden');
           modal.classList.add('flex');
           modal.setAttribute('aria-hidden', 'false');
-          document.body.style.overflow = 'hidden';
+          (window.solaireScrollLock || function (on) { document.body.style.overflow = on ? 'hidden' : ''; })(true);
         }
         function close() {
           modal.classList.add('hidden');
           modal.classList.remove('flex');
           modal.setAttribute('aria-hidden', 'true');
-          document.body.style.overflow = '';
+          (window.solaireScrollLock || function (on) { document.body.style.overflow = on ? 'hidden' : ''; })(false);
           if (bodyEl) bodyEl.innerHTML = ''; // stop the game / free the iframe
         }
 
@@ -640,7 +640,7 @@ function solaire_nav_icon_html($item, $active)
             return sprintf(
                 '<span class="relative inline-flex h-5 w-5 shrink-0 items-center justify-center">'
                 . '<img src="%1$s" alt="" aria-hidden="true" class="h-5 w-5 object-contain transition-opacity %3$s" />'
-                . '<img src="%2$s" alt="" aria-hidden="true" class="absolute inset-0 h-5 w-5 object-contain transition-opacity %4$s" />'
+                . '<img src="%2$s" alt="" aria-hidden="true" class="absolute inset-0 m-auto h-5 w-5 object-contain transition-opacity %4$s" />'
                 . '</span>',
                 esc_url($inactive_url),
                 esc_url($active_url),

@@ -634,14 +634,14 @@ while (have_posts()) :
         modal.classList.remove('hidden');
         modal.classList.add('flex');
         modal.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
+        (window.solaireScrollLock || function (on) { document.body.style.overflow = on ? 'hidden' : ''; })(true);
         hideLoading();
       }
       function close() {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
         modal.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
+        (window.solaireScrollLock || function (on) { document.body.style.overflow = on ? 'hidden' : ''; })(false);
       }
 
       document.querySelectorAll('[data-demo-open]').forEach(function (btn) {

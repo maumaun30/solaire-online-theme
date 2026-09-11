@@ -7,6 +7,24 @@
 (function () {
   "use strict";
 
+  /* ---- Scroll lock ------------------------------------------
+     Hiding body overflow removes the scrollbar, which widens the page and
+     shifts it sideways. Pad the body by the scrollbar's width instead, so
+     the layout holds still while fixed panels (drawer, overlays) still
+     reach the true right edge. Exposed for the inline demo-modal scripts. */
+  function scrollLock(on) {
+    var body = document.body;
+    if (on) {
+      var sbw = window.innerWidth - document.documentElement.clientWidth;
+      body.style.paddingRight = sbw > 0 ? sbw + "px" : "";
+      body.style.overflow = "hidden";
+    } else {
+      body.style.overflow = "";
+      body.style.paddingRight = "";
+    }
+  }
+  window.solaireScrollLock = scrollLock;
+
   /* ---- Mobile nav drawer ---------------------------------- */
   function initDrawer() {
     var btn = document.getElementById("nav-toggle");
@@ -19,12 +37,12 @@
       drawer.classList.add("open");
       overlay.classList.remove("hidden");
       requestAnimationFrame(function () { overlay.style.opacity = "1"; });
-      document.body.style.overflow = "hidden";
+      scrollLock(true);
     }
     function close() {
       drawer.classList.remove("open");
       overlay.style.opacity = "0";
-      document.body.style.overflow = "";
+      scrollLock(false);
       setTimeout(function () { overlay.classList.add("hidden"); }, 350);
     }
     btn.addEventListener("click", open);
@@ -183,8 +201,8 @@
         try { localStorage.setItem(RG_KEY, String(Date.now() + RG_TTL)); } catch (e) {}
       }
     }
-    function lock() { document.body.style.overflow = "hidden"; }
-    function unlock() { document.body.style.overflow = ""; }
+    function lock() { scrollLock(true); }
+    function unlock() { scrollLock(false); }
     function show(el) {
       if (!el) return;
       el.classList.remove("hidden");
@@ -682,7 +700,7 @@
       if (field) field.value = "";
       overlay.classList.remove("hidden");
       overlay.setAttribute("aria-hidden", "false");
-      document.body.style.overflow = "hidden";
+      scrollLock(true);
       requestAnimationFrame(function () { overlay.classList.add("is-open"); });
       // Focus after the fade so the mobile keyboard doesn't fight the animation.
       setTimeout(function () { field && field.focus(); }, 200);
@@ -690,7 +708,7 @@
     function close() {
       overlay.classList.remove("is-open");
       overlay.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = "";
+      scrollLock(false);
       setTimeout(function () { overlay.classList.add("hidden"); }, 250);
     }
 
