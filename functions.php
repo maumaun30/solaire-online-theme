@@ -267,3 +267,27 @@ require_once get_theme_file_path('/inc/template-helpers.php');
 require_once get_theme_file_path('/inc/homepage.php');
 require_once get_theme_file_path('/inc/seed.php');
 require_once get_theme_file_path('/inc/schema.php');
+
+/**
+ * Wrap every mailto: link on the front end with Cloudflare's email_off
+ * opt-out so crawlers (Screaming Frog, Ahrefs) stop hitting
+ * /cdn-cgi/l/email-protection 404s. Filters the full page HTML so links from
+ * blocks, ACF fields, the footer and templates are all covered. Links that are
+ * already wrapped are left alone.
+ */
+function solaire_cloudflare_email_off( $content ) {
+    if ( false === stripos( $content, 'mailto:' ) ) {
+        return $content;
+    }
+
+    return preg_replace_callback(
+        '/(<!--email_off-->\s*)?<a\s[^>]*href\s*=\s*["\']\s*mailto:[^>]*>.*?<\/a>/is',
+        function ( $m ) {
+            return ! empty( $m[1] ) ? $m[0] : '<!--email_off-->' . $m[0] . '<!--email_on-->';
+        },
+        $content
+    );
+}
+add_action( 'template_redirect', function () {
+    ob_start( 'solaire_cloudflare_email_off' );
+}, PHP_INT_MAX );
