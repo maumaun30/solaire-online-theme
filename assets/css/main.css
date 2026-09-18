@@ -1443,3 +1443,7 @@
     margin-right: 10px;
   }
 }
+/* HTML Sitemap plugin: keep the native list marker, drop the plugin's duplicate ::before dot */
+.sw-html-sitemap .sw-html-sitemap__item::before {
+  content: none;
+}
