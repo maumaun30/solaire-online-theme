@@ -213,19 +213,6 @@ $share_title = rawurlencode($title);
     opacity: .95;
   }
 
-  .sp-hero__title {
-    font-size: clamp(2.25rem, 6vw, 4.5rem);
-    font-weight: 900;
-    line-height: 1.02;
-    text-transform: uppercase;
-    color: #fff;
-    margin: 0;
-    padding: 2.5rem 2rem;
-    max-width: 720px;
-    text-shadow: 0 4px 28px rgba(0, 0, 0, .45);
-    letter-spacing: -.01em;
-    display: none;
-  }
 
   /* ── MAIN GRID (content + sidebar) ── */
   .sp-main {
@@ -325,11 +312,11 @@ $share_title = rawurlencode($title);
   }
 
   .sp-content__body h2 {
-    font-size: 1.25rem;
+    font-size: 26px;
   }
 
   .sp-content__body h3 {
-    font-size: 1.05rem;
+    font-size: 22px;
   }
 
   .sp-content__body ul,
@@ -795,7 +782,6 @@ $share_title = rawurlencode($title);
       <?php if (! $hero_img && ($sp_logo = solaire_site_logo_url())) : ?>
         <img class="sp-hero__logo" src="<?php echo esc_url($sp_logo); ?>" alt="<?php echo esc_attr(get_bloginfo('name')); ?>" />
       <?php endif; ?>
-      <h1 class="sp-hero__title"><?php echo esc_html($title); ?></h1>
     </div>
   </section>
 
@@ -804,7 +790,7 @@ $share_title = rawurlencode($title);
 
     <!-- LEFT: article -->
     <article class="sp-content">
-      <h2 class="sp-content__title"><?php echo esc_html($title); ?></h2>
+      <h1 class="sp-content__title"><?php echo esc_html($title); ?></h1>
 
       <?php if ($cats || $tags) : ?>
         <div class="sp-terms">
