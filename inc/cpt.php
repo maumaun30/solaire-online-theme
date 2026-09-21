@@ -226,3 +226,54 @@ function solaire_ajax_load_games()
 }
 add_action('wp_ajax_solaire_load_games', 'solaire_ajax_load_games');
 add_action('wp_ajax_nopriv_solaire_load_games', 'solaire_ajax_load_games');
+
+/**
+ * game_category / provider archives are not crawlable by page.
+ *
+ * The grid is server-rendered with page 1 and extended in place by the
+ * "Load More Games" AJAX endpoint above — /page/2/ is never linked in the UI.
+ * The main query still runs with posts_per_page = 12, though, so
+ * max_num_pages came back > 1 and Yoast emitted <link rel="next"> pointing at
+ * e.g. /game-category/live-slots/page/2/. Those URLs resolved 200 with a
+ * self-referencing canonical, giving crawlers an endless chain of near
+ * duplicate pages.
+ *
+ * Two parts: stop the rel=next/prev tags being printed (nothing new is
+ * discovered), and 301 any paged URL that is already indexed or linked back to
+ * the term itself so that history consolidates on the canonical URL.
+ */
+if (!function_exists('solaire_unpaginated_game_taxonomies')) {
+    function solaire_unpaginated_game_taxonomies(): array
+    {
+        return ['game_category', 'provider'];
+    }
+}
+
+add_filter('wpseo_next_rel_link', function ($link) {
+    return is_tax(solaire_unpaginated_game_taxonomies()) ? false : $link;
+});
+
+add_filter('wpseo_prev_rel_link', function ($link) {
+    return is_tax(solaire_unpaginated_game_taxonomies()) ? false : $link;
+});
+
+function solaire_redirect_paged_game_taxonomy(): void
+{
+    if (!is_tax(solaire_unpaginated_game_taxonomies()) || !is_paged()) {
+        return;
+    }
+
+    $term = get_queried_object();
+    if (!$term instanceof WP_Term) {
+        return;
+    }
+
+    $link = get_term_link($term);
+    if (is_wp_error($link)) {
+        return;
+    }
+
+    wp_safe_redirect($link, 301);
+    exit;
+}
+add_action('template_redirect', 'solaire_redirect_paged_game_taxonomy');
