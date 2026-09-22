@@ -267,6 +267,7 @@ require_once get_theme_file_path('/inc/template-helpers.php');
 require_once get_theme_file_path('/inc/homepage.php');
 require_once get_theme_file_path('/inc/seed.php');
 require_once get_theme_file_path('/inc/schema.php');
+require_once get_theme_file_path('/inc/opengraph.php');
 
 /**
  * Wrap every mailto: link on the front end with Cloudflare's email_off
