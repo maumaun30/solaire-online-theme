@@ -31,3 +31,21 @@ add_action('wpseo_add_opengraph_additional_images', function ($image_container) 
         $image_container->add_image_by_url($fallback);
     }
 });
+
+/**
+ * Safety net. Some games still printed no og:image: Yoast reported an image
+ * for them (so the fallback above stepped aside) but then dropped it before
+ * output. Check the final list Yoast is about to print instead.
+ */
+add_filter('wpseo_frontend_presentation', function ($presentation) {
+    if (!empty($presentation->open_graph_images)) {
+        return $presentation;
+    }
+
+    $fallback = solaire_default_og_image();
+    if ($fallback) {
+        $presentation->open_graph_images = [['url' => $fallback]];
+    }
+
+    return $presentation;
+});
