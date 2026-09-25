@@ -107,6 +107,8 @@ $footer_responsible = get_field('so_footer_responsible_gaming', 'option');
 
 <?php get_template_part('template-parts/site-popups'); ?>
 
+<?php get_template_part('template-parts/register-modal'); ?>
+
 <?php wp_footer(); ?>
 </body>
 </html>

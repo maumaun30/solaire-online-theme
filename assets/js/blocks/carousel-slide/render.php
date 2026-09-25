@@ -27,24 +27,6 @@ if ( '' === trim( (string) $secondary_btn_url ) || '#' === $secondary_btn_url ) 
 $overlay_full  = round( $overlay_opacity / 100, 2 );
 $overlay_light = round( $overlay_full * 0.6, 2 );
 
-// Unique suffix so each slide's SVG clipPath ids don't collide on the page.
-$slide_uid = uniqid();
-
-if ( ! function_exists( 'mytheme_carousel_btn_shape' ) ) {
-    function mytheme_carousel_btn_shape( $uid ) { ?>
-      <svg aria-hidden="true" class="mytheme-carousel-slide__btn-shape" viewBox="0 0 148 42" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <g clip-path="url(#mytheme-carousel-btn-<?php echo esc_attr( $uid ); ?>)">
-          <path d="M148 30.4 L136.4 42 H0 V7 L7 0 H148 V30.4 Z" fill="currentColor"></path>
-          <path d="M148 34 V42 H140 L148 34 Z" fill="var(--decoration, currentColor)"></path>
-        </g>
-        <defs>
-          <clipPath id="mytheme-carousel-btn-<?php echo esc_attr( $uid ); ?>">
-            <rect width="148" height="42" fill="white"></rect>
-          </clipPath>
-        </defs>
-      </svg>
-    <?php }
-}
 ?>
 
 <div <?php echo get_block_wrapper_attributes(['class' => 'swiper-slide mytheme-carousel-slide']); ?>>
@@ -117,14 +99,23 @@ if ( ! function_exists( 'mytheme_carousel_btn_shape' ) ) {
       <?php if ( ( $show_primary_btn && $primary_btn_text ) || $secondary_btn_text ) : ?>
         <div class="mytheme-carousel-slide__buttons">
           <?php if ( $show_primary_btn && $primary_btn_text ) : ?>
-            <button
-              type="button"
-              class="mytheme-carousel-slide__btn mytheme-carousel-slide__btn--primary"
-              id="fnlmx-rg-proceed"
-            >
-              <?php mytheme_carousel_btn_shape( 'primary-' . $slide_uid ); ?>
-              <span class="mytheme-carousel-slide__btn-label"><?php echo esc_html( $primary_btn_text ); ?></span>
-            </button>
+            <?php // Opens the login modal (.so-open-register); falls back to a
+                  // link to solaireonline.com when the modal is disabled. ?>
+            <?php if ( ! function_exists( 'solaire_login_modal_enabled' ) || solaire_login_modal_enabled() ) : ?>
+              <button
+                type="button"
+                class="so-open-register mytheme-carousel-slide__btn mytheme-carousel-slide__btn--primary"
+              >
+                <span class="mytheme-carousel-slide__btn-label"><?php echo esc_html( $primary_btn_text ); ?></span>
+              </button>
+            <?php else : ?>
+              <a
+                href="<?php echo esc_url( 'https://www.solaireonline.com/en' ); ?>"
+                class="mytheme-carousel-slide__btn mytheme-carousel-slide__btn--primary"
+              >
+                <span class="mytheme-carousel-slide__btn-label"><?php echo esc_html( $primary_btn_text ); ?></span>
+              </a>
+            <?php endif; ?>
           <?php endif; ?>
 
           <?php if ( $secondary_btn_text ) : ?>
@@ -132,7 +123,6 @@ if ( ! function_exists( 'mytheme_carousel_btn_shape' ) ) {
               href="<?php echo esc_url( $secondary_btn_url ); ?>"
               class="mytheme-carousel-slide__btn mytheme-carousel-slide__btn--secondary"
             >
-              <?php mytheme_carousel_btn_shape( 'secondary-' . $slide_uid ); ?>
               <span class="mytheme-carousel-slide__btn-label"><?php echo esc_html( $secondary_btn_text ); ?></span>
             </a>
           <?php endif; ?>

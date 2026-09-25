@@ -480,7 +480,7 @@ while (have_posts()) :
 
   <!-- ===================== CTA ===================== -->
   <div class="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
-    <a href="https://www.solaireonline.com/en" class="bg-brand-orange text-white btn-press inline-flex w-full items-center justify-center rounded-xl px-8 py-4 text-center font-display text-lg sm:w-auto sm:text-xl"><?php esc_html_e('Play for Real - Sign Up Now', 'solaire'); ?></a>
+    <?php solaire_signup_cta(__('Play for Real - Sign Up Now', 'solaire'), 'bg-brand-orange text-white btn-press inline-flex w-full items-center justify-center rounded-xl px-8 py-4 text-center font-display text-lg sm:w-auto sm:text-xl'); ?>
     <?php if ($game_code) : ?>
       <button type="button" data-demo-open
         data-title="<?php echo esc_attr(get_the_title()); ?> — <?php esc_attr_e('Demo', 'solaire'); ?>"
