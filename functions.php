@@ -100,6 +100,34 @@ function solaire_enqueue_assets()
             'nonce' => wp_create_nonce('solaire_games'),
         ]);
     }
+
+    // Register / login modal (template-parts/register-modal.php).
+    $register_js  = get_theme_file_path('/assets/js/register-modal.js');
+    $countries_js = get_theme_file_path('/assets/js/country-codes.js');
+    if (file_exists($register_js)) {
+        wp_enqueue_script(
+            'solaire-country-codes',
+            get_theme_file_uri('/assets/js/country-codes.js'),
+            [],
+            file_exists($countries_js) ? filemtime($countries_js) : null,
+            true
+        );
+        // Per-country phone validation (non-PH numbers) in the login modal.
+        wp_enqueue_script(
+            'libphonenumber',
+            'https://cdn.jsdelivr.net/npm/libphonenumber-js@1.13.14/bundle/libphonenumber-min.js',
+            [],
+            null,
+            true
+        );
+        wp_enqueue_script(
+            'solaire-register-modal',
+            get_theme_file_uri('/assets/js/register-modal.js'),
+            ['solaire-main', 'solaire-country-codes', 'libphonenumber'],
+            filemtime($register_js),
+            true
+        );
+    }
 }
 add_action('wp_enqueue_scripts', 'solaire_enqueue_assets');
 

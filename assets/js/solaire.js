@@ -48,7 +48,8 @@
     btn.addEventListener("click", open);
     closeBtn && closeBtn.addEventListener("click", close);
     overlay && overlay.addEventListener("click", close);
-    drawer.querySelectorAll("a").forEach(function (a) {
+    // Links, plus the Sign Up button that opens the login modal instead.
+    drawer.querySelectorAll("a, .so-open-register").forEach(function (a) {
       a.addEventListener("click", close);
     });
 

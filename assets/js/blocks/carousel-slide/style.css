@@ -202,18 +202,15 @@
   transform: translateY(0);
 }
 
-/* The SVG (.mytheme-carousel-slide__btn-shape) is the button background, filled via
-   `color` (fill: currentColor); .mytheme-carousel-slide__btn-label sits on top. */
+/* Same look as the editor preview (.carousel-slide-editor__btn above):
+   solid orange primary, transparent secondary with a white outline. */
 .mytheme-carousel-slide__btn {
-  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 200px;
+  border-radius: 8px;
   text-decoration: none;
-  isolation: isolate;
-  --decoration: #ffffff; /* bottom-right accent triangle */
-  transition: transform 0.2s ease, filter 0.2s ease;
+  transition: transform 0.2s ease, background-color 0.2s ease;
   /* reset so the <button> primary matches the <a> secondary */
   padding: 0;
   border: 0;
@@ -224,24 +221,11 @@
   appearance: none;
 }
 
-.mytheme-carousel-slide__btn-shape {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
 .mytheme-carousel-slide__btn-label {
-  position: relative;
-  z-index: 1; /* above the shape */
   padding: 14px 32px;
   font-weight: 600;
   font-size: 1rem;
-  letter-spacing: -1.2px;
-  color: #FFFFFF;
+  color: #ffffff;
   text-align: center;
 }
 
@@ -249,21 +233,16 @@
   transform: translateY(-5px);
 }
 
-.mytheme-carousel-slide__btn--primary:hover {
-  color: #ef7b00;
-}
-a.mytheme-carousel-slide__btn--secondary:hover {
-  color: rgba(57, 57, 60, 0.6);
-}
-
-
 .mytheme-carousel-slide__btn--primary {
-  color: #df6a2e; /* fills the SVG shape */
+  background-color: var(--color-primary, #df6a2e);
+}
+
+.mytheme-carousel-slide__btn--primary:hover {
+  background-color: #ef7b00;
 }
 
 .mytheme-carousel-slide__btn--secondary {
-  color: rgba(57, 57, 60, 0.6); /* fills the SVG shape */
-  --decoration: rgba(255, 255, 255, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.5);
 }
 
 @media (max-width: 767px) {
@@ -291,10 +270,6 @@ a.mytheme-carousel-slide__btn--secondary:hover {
 
   .mytheme-carousel-slide__buttons {
     justify-content: flex-start;
-  }
-
-  .mytheme-carousel-slide__btn {
-    width: 150px;
   }
 
   .mytheme-carousel-slide__btn-label {

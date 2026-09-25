@@ -978,3 +978,40 @@ add_filter('wp_nav_menu_objects', function ($items, $args) {
 
     return $items;
 }, 10, 2);
+
+/**
+ * Whether the login / register modal is enabled ("Enable Login Modal" on the
+ * Gaming Guide options page). Defaults to on until the field is first saved.
+ */
+function solaire_login_modal_enabled()
+{
+    $enabled = function_exists('get_field') ? get_field('so_enable_login_modal', 'option') : null;
+    return ($enabled === null || $enabled === '') ? true : (bool) $enabled;
+}
+
+/**
+ * Sign-up CTA. With the login modal enabled it renders a <button> that opens
+ * it (no URL — register-modal.js handles `.so-open-register`); when disabled
+ * it falls back to a plain link to solaireonline.com.
+ *
+ * @param string $label   Button text (already translated).
+ * @param string $classes Tailwind classes shared by both variants.
+ */
+function solaire_signup_cta($label, $classes = '')
+{
+    if (solaire_login_modal_enabled()) {
+        printf(
+            '<button type="button" class="so-open-register %s">%s</button>',
+            esc_attr($classes),
+            esc_html($label)
+        );
+        return;
+    }
+
+    printf(
+        '<a href="%s" class="%s">%s</a>',
+        esc_url('https://www.solaireonline.com/en'),
+        esc_attr($classes),
+        esc_html($label)
+    );
+}
