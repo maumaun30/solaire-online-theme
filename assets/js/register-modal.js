@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const DEFAULT_SOURCE = "seo";
     const DEFAULT_MEDIUM = "seo";
-    const DEFAULT_CAMPAIGN = "so-games-sub";
+    const DEFAULT_CAMPAIGN = "2026_so_seo_lfc_org_seo_seo_so-games-sub";
 
     const STORAGE_KEY = "so_attr";
     const LEGACY_STORAGE_KEY = "so_attribution";
