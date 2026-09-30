@@ -257,6 +257,34 @@ function solaire_site_logo_url()
 }
 
 /**
+ * Header / mobile drawer logo link — "Header Logo UTM Link" on the Site
+ * Settings options page, falling back to the site home when empty.
+ */
+function solaire_header_logo_link()
+{
+    $link = function_exists('get_field') ? get_field('so_header_logo_utm_link', 'option') : '';
+    $link = is_string($link) ? trim($link) : '';
+    return $link !== '' ? $link : home_url('/');
+}
+
+/**
+ * Custom Logo <img> without the <a> that the_custom_logo() wraps it in, so the
+ * header can link it to solaire_header_logo_link(). '' when no logo is set.
+ */
+function solaire_custom_logo_img()
+{
+    $logo_id = get_theme_mod('custom_logo');
+    if (!$logo_id) {
+        return '';
+    }
+    $attr = ['class' => 'custom-logo'];
+    if (!get_post_meta($logo_id, '_wp_attachment_image_alt', true)) {
+        $attr['alt'] = get_bloginfo('name', 'display');
+    }
+    return wp_get_attachment_image($logo_id, 'full', false, $attr);
+}
+
+/**
  * Branded card face — the site logo centered on a dark panel. Used as the
  * visual for every game card (in place of game artwork). Falls back to the
  * "SOLAIRE ONLINE" wordmark when no Custom Logo is configured.
