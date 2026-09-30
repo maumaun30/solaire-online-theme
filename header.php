@@ -24,13 +24,13 @@ if (!defined('ABSPATH')) {
     <div class="relative z-10 mx-auto flex h-[44px] max-w-shell items-center gap-6 pl-2 pr-4 sm:h-[68px] sm:px-6 lg:max-w-none lg:gap-2 lg:px-4 xl:gap-4 xl:px-6 lg:grid 2xl:max-w-[1720px] lg:grid-cols-[1fr_auto_1fr]">
 
       <!-- Logo -->
-      <?php // the_custom_logo() prints its own <a>, so the wrapper is a div — a
-      // nested link gets split by the browser into an extra header child. ?>
+      <?php $logo_link = solaire_header_logo_link();
+      $logo_img = solaire_custom_logo_img(); ?>
       <div class="flex shrink-0 flex-col leading-none lg:justify-self-start">
-        <?php if (has_custom_logo()) : ?>
-          <?php the_custom_logo(); ?>
+        <?php if ($logo_img) : ?>
+          <a href="<?php echo esc_url($logo_link); ?>" class="custom-logo-link" rel="home"><?php echo $logo_img; // phpcs:ignore ?></a>
         <?php else : ?>
-          <a href="<?php echo esc_url(home_url('/')); ?>" class="flex flex-col leading-none">
+          <a href="<?php echo esc_url($logo_link); ?>" class="flex flex-col leading-none">
             <span class="font-logo text-2xl font-semibold tracking-[0.32em] text-white sm:text-[28px]">SOLAIRE</span>
             <span class="font-logo text-[10px] tracking-[0.55em] text-white/70">ONLINE</span>
           </a>
@@ -66,16 +66,17 @@ if (!defined('ABSPATH')) {
   <!-- Mobile drawer -->
   <div id="nav-overlay" class="fixed inset-0 z-50 hidden bg-black/60 opacity-0 lg:hidden"></div>
   <aside id="nav-drawer" class="fixed right-0 top-0 z-[60] flex h-full w-full flex-col overflow-hidden bg-deep p-6 shadow-2xl sm:w-80 sm:max-w-[80vw] lg:hidden">
-    <div class="drawer-head -mx-6 -mt-6 mb-8 flex items-center justify-between px-6 py-5">
-      <a href="<?php echo esc_url(home_url('/')); ?>" class="flex shrink-0 flex-col leading-none">
-        <?php if (has_custom_logo()) : ?>
-          <?php the_custom_logo(); ?>
+    <?php // 1fr | logo | 1fr grid keeps the logo centred with the close button on the right. ?>
+    <div class="drawer-head -mx-6 -mt-6 mb-8 grid grid-cols-[1fr_auto_1fr] items-center px-6 py-5">
+      <a href="<?php echo esc_url($logo_link); ?>" class="col-start-2 flex shrink-0 flex-col items-center leading-none">
+        <?php if ($logo_img) : ?>
+          <?php echo $logo_img; // phpcs:ignore ?>
         <?php else : ?>
           <span class="font-logo text-2xl font-semibold tracking-[0.32em] text-white">SOLAIRE</span>
           <span class="font-logo text-[10px] tracking-[0.55em] text-white/70">ONLINE</span>
         <?php endif; ?>
       </a>
-      <button id="nav-close" aria-label="<?php esc_attr_e('Close menu', 'solaire'); ?>" class="flex h-9 w-9 items-center justify-center rounded-lg text-white/70 hover:text-white">
+      <button id="nav-close" aria-label="<?php esc_attr_e('Close menu', 'solaire'); ?>" class="justify-self-end flex h-9 w-9 items-center justify-center rounded-lg text-white/70 hover:text-white">
         <?php echo solaire_icon('close', 'h-6 w-6'); // phpcs:ignore 
         ?>
       </button>
