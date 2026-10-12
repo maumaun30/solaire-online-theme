@@ -320,3 +320,9 @@ function solaire_cloudflare_email_off( $content ) {
 add_action( 'template_redirect', function () {
     ob_start( 'solaire_cloudflare_email_off' );
 }, PHP_INT_MAX );
+
+/**
+   * Comments aren't used on this site, so every per-post comment feed is empty.
+   * Stop advertising them in <head>; single games' feeds also 404.
+   */
+  add_filter( 'feed_links_extra_show_post_comments_feed', '__return_false' );
