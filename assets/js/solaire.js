@@ -318,6 +318,8 @@
         filter:  "all",
         tags:      [],
         providers: [],
+        customFilters: {},
+        search:    "",
         paged:   parseInt(grid.getAttribute("data-page") || "1", 10),
         step:    parseInt(grid.getAttribute("data-step") || "12", 10),
         hasMore: grid.getAttribute("data-has-more") === "1",
@@ -351,6 +353,8 @@
       filter:    st.filter,
       tags:      st.tags.join(","),
       providers: st.providers.join(","),
+        custom_filters: JSON.stringify(st.customFilters),
+        search:    st.search,
       provider_scope: st.providerScope,
       paged:     String(st.paged),
       per_page:  String(st.step)
@@ -404,6 +408,7 @@
       var panelClose   = group.querySelector("[data-filters-close]");
       var toggleLabel  = group.querySelector("[data-filters-toggle-label]");
       var toggleBase   = toggleLabel ? toggleLabel.textContent : "";
+      var searchInput  = group.querySelector("[data-game-search]");
 
       /* Re-read every dropdown into grid state, refresh the pills, and
          fetch page 1 of the combined filter. */
@@ -411,17 +416,27 @@
         var st = gridState(grid);
         st.tags = [];
         st.providers = [];
+        st.customFilters = {};
+        st.search = searchInput ? searchInput.value.trim() : "";
         st.filter = "all";
 
         dropdowns.forEach(function (dd) {
           var type = dd.getAttribute("data-dd-type");
-          if (type === "category") {
+          if (type === "category" || type === "custom-single") {
             var active = dd.querySelector("[data-dd-option].is-active");
-            st.filter = (active && active.getAttribute("data-value")) || "all";
+            if (type === "category") {
+              st.filter = (active && active.getAttribute("data-value")) || "all";
+            } else if (active && active.getAttribute("data-value") !== "all") {
+              st.customFilters[dd.getAttribute("data-custom-group")] = [active.getAttribute("data-value")];
+            }
           } else {
-            var bucket = type === "provider" ? st.providers : st.tags;
+            var bucket = type === "provider" ? st.providers : (type === "custom" ? null : st.tags);
             dd.querySelectorAll("[data-dd-check]:checked").forEach(function (cb) {
-              bucket.push(cb.value);
+              if (type === "custom") {
+                var groupKey = dd.getAttribute("data-custom-group");
+                if (!st.customFilters[groupKey]) st.customFilters[groupKey] = [];
+                st.customFilters[groupKey].push(cb.value);
+              } else { bucket.push(cb.value); }
             });
           }
           syncTitle(dd);
@@ -438,7 +453,7 @@
         var title = dd.querySelector("[data-dd-title]");
         var menu  = dd.querySelector("[data-dd-menu]");
         var base  = (menu && menu.getAttribute("data-dd-default")) || (title && title.textContent) || "";
-        if (type === "category") {
+        if (type === "category" || type === "custom-single") {
           var active = dd.querySelector("[data-dd-option].is-active");
           var val    = active ? active.getAttribute("data-value") : "all";
           if (title) title.textContent = (val && val !== "all") ? active.textContent.trim() : base;
@@ -454,25 +469,35 @@
       function renderPills() {
         if (!pillsList) return;
         pillsList.innerHTML = "";
-        var checks = group.querySelectorAll('[data-dd-type="tag"] [data-dd-check]:checked, [data-dd-type="provider"] [data-dd-check]:checked');
+        // The first custom filter behaves like All Games: its button reflects
+        // the selection, but it is not repeated as a removable filter pill.
+        var checks = group.querySelectorAll('[data-dd-type="tag"] [data-dd-check]:checked, [data-dd-type="provider"] [data-dd-check]:checked, [data-dd-type="custom"] [data-dd-check]:checked');
         checks.forEach(function (cb) {
           var pill = document.createElement("span");
           pill.className = "solaire-pill";
           var label = document.createElement("span");
-          label.textContent = cb.getAttribute("data-label") || cb.value;
+          label.textContent = cb.getAttribute("data-label") || cb.value || cb.textContent.trim();
           var x = document.createElement("button");
           x.type = "button";
           x.setAttribute("aria-label", "Remove " + label.textContent);
           x.innerHTML = '<svg class="h-3 w-3" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 5l10 10M15 5L5 15" stroke-linecap="round"/></svg>';
           x.addEventListener("click", function () {
-            cb.checked = false;
+            if (cb.matches("[data-dd-check]")) {
+              cb.checked = false;
+            } else {
+              cb.classList.remove("is-active");
+            }
             apply();
           });
           pill.appendChild(label);
           pill.appendChild(x);
           pillsList.appendChild(pill);
         });
-        if (pillsWrap) pillsWrap.style.display = checks.length ? "flex" : "none";
+        if (pillsWrap) {
+          pillsWrap.classList.toggle("is-visible", checks.length > 0);
+          pillsWrap.classList.toggle("hidden", checks.length === 0);
+          pillsWrap.style.display = "";
+        }
         // Mobile "Filters" button reflects how many tag/provider filters are on.
         if (toggleLabel) toggleLabel.textContent = checks.length ? toggleBase + " (" + checks.length + ")" : toggleBase;
       }
@@ -496,7 +521,7 @@
         }
 
         // Category = single-select radio behaviour.
-        if (dd.getAttribute("data-dd-type") === "category") {
+        if (dd.getAttribute("data-dd-type") === "category" || dd.getAttribute("data-dd-type") === "custom-single") {
           dd.querySelectorAll("[data-dd-option]").forEach(function (opt) {
             opt.addEventListener("click", function () {
               dd.querySelectorAll("[data-dd-option]").forEach(function (o) {
@@ -545,7 +570,10 @@
           dropdowns.forEach(function (dd) {
             dd.querySelectorAll("[data-dd-check]").forEach(function (cb) { cb.checked = false; });
             var opts = dd.querySelectorAll("[data-dd-option]");
-            opts.forEach(function (o, i) { o.classList.toggle("is-active", i === 0 && dd.getAttribute("data-dd-type") === "category"); });
+            opts.forEach(function (o, i) {
+              var type = dd.getAttribute("data-dd-type");
+              o.classList.toggle("is-active", i === 0 && (type === "category" || type === "custom-single"));
+            });
           });
           closeAll();
           apply();
@@ -568,6 +596,14 @@
             setPanel(false);
           });
         }
+      }
+
+      if (searchInput) {
+        var searchTimer;
+        searchInput.addEventListener("input", function () {
+          clearTimeout(searchTimer);
+          searchTimer = setTimeout(apply, 250);
+        });
       }
 
       // Close any open menu when clicking elsewhere.

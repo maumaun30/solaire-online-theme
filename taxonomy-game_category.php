@@ -45,6 +45,16 @@ if (is_wp_error($child_terms))    { $child_terms = []; }
 if (is_wp_error($tag_terms))      { $tag_terms = []; }
 if (is_wp_error($provider_terms)) { $provider_terms = []; }
 
+// Optional term-level custom filter template. ACF stores the toggle and
+// repeater inside the `so_custom_filter_template` group.
+$custom_filter_template = get_field('so_custom_filter_template', $current_term);
+if (!is_array($custom_filter_template)) { $custom_filter_template = []; }
+$custom_filter_enabled = !empty($custom_filter_template['so_custom_game_filter']);
+$custom_filter_groups  = $custom_filter_enabled
+    ? ($custom_filter_template['so_custom_filter_repeater'] ?? [])
+    : [];
+if (!is_array($custom_filter_groups)) { $custom_filter_groups = []; }
+
 // When the category has no games at all, skip the filters/grid/load-more
 // entirely rather than rendering an empty toolbar over a "No games found." box.
 $has_games = have_posts();
@@ -90,7 +100,8 @@ $dd_caret = '<svg class="solaire-dd-caret h-4 w-4" viewBox="0 0 20 20" fill="non
   <div class="mt-8" data-filter-group data-filter-target="#games-grid">
     <div class="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center">
 
-      <!-- Popular Games — child categories (single-select). Always visible. -->
+      <?php if (!$custom_filter_enabled || !$custom_filter_groups) : ?>
+      <!-- Popular Games — child categories (single-select). -->
       <div class="solaire-dd relative w-full lg:w-auto" data-dd data-dd-type="category">
         <button type="button" data-dd-toggle aria-haspopup="true" aria-expanded="false" class="solaire-dd-btn w-full lg:w-auto">
           <span data-dd-title><?php esc_html_e('All Games', 'solaire'); ?></span>
@@ -103,6 +114,30 @@ $dd_caret = '<svg class="solaire-dd-caret h-4 w-4" viewBox="0 0 20 20" fill="non
           <?php endforeach; ?>
         </div>
       </div>
+      <?php endif; ?>
+
+      <?php if ($custom_filter_enabled && $custom_filter_groups) :
+        $first_custom_group = reset($custom_filter_groups);
+        $first_custom_options = is_array($first_custom_group) ? ($first_custom_group['so_filter_option_repeater'] ?? ($first_custom_group['so_filter_option_items'] ?? [])) : [];
+        $first_custom_title = is_array($first_custom_group) ? trim((string) ($first_custom_group['so_filter_option_title'] ?? '')) : '';
+      ?>
+        <?php if ($first_custom_title && is_array($first_custom_options)) : ?>
+        <div class="solaire-dd solaire-dd--right relative w-full lg:w-auto" data-dd data-dd-type="custom-single" data-custom-group="0">
+          <button type="button" data-dd-toggle aria-haspopup="true" aria-expanded="false" class="solaire-dd-btn w-full lg:w-auto">
+            <span data-dd-title><?php echo esc_html($first_custom_title); ?></span><?php echo $dd_caret; // phpcs:ignore ?>
+          </button>
+          <div data-dd-menu class="solaire-dd-menu hidden" role="menu" data-dd-default="<?php echo esc_attr($first_custom_title); ?>">
+            <button type="button" role="menuitemradio" data-dd-option data-value="all" class="solaire-dd-option is-active"><?php echo esc_html($first_custom_title); ?></button>
+            <?php foreach ($first_custom_options as $option) :
+              $value = is_array($option) ? ($option['so_filter_option_items'] ?? '') : $option;
+              if (($value = trim((string) $value)) === '') { continue; }
+            ?>
+              <button type="button" role="menuitemradio" data-dd-option data-value="<?php echo esc_attr($value); ?>" data-label="<?php echo esc_attr($value); ?>" class="solaire-dd-option"><?php echo esc_html($value); ?></button>
+            <?php endforeach; ?>
+          </div>
+        </div>
+        <?php endif; ?>
+      <?php endif; ?>
 
       <!-- Mobile-only toggle that opens the Games/Provider panel below. -->
       <button type="button" data-filters-toggle aria-expanded="false" class="solaire-filters-toggle lg:hidden">
@@ -128,8 +163,35 @@ $dd_caret = '<svg class="solaire-dd-caret h-4 w-4" viewBox="0 0 20 20" fill="non
           <button type="button" data-filter-clear class="ml-1 hidden text-sm font-semibold text-orange transition hover:text-white lg:inline"><?php esc_html_e('Clear filters', 'solaire'); ?></button>
         </div>
 
-        <!-- Games — Tags taxonomy (multi-select) -->
-        <?php if (!empty($tag_terms)) : ?>
+      <?php if ($custom_filter_enabled && $custom_filter_groups) : ?>
+        <?php foreach ($custom_filter_groups as $group_index => $custom_group) :
+          if ($group_index === array_key_first($custom_filter_groups)) { continue; }
+          $custom_title   = trim((string) ($custom_group['so_filter_option_title'] ?? ''));
+          $custom_options = $custom_group['so_filter_option_repeater'] ?? [];
+          if (!$custom_options) { $custom_options = $custom_group['so_filter_option_items'] ?? []; }
+          if (!is_array($custom_options) || !$custom_title) { continue; }
+        ?>
+        <div class="solaire-dd solaire-dd--right relative w-full lg:w-auto<?php echo array_search($group_index, array_keys($custom_filter_groups), true) === 1 ? ' lg:ml-auto' : ''; ?>" data-dd data-dd-type="custom" data-custom-group="<?php echo esc_attr($group_index); ?>">
+          <button type="button" data-dd-toggle aria-haspopup="true" aria-expanded="false" class="solaire-dd-btn w-full lg:w-auto">
+            <span data-dd-title><?php echo esc_html($custom_title); ?></span><?php echo $dd_caret; // phpcs:ignore ?>
+          </button>
+          <div data-dd-menu class="solaire-dd-menu hidden" role="menu" data-dd-default="<?php echo esc_attr($custom_title); ?>">
+            <?php foreach ($custom_options as $option) :
+              $value = is_array($option) ? ($option['so_filter_option_items'] ?? '') : $option;
+              $value = trim((string) $value);
+              if (!$value) { continue; }
+            ?>
+              <label class="solaire-dd-option" data-dd-option>
+                <input type="checkbox" data-dd-check value="<?php echo esc_attr($value); ?>" data-label="<?php echo esc_attr($value); ?>" />
+                <span><?php echo esc_html($value); ?></span>
+              </label>
+            <?php endforeach; ?>
+          </div>
+        </div>
+        <?php endforeach; ?>
+      <?php else : ?>
+      <!-- Games — Tags taxonomy (multi-select) -->
+      <?php if (!empty($tag_terms)) : ?>
         <div class="solaire-dd solaire-dd--right relative w-full lg:ml-auto lg:w-auto" data-dd data-dd-type="tag">
           <button type="button" data-dd-toggle aria-haspopup="true" aria-expanded="false" class="solaire-dd-btn w-full lg:w-auto">
             <span data-dd-title><?php esc_html_e('Themes', 'solaire'); ?></span>
@@ -145,8 +207,10 @@ $dd_caret = '<svg class="solaire-dd-caret h-4 w-4" viewBox="0 0 20 20" fill="non
           </div>
         </div>
         <?php endif; ?>
+      <?php endif; ?>
 
         <!-- Provider — Providers taxonomy (multi-select + search) -->
+        <?php if (!$custom_filter_enabled || !$custom_filter_groups) : ?>
         <?php if (!empty($provider_terms)) : ?>
         <div class="solaire-dd solaire-dd--right relative w-full lg:w-auto" data-dd data-dd-type="provider">
           <button type="button" data-dd-toggle aria-haspopup="true" aria-expanded="false" class="solaire-dd-btn w-full lg:w-auto">
@@ -169,9 +233,15 @@ $dd_caret = '<svg class="solaire-dd-caret h-4 w-4" viewBox="0 0 20 20" fill="non
           </div>
         </div>
         <?php endif; ?>
+        <?php endif; ?>
 
         <!-- Mobile-only full-width Clear Filters -->
         <button type="button" data-filter-clear class="solaire-filters-clear lg:hidden"><?php esc_html_e('Clear Filters', 'solaire'); ?></button>
+      </div>
+
+      <!-- Search remains visible outside the collapsible mobile/tablet panel. -->
+      <div class="solaire-game-search relative w-full lg:order-last lg:w-auto" data-game-search-wrap>
+        <input type="search" data-game-search class="solaire-dd-btn w-full lg:w-64" placeholder="<?php esc_attr_e('Search Games', 'solaire'); ?>" aria-label="<?php esc_attr_e('Search Games', 'solaire'); ?>" />
       </div>
     </div>
   </div>
