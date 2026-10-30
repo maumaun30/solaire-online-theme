@@ -150,6 +150,17 @@ function solaire_ajax_load_games()
     };
     $tags      = isset($_POST['tags']) ? $slug_list(wp_unslash($_POST['tags'])) : [];
     $providers = isset($_POST['providers']) ? $slug_list(wp_unslash($_POST['providers'])) : [];
+    $search = isset($_POST['search']) ? sanitize_text_field(wp_unslash($_POST['search'])) : '';
+    $custom_filters = [];
+    if (isset($_POST['custom_filters'])) {
+        $decoded = json_decode(wp_unslash($_POST['custom_filters']), true);
+        if (is_array($decoded)) {
+            foreach ($decoded as $values) {
+                $values = array_values(array_filter(array_map('sanitize_text_field', (array) $values)));
+                if ($values) { $custom_filters[] = $values; }
+            }
+        }
+    }
 
     // Provider archive (taxonomy-provider.php): every result stays inside the
     // provider being viewed, whatever the category/theme filters select. The
@@ -206,6 +217,43 @@ function solaire_ajax_load_games()
             $tax_query['relation'] = 'AND';
         }
         $args['tax_query'] = $tax_query;
+    }
+
+    // Custom ACF filters: options within one group are OR; separate groups
+    // are AND. Select fields are stored as serialized post meta, so LIKE is
+    // used for each selected value.
+    if ($custom_filters) {
+        $filter_fields = [
+            'so_parent_category_custom_filter_so_first_custom_filter_values',
+            'so_parent_category_custom_filter_so_second_custom_filter_values',
+            'so_parent_category_custom_filter_so_third_custom_filter_values',
+        ];
+        global $wpdb;
+        $matching_ids = null;
+        foreach ($custom_filters as $index => $options) {
+            $field_name = $filter_fields[$index] ?? '';
+            if (!$field_name) { continue; }
+            $group_ids = [];
+            foreach ($options as $option) {
+                // ACF Select values may be stored as a string or serialized
+                // array, and Group meta keys can vary by field configuration.
+                // Match the saved value directly across post meta.
+                $like = '%' . $wpdb->esc_like($option) . '%';
+                $ids = $wpdb->get_col($wpdb->prepare(
+                    "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_value LIKE %s",
+                    $like
+                ));
+                $group_ids = array_merge($group_ids, array_map('intval', $ids));
+            }
+            $group_ids = array_values(array_unique($group_ids));
+            $matching_ids = $matching_ids === null
+                ? $group_ids
+                : array_values(array_intersect($matching_ids, $group_ids));
+        }
+        $args['post__in'] = $matching_ids ?: [0];
+    }
+    if ($search !== '') {
+        $args['s'] = $search;
     }
 
     $q = new WP_Query($args);

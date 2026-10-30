@@ -12,6 +12,67 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+/**
+ * Populate the Single Game custom-filter Select fields from the first assigned
+ * game category's custom-filter template. The category remains the source of
+ * truth; editors only select values that apply to the game.
+ */
+function solaire_load_game_custom_filter_choices($field)
+{
+    $post_id = (int) ($_GET['post'] ?? 0);
+    if (!$post_id && function_exists('acf_get_form_data')) {
+        $post_id = (int) acf_get_form_data('post_id');
+    }
+    if (!$post_id) {
+        return $field;
+    }
+
+    $terms = wp_get_post_terms($post_id, 'game_category');
+    if (is_wp_error($terms) || !$terms) {
+        return $field;
+    }
+
+    foreach ($terms as $term) {
+        $template = get_field('so_custom_filter_template', $term);
+        if (empty($template['so_custom_game_filter']) || empty($template['so_custom_filter_repeater'])) {
+            continue;
+        }
+
+        $field_map = [
+            'so_first_custom_filter_values'  => 0,
+            'so_second_custom_filter_values' => 1,
+            'so_third_custom_filter_values'  => 2,
+        ];
+        $row_index = $field_map[$field['name']] ?? null;
+        if ($row_index === null) {
+            return $field;
+        }
+
+        $rows = array_values($template['so_custom_filter_repeater']);
+        $row = $rows[$row_index] ?? null;
+        if (!$row) {
+            return $field;
+        }
+
+        $options = $row['so_filter_option_repeater'] ?? [];
+        foreach ((array) $options as $option) {
+            $value = is_array($option) ? ($option['so_filter_option_items'] ?? '') : $option;
+            $value = trim((string) $value);
+            if ($value !== '') {
+                $field['choices'][$value] = $value;
+            }
+        }
+        $field['multiple'] = 1;
+        $field['ui'] = 1;
+        return $field;
+    }
+
+    return $field;
+}
+add_filter('acf/load_field/name=so_first_custom_filter_values', 'solaire_load_game_custom_filter_choices');
+add_filter('acf/load_field/name=so_second_custom_filter_values', 'solaire_load_game_custom_filter_choices');
+add_filter('acf/load_field/name=so_third_custom_filter_values', 'solaire_load_game_custom_filter_choices');
+
 add_action('acf/init', function () {
     if (!function_exists('acf_add_local_field_group')) {
         return;
